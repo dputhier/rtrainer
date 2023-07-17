@@ -1,0 +1,449 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "Entrées/Sorties et système de fichiers."
+output:
+  learnr::tutorial:
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #FFEEFF;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+
+<!--  
+<img src="img/graph_with_r.jpeg"> 
+![](img/graph_with_r.jpeg)
+--> 
+
+## Objectifs
+
+Il est important de pouvoir **communiquer avec le système de fichier** afin de pourvoir **importer/lire** des fichiers ou **exporter/écrire** dans des fichiers. La section suivante présente quelques éléments permettant de **manipuler l'arborescence des fichiers**.
+
+## La fonction getwd()
+
+La fonction **getwd()** (*get working directory*) permet d'afficher **le répertoire de travail courant**. Ce répertoire est le répertoire dans lequel R travail à un instant $t$ et à partir duquel il lira ou dans lequel il écrira **par défaut** (*i.e* si aucun autre dossier de travail n'est spécifié).
+
+```{r getwd, exercise=TRUE}
+getwd()
+```
+
+## Création de répertoires: dir.create()
+
+La fonction **dir.create** permet de créer des répertoires. Ici nous allons créer un répertoire dans un dossier système, temporaire, pour ne pas encombrer votre espace de travail.
+
+la fonction **tempdir()** permet de créer **un chemin vers un répertoire temporaire** (sans créer le dossier correspondant). Cette fonction fonctionne **sur tous les système d'exploitation (Windows, OSX, Linux...)**. Elle définira un chemin **à l'intérieur du répertoire parent dédié aux fichiers/dossiers temporaires** (*e.g* le dossier /tmp sous Linux et quelque chose comme C:\\Users\\nom_utilisateur\\AppData\\Local\\Temp sous windows). 
+
+```{r tempdir_0, exercise=TRUE}
+tmp_dir_path <- tempdir()
+print(tmp_dir_path)
+```
+
+Ou peut **créer, ensuite, le répertoire correspondant** avec la fonction **dir.create()**. Cette fonction est la fonction de référence permettant de créer un dossier étant donné un chemin fourni en entrée. 
+
+```{r tempdir, exercise=TRUE, exercise.setup="tempdir_0" }
+dir.create(tmp_dir_path)
+```
+
+**NB:** Ci-dessous, le répertoire est temporaire. Sous Linux il sera délété au prochain redémarrage de la machine (à moins que vous ne le délétiez avant). 
+
+
+
+## La fonction dir()
+
+On pourra lister les fichiers dans un répertoire à l'aide de la fonction **dir()** (directory). La valeur renvoyée par **dir()** est un vecteur de chaînes de caractères. **A ce stade notre dossier ne devrait rien contenir**. Cependant ici nous travaillons **dans une application web** et ce pourrait être **un peu différent**, vous pourriez y trouver des fichiers préfixés par *lrn-exa* (ils sont liés au librairies utilisées pour ce tutoriel). **Ne pas en tenir compte**.
+
+
+```{r exodir, exercise=TRUE, exercise.setup="tempdir"}
+dir(tmp_dir_path)
+```
+
+## la fonction file.path() 
+
+### Créer des chemins
+
+On peut utiliser la fonction **file.path()** pour créer un chemin vers un objet (dossier ou fichier). Etant donné que le format des chemins diffère d'un système d'exploitation à l'autre (Linux, Windows, OSX...), en utilisant **file.path** le chemin produit sera adpaté à la plateforme  sur laquelle R est installé. L'utilisation de file.path() permet donc d'avoir un code compatible entre les différents systèmes d'exploitation.
+
+```{r filepath, exercise=TRUE, exercise.setup="tempdir" }
+# Ici on crée 5 chemins différents
+fp <- file.path(tmp_dir_path, "projects", paste0("project_", 1:5))
+fp
+```
+
+Ensuite on peut créer les dossiers correspondant. Comme il y en a plusieurs et que **dir.create()** n'en accepte qu'un, on va **'appliquer'** (avec **sapply**) à toutes les positions du vecteur **fp** la fonction **dir.create()**. Par défaut **dir.create()** n'accepte pas de créer un dossier enfant si le dossier parent n'existe pas (ici "projects"). On le force à accepter de le faire en indiquant **recursive=TRUE**. Comme pour l'ensemble des fonction de la **famille apply**, les arguments supplémentaires de la fonction appelée (**dir.create**) son passés à la fin (**recursive=TRUE, showWarnings=FALSE**).
+
+**NB:** si le dossier n'existe pas la sapply renverra *TRUE* sinon *FALSE*.
+
+```{r sapply, exercise=TRUE, exercise.setup="filepath" }
+sapply(fp, dir.create, recursive=TRUE, showWarnings=FALSE)
+```
+
+### Exercice 
+
+<div class="exo">
+
+- Dans **chacun des sous-dossiers du dossier projects**, créer un dossier **input**.
+
+```{r exomkdir, exercise=TRUE, exercise.setup="sapply"}
+
+```
+
+```{r exomkdir-solution}
+fp <- file.path(tmp_dir_path, "projects", paste0("project_", 1:5), "input")
+sapply(fp, dir.create, recursive=TRUE, showWarnings=FALSE)
+```
+
+```{r exomkdir-check }
+gradethis::grade_result(
+  pass_if(~ all(dir.exists(fp)))
+)
+```
+</div>
+
+### Visualisation de l'arborescence
+
+Par défaut, R ne propose par de fonction permettant de visualiser l'arborescence sous la forme d'un arbre. Cependant cette fonctionnalité est proposée par la librairie de fonctions **fs** (Cross-Platform **F**ile **S**ystem Operations). Nous allons donc la charger (elle devrait être pré-installée) avec la fonction **library()**.
+
+```{r exorecap, eval=FALSE, echo=FALSE, exercise.setup="sapply"}
+fp <- file.path(tmp_dir_path, "projects", paste0("project_", 1:5), "input")
+sapply(fp, dir.create, recursive=TRUE, showWarnings=FALSE)
+```
+
+```{r fs, exercise=TRUE }
+library(fs)
+```
+
+Ensuite on peut faire appel à la fonction **dir_tree()**.
+
+```{r dir_tree, exercise=TRUE, exercise.setup="exorecap"}
+dir_tree(file.path(tmp_dir_path, "projects"))
+```
+
+## Changement de répertoire
+
+La fonction **setwd()** (*set working directory*) permet de **se déplacer dans l'arborescence** et d'aller d'un répertoire à un autre (et donc de définir un **nouveau répertoire de travail**). Ce nouveau répertoire deviendra le répertoire dans lequel R cherchera, par défaut, les documents (fichiers et dossiers). On passera simplement le nom du répertoire de destination à **setwd()**. Après avoir utilisé **setwd()** on peut vérifier sa position dans l'arborescence avec **getwd()**. 
+
+Déplacçons nous dans le répertoire *project/project_1.
+
+```{r setwd, exercise=TRUE, exercise.setup="exorecap" }
+setwd(file.path(tmp_dir_path, "projects", "project_1"))
+getwd()
+```
+
+## Création de fichier
+
+R dispose de nombreuses fonctions pour effectuer des tâches sur des fichiers. 
+
+- **file.create** : création de fichiers
+- **file.show** : pour visualiser le contenu d'un fichier
+- **cat** : écriture dans un fichier ou sur la sortie standard (*e.g.* l'écran) si l'argument ("file") n'est pas
+renseignée
+- **file.remove** (ou unlink() : détruire un fichier.
+
+Une bonne partie d'entre elles porte un nom qui commence ou finit par *file*.
+
+```{r apropos, exercise=TRUE }
+# L'expression régulière signifie
+# 'un chaîne de caractères commençant (^)
+# par 'file'.
+apropos("^file")
+```
+
+<div class="exo">
+
+- Recherchez toutes les fonctions dont le nom finit (\$ en expression régulière) par *file*.
+
+```{r apropos2, exercise=TRUE }
+
+```
+
+```{r apropos2-solution}
+apropos("file$")
+```
+
+```{r apropos2-check }
+gradethis::grade_result(
+  pass_if(~ "download.file" %in% .result)
+)
+```
+</div>
+
+Ici nous pouvons créer un fichier "file_1.txt", contenant "Hello World", dans le dossier "projects/project_1".
+
+```{r exocat, exercise=TRUE , exercise.setup="exorecap"}
+dir_name <- file.path(tmp_dir_path, "projects", "project_1")
+fp <- file.path(dir_name, "file_1.txt")
+cat("Hello World", file=fp)
+dir(dir_name)
+file.show(fp)
+```
+
+## La fonction scan()
+
+Bien sûr, généralement on travail pas avec des fichiers dont le contenu est *Hello World*. On **importe des données depuis des logiciels tiers** qui contiendront des **données de nature très variées**. 
+Une première fonction, assez méconnue, pour importer des données est la fonction **scan()**. Elle permet la lecture d'un fichier (argument **file** que je vous laisse découvrir plus tard) mais aussi la lecture via **un copier-coller**. Ce dernier mode de lecture peut-être assez intéressant pour **transférer rapidement** (mais sans guère de traçabilité...) des données dans R. Ce mode d'utilisation **ne fonctionnera pas dans notre interface Web mais fonctionnera dans l'éditeur de référence RStudio** (vous pourrez le tester plus tard). 
+
+Par exemple si le presse-papier contient une série de valeurs numérique provenant d'Excel par exemple, on pourra écrire:
+
+```{r eval=FALSE}
+x <- scan(what=double())
+# Ensuite on colle (e.g. ctrl+V)
+plot(x)
+```
+
+## La fonction read.table()
+
+### Présentation de read.table()
+
+Cette commande est **incontournable** puisqu'elle permettra la **lecture de tableaux de données** locaux ou distants (http, ftp) au format texte. Ces tableaux au format texte contiendront un séparateur de colonne comme, par exemple:
+
+- Les fichiers dont **l'extension est ".csv" (*comma separated values*)** et dont les colonnes sont **séparées par des virgules**.
+- Les fichiers dont dont **l'extension est ".tsv" ou ".tab" (*tab separated value*)** et dont les colonnes sont **séparées par des tabulations** (voir prochaine section). 
+- Potentiellement des fichiers dont l'extension est, **imprécisement, définie comme ".txt"** (*texte*) et qu'on aurait du nommer avec l'extension ".csv" ou  ".tsv/.tab" car il contiennent des données en colonnes...
+
+Tous ces fichiers .csv", ".tsv" et ".txt" sont considérés comme des **fichiers plats**. C'est à dire qu'ils ne contiennent que des caractères et aucune information de mise en forme (e.g gras, italique, souligné comme un document word). 
+
+### Qu'est ce qu'un fichier tabulé
+
+Etant donné que le fichier tabulé (contenant souvent l'extension ".tsv") très populaire (qu'on peut produire à partir d'Excel par exemple) il est important de s'attarder un peu sur se format. 
+
+Le séparateur de colonne dans le fichier tabulé est **le caractère '\t'**. Si vous n'avez **pas fait d'informatique vous n'en avez sans doute jamais entendu parlé**. Vous l'avez pourtant sans doute rencontré mais sans savoir que c'était lui... Il s'écrit '\t' mais **l'ordinateur le représente sous la forme d'un grand espace** (mais ce n'en est pas un...).
+
+<div class="exo">
+
+- Interprétez le code suivant. 
+
+```{r tabulation, exercise=TRUE }
+cat("1\t2\t3")
+```
+
+```{r q1, echo=FALSE }
+learnr::question("Que voyez vous quand R interprète le code ?",
+  answer("2\t3\t4", correct = TRUE),
+  answer("2\\t3\\t4"),
+  allow_retry = TRUE 
+)
+```
+</div>
+
+Un autre caractère important qu'il est nécessaire de connaître est le caractère '\\n' (**newline**). On le retrouve dans tous les fichiers (tabulés ou non...) à moins qu'ils ne contiennent qu'une seule ligne... Ce caractère est en effet interprété par les logiciels comme un retour à la ligne.
+
+<div class="exo">
+
+- Interprétez le code suivant. 
+
+```{r newline, exercise=TRUE }
+cat("1\t2\t3\n4\t5\t6\n8\t9\t10")
+```
+
+```{r q2, echo=FALSE }
+learnr::question("Que voyez vous ?",
+  answer("Les positions contenant un '\\n' sont interprétés par un retour à la ligne le logiciel.", correct = TRUE),
+  answer("Les positions contenant un '\\n' sont délétés"),
+  allow_retry = TRUE 
+)
+```
+
+</div>
+
+Soit la matrice suivante (au format tabulé):
+
+
+```{r newline_1, exercise=TRUE }
+cat("Gene\tA\tB\tC\ngene_1\t1\t2\t3\ngene_2\t4\t5\t6\ngene_3\t8\t9\t10")
+```
+
+On peut-donc **créer un fichier tabulé** avec le code suivant 
+
+```{r newline_2, exercise=TRUE, exercise.setup="exocat" }
+cat("Gene\tA\tB\tC\ngene_1\t1\t2\t3\ngene_2\t4\t5\t6\ngene_3\t8\t9\t10\n", 
+    file=file.path(tmp_dir_path, "projects", "project_1", "file_1.tab"))
+```
+
+**NB:** On écrira rarement toute une matrice caractère par caractère comme ici. Mais cet exercice est proposé dans un but pédagogique.
+
+<div class="exo">
+
+- Analysez le contenu du fichier *"file_1.tab"* avec **file.show()**
+
+```{r fileshow, exercise=TRUE , exercise.setup="newline_2"}
+
+```
+
+```{r fileshow-solution}
+file.show(file.path(tmp_dir_path, "projects", "project_1", "file_1.tab"))
+```
+
+</div>
+
+### Les arguments de la fonction read.table()
+
+Les principaux arguments de **read.table** sont:  
+
+- **file**: le nom du fichier
+- **header**: la première ligne correspond aux noms des colonnes.
+- **skip**: Passer les n premières lignes avant la lecture.
+- **sep**: le type de séparateurs de colonnes (e.g "\t", une tabulation qui est le séparateur le plus classique).
+- **row.names**: la colonne contenant les noms des lignes (e.g, 1)
+- **quote**: le délimiter de champs (à positionner plutôt sur "")
+- **comment.char**: par défaut "#". Le texte précédé de ce caractère n'est pas lu. A utiliser pour des lignes de commentaires.
+
+<div class="exo">
+
+- A l'aide de la fonction **read.table()**, lisez le contenu du fichier ***file_1.tab***.
+  - Pensez à positionner: file, header, et row.names (les autres arguments peuvent conserver leurs valeurs par défaut).
+  - Stockez le résultat dans l'objet **df**.
+
+```{r readtable, exercise=TRUE, exercise.setup="newline_2"}
+
+```
+
+```{r readtable_2-solution}
+fp <- file.path(tmp_dir_path, "projects", "project_1", "file_1.tab")
+df <- read.table(file=fp, header=TRUE, row.names=1)
+```
+
+```{r readtable_2-check }
+gradethis::grade_result(
+  pass_if(~ sum(df) == 48)
+)
+```
+</div>
+
+
+```{r readtable_2b, exercise.setup="newline_2" }
+fp <- file.path(tmp_dir_path, "projects", "project_1", "file_1.tab")
+df <- read.table(file=fp, header=TRUE, row.names=1)
+```
+
+<h1>Fin de la session.</h1>

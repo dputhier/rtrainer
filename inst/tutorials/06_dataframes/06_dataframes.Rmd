@@ -1,0 +1,376 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "Les objets data.frame"
+output:
+  learnr::tutorial:
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #FFEEFF;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+
+<!--  
+<img src="img/graph_with_r.jpeg"> 
+![](img/graph_with_r.jpeg)
+--> 
+
+
+## Création
+
+### La fonction data.frame()
+
+L'objet **data.frame** est véritablement central dans R. C'est notamment l'objet renvoyé par la fonction **read.table()** (nous la rencontrerons bientôt) lorsqu'on lit un tableau de données. C'est aussi l'objet utilisé en entrée pour créer des diagrammes avec la magnifique librairie de fonctions graphiques **ggplot2** (voir par exemple [le site ggplot2 extensions](https://exts.ggplot2.tidyverse.org/gallery/ ou [r-graph-gallery](https://r-graph-gallery.com/all-graphs.html)) pour un aperçu). C'est aussi un object permettant de stocker des informations sur des objets d'études (patients, échantillons biologiques, expériences...) et les caractéristiques (mesure, catégories...).
+
+Le data.frame est une matrice dont **chacune des colonnes accepte un mode différent et unique (character, numeric, boolean,...)**.
+
+On pourra, notamment, créer un dataframe avec la fonction *data.frame()*. Dans l'exemple ci-dessous, la colonne *elisa_level* est numérique, la colonne *category* est un facteur, la colonne *age* est un numérique et la colonne *name* est une chaîne de caractère.
+
+```{r dataframe0, exercise=TRUE}
+set.seed(123)
+df_1 <- data.frame(
+  elisa_level = round(runif(n = 6, min = 0, max = 10), 2),
+  category = as.factor(sample(c("A", "B", "C"), size = 6, replace = TRUE )),
+  age = sample(1:90, size=6, replace=TRUE),
+  name = c("Miescher", "Watson", "Crick", "Kossel", "Levene", "Kossel")
+)
+df_1
+```
+
+
+### Exercice
+
+<div class="exo">
+
+- Créer un *data.frame* nommé *my_df* contenant les vecteurs et facteurs ci-dessous (les colonnes se nommeront "col_A", "col_B", "col_C" et "col_D" respectivement).
+
+```{r dataframe01, exercise=TRUE }
+set.seed(123)
+a <- round(rnorm(10), 2)
+b <- 1:10
+c <- letters[1:10]
+d <- factor(sort(rep(c("M", "F"), 5)), ordered=TRUE)
+```
+
+```{r dataframe01-solution}
+my_df <- data.frame(col_A=a, col_B=b, col_C=c, col_D=d)
+```
+
+```{r dataframe01-check }
+gradethis::grade_result(
+  pass_if(~ round(sum(my_df$col_A), 0) == 2),
+  pass_if(~ round(sum(my_df$col_B), 55) == 2),
+  pass_if(~ all(my_df$col_C == letters[1:10])),
+  pass_if(~ all(levels(my_df$col_D)) == c("F", "M"))
+)
+```
+</div>
+
+### Les fonctions as.data.frame() et as.matrix()
+
+On pourra **transformer un objet *matrix* en objet *data.frame* avec la fonction *as.data.frame()* **. Cela permettra de présenter un objet au bon format à une fonction requérant un *data.frame* et pas une matrice.
+
+```{r dataframe02,  exercise=TRUE}
+mat <- matrix(data=round(rnorm(20), 2), 
+            ncol = 5)
+df_2 <- as.data.frame(mat)
+print(df_2)
+```
+
+On pourra de la même manière **convertir une matrice en *data.frame* avec *as.matrix()*.**
+
+<div class="exo">
+
+- Les objets *data.frame* contenant potentiellement autre chose que des valeurs numérique la fonction *hist()* ne les acceptera pas par défaut. Convertisez le *data.frame* suivant en matrice (objet $mat$) et passez cette matrice à la fonction *hist()* pour construire l'histogramme correspondant.  
+
+```{r dataframe03, exercise=TRUE}
+set.seed(123)
+df <- data.frame(A=rnorm(10000, mean=0, sd=1),
+                 B=rnorm(10000, mean=5, sd=2),
+                 C=rnorm(10000, mean=10, sd=1)
+                 )
+
+# L'instruction suivante renvoie une erreur
+# hist(df)
+# Error in hist.default(df) : 'x' must be numeric
+
+# Il faut donc convertir
+```
+
+```{r dataframe03-solution}
+mat <- as.matrix(df)
+hist(mat, breaks=100)
+```
+
+```{r dataframe03-check }
+gradethis::grade_result(
+  pass_if(~ round(sum(mat), 0) == 149723)
+)
+```
+</div>
+
+## Les jeux de données
+
+On pourra aussi utiliser un des nombreux jeux de données fournis par le logiciel R dont beaucoup sont des objets *data.frame*. Ci-dessous on charge le jeu de données **ChickWeight** (*chicken Weights*) qui contient des mesures de poids permettant évaluer l'efficacité de divers compléments alimentaires sur le taux de croissance de poulets. Ce jeux de données est founi par la librairie **datasets**. Il est donc nécessaire de charger cette librairie en mémoire (**library(datasets)**) pour avoir accès à ce jeu de données. On charge explicitement le jeux de données avec **data(ChickWeight)**.
+
+```{r dataframe1, exercise=TRUE}
+# On charge/active la librairie datasets
+library(datasets)
+# On charge le jeu de donnée chickwts
+data(ChickWeight)
+is(ChickWeight)
+# Voilà ses premières lignes
+head(ChickWeight)
+```
+
+<div class="exo">
+
+- Lister les jeux de démonstration disponibles avec la fonction **data()** utilisée sans argument.
+
+```{r data, exercise=TRUE }
+
+```
+
+```{r data-solution}
+data()
+```
+
+</div>
+
+## Noms de lignes et colonnes
+
+Comme pour les matrices, **les noms des colonnes d'un data.frame peuvent être obtenus avec *colnames()* **(et les lignes avec *rownames()*)
+
+```{r dataframe2, exercise=TRUE, setup.exercice="dataframe1"}
+colnames(ChickWeight)
+head(rownames(ChickWeight))
+```
+
+Comme pour les matrices, on pourra changer les noms des colonnes ou des lignes. 
+
+<div class="exo">
+
+- Utiliser la fonction *paste0()* pour changer les noms de lignes de *ChickWeight* et les nommer "line_1", "line_2", "line_3"...  
+
+```{r linedf, exercise=TRUE, exercise.setup="dataframe1" }
+ChickWeight
+```
+
+```{r linedf-solution }
+rownames(ChickWeight) <- paste0("line_", 1:nrow(ChickWeight))
+```
+
+```{r linedf-check }
+gradethis::grade_result(
+  pass_if(~ all(head(rownames(ChickWeight)) == c("line_1", "line_2", "line_3", "line_4", "line_5", "line_6")))
+)
+```
+
+</div>
+
+## Indexation
+
+ On peut indexer un data.frame en interrogeant les lignes et colonnes, comme une matrice. Comme pour une matrice, on pourra utiliser **l'indexation par position, l'indexation logique, et l'indexation par nom des positions**. Cependant, le *data.frame** bénéficie d'un opérateur d'indexation supplémentaire, le dollar '$'.
+
+Tapez `chickwts$` et pressez la touche <TAB> (tabulation) pour afficher le contenu de la colonne *feed*. Faites de même pour la colonne *weight*.
+
+```{r dataframe3, exercise=TRUE, setup.exercice="dataframe1"}
+# Mettez votre curseur après chickwts, tapez '$' et 
+# appuyez sur la touche tabulation (<TAB>)
+chickwts
+```
+
+En utilisant l'indexation logique que nous avons vu sur les vecteurs et les matrices, on pourra donc écrire les choses suivantes pour sélectionner des lignes dans le *data.frame*:
+
+```{r idx1, exercise=TRUE, setup.exercice="dataframe1"}
+chickwts[chickwts$weight > 400, ]
+```
+
+On encore:
+
+```{r idx2, exercise=TRUE, setup.exercice="dataframe1"}
+chickwts[chickwts$weight > 400 & chickwts$feed == "casein",  ]
+```
+
+
+## 'wide' vs 'long'
+
+**Pour plusieurs application, notamment les graphiques avec la librairie ggplot2** (qui est incontournable, nous en reparlerons par la suite), il est nécessaire de changer le format du *data.frame* ou de la matrice.
+
+Prenons le cas du *data.frame* suivant. Il est initialement au format **large (wide)**. Rien ne permet de le savoir à ce stade.
+
+```{r longlarge0, exercice=TRUE}
+# On remplit une matrice avec des données
+# issues d'une loi normale (n=20). La matrices
+# contiendra 5 colonnes 
+set.seed(123)
+m <- matrix(data=round(rnorm(20), 2), 
+            ncol = 5)
+colnames(m) <- LETTERS[1:5]
+rownames(m) <- letters[1:4]
+df <- as.data.frame(m)
+print(df)
+```
+
+La fonction **melt()** de la librairie *reshape2* permet de le transformer (de le faire 'fondre') au format **long**. Le nombre de ligne est maintenant le produit du nombre de lignes et de colonnes de l'objet d'entrée.
+
+```{r largelong1, exercise=TRUE, eval=TRUE, exercise.setup="longlarge0"}
+library(reshape2)
+df_melted <- melt(df)
+dim(df_melted)
+head(df_melted)
+```
+
+Notez que le **résultat est différent si on transforme, au préalable, le data.frame en matrice** avec *as.matrix()*. Cela peut être avantageux car **toutes les informations contenus dans le data.frame sont conservées** ici. Dans les deux cas (qu'on parte d'une matrice ou d'un *data.frame*), l'objet renvoyé est un *data.frame*.
+
+```{r largelong2, exercise=TRUE, eval=TRUE, exercise.setup="longlarge0"}
+library(reshape2)
+df_melted <- melt(as.matrix(df))
+dim(df_melted)
+head(df_melted)
+```
+
+## Appliquer des fonctions
+
+Au même titre que pour les matrices, on pourra appliquer des fonctions aux lignes et colonnes du *data.frame* avec la fonction *apply()* (*cf* le chapitre sur les matrices). R propose une fonction supplémentaire pour les objets *data.frame*, la fonction **lapply()**. Elle est très similaire mais ne fait de calcul que sur les colonnes. Par ailleurs elle renvoie, **non pas un objet vecteur** mais un objet de type **list** (nous en discutons dans le prochain chapitre). 
+
+```{r lapply, exercise=TRUE, exercise.setup="largelong2" }
+lapply(df_melted, length)
+```
+
+```{r lapply2, exercise=TRUE, exercise.setup="largelong2" }
+apply(df_melted, 2, length)
+```
+
+<h1> Fin de la section </h1>

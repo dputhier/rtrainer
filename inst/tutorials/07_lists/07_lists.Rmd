@@ -1,0 +1,279 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "Les listes"
+output:
+  learnr::tutorial:
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: false
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #FFEEFF;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+
+<!--  
+<img src="img/graph_with_r.jpeg"> 
+![](img/graph_with_r.jpeg)
+--> 
+
+## Les listes
+
+### Listes ?
+
+L'objet **list**, est l'objet **le plus flexible** des objets basiques de R. Il ne possède **pas de contraintes de tailles** et on peut donc y placer **des objets de tailles différentes**. De même, il ne contient **pas de contraintes de
+type** et on pourra donc y **stocker des objets très divers**. Etant donné cette flexibilité, les fonctions peuvent renvoyer les résultats sous cette forme (exemple : une liste contenant des vecteurs, des matrices et autres objets divers et variés issus d'un calcul). Chaque élément de la liste peut possèder un nom. Ces noms sont accessibles via la fonction **names()** comme pour les vecteurs.
+
+```{r exo1, exercise=TRUE}
+my_list <- list(a_vector = 1:5, 
+                a_matrix = matrix(8:13, nr = 2), 
+                some_letters = LETTERS[10:15])
+my_list
+```
+
+```{r exo0_1, exercise=TRUE, exercise.setup="exo1" }
+names(my_list)
+```
+La taille de la liste (le nombre d'objets stockés) est donnée, comme pour les vecteurs, par la fonction**length()**.
+
+```{r exo0, exercise=TRUE, exercise.setup="exo1" }
+length(my_list)
+```
+
+## Indexation des listes
+
+### La fonction d'indexation '['
+
+Attention, dans le cas des listes, la fonction d'indexation ("[") renvoie une sous-liste. Elle est donc utile produire une nouvelle liste qui est un sous-ensemble de la liste de départ.
+
+```{r exo2, exercise=TRUE, exercise.setup="exo1"}
+sub_list <- my_list[c(1,3)]
+is(sub_list)
+sub_list
+```
+
+
+```{r exo2_1, exercise=TRUE, exercise.setup="exo1" }
+sub_list <- my_list[1]
+is(sub_list)
+sub_list
+```
+
+### La fonction d'indexation '[['
+
+Pour avoir accès directement aux éléments contenus dans la liste, il faut utiliser la fonction d'indexation "[[" et lui passer comme argument une valeur numérique ou le nom d'un élément cible. Cette fonction n'accepte qu'un vecteur atomique (ne contenant qu'un élément) en entrée.
+
+```{r exo_3, exercise=TRUE, exercise.setup="exo1" }
+# Mêmes résultats
+my_list[[1]]
+my_list[['a_vector']]
+```
+
+
+### La fonction d'indexation $
+
+De même que pour les objets  *data.frame*, on pourra, de plus utiliser l'opérateur '$' pour indexer la liste.
+
+```{r exo_4, exercise=TRUE, exercise.setup="exo1"  }
+# Mêmes résultats
+my_list$a_vector
+```
+
+<div class="exo">
+
+- En utilisant les fonctions d'indexation, extraire la *5^{ième}$ position du vecteur 'a_vector' contenu dans my_list. Placez le résultat dans la variable 'a'. 
+- En utilisant les fonctions d'indexation, extraire la cellule ligne 2 / colonne de la matrice 'a_matrix'. Placez le résultat dans la variable 'b'. 
+
+```{r exolist1, exercise=TRUE }
+my_list <- list(a_vector = 1:5, 
+                a_matrix = matrix(8:13, nr = 2), 
+                some_letters = LETTERS[10:15])
+
+```
+
+```{r exolist1-solution}
+# Exo a: solution 1
+a <- my_list[['a_vector']][5]
+# Exo a: solution 2
+v <- my_list[['a_vector']]
+a <- v[5]
+# Exo a: solution 3
+v <- my_list$a_vector
+a <- v[5]
+# Exo a: solution 4
+a <- my_list$a_vector[5]
+
+
+# Exo b (à vous de trouver les 
+# autres solutions)
+b <- my_list$a_matrix[2, 2]
+```
+
+```{r exolist1-check }
+gradethis::grade_result(
+  pass_if(~ a == 5),
+  pass_if(~ b == 11)
+)
+```
+</div>
+
+
+<div class="exo">
+
+- En utilisant les fonctions d'indexation, extraire la *5^{ième}$ position du vecteur 'a_vector' contenu dans la liste imbriquée. Placez le résultat dans la variable 'a'. 
+- En utilisant les fonctions d'indexation, extraire la cellule ligne 2 / colonne de la matrice 'a_matrix' contenue dans la liste imbriquée. Placez le résultat dans la variable 'b'. 
+
+```{r exolist2, exercise=TRUE }
+my_list <- list(A=list(a_vector = 1:5, 
+                       a_matrix = matrix(8:13, nr = 2)),
+                B=list(some_letters = LETTERS[10:15],
+                       other_letters = LETTERS[18:26])
+               )
+```
+
+```{r exolist2-solution}
+a <- my_list$A$a_vector[5]
+b <- my_list$A$a_matrix[2, 2]
+```
+
+```{r exolist2-check }
+gradethis::grade_result(
+  pass_if(~ a == 5),
+  pass_if(~ b == 11)
+)
+```
+</div>
+
+<h1>Fin de la section.</h1>
+
+
+

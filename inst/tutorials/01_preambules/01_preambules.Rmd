@@ -1,0 +1,470 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "Préambules"
+output:
+  learnr::tutorial:
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #FFEEFF;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+
+## Quelques mots à propos de R
+
+L’avènement de la technologie des techniques d’analyse biologique "hauts débits", conduit à la génération de données toujours plus volumineuses. Il est donc devenu courant pour le biologiste de manipuler quelques milliers (voire millions) de valeurs. Il convient donc de pouvoir utiliser des logiciels flexibles permettant l’automatisation des procédures de lecture, de traitement et d’analyse statistique des données. R est un système d’analyse statistique dont le développement a été initié par Robert Gentleman et Ross Ihaka. R fonctionne sur de nombreuses plate-formes (*Unix*, *Linux*, *Windows*, *Macintosh*). C’est un logiciel libre. Cette notion de liberté d’utilisation suggère que ce logiciel est en perpétuelle évolution notamment grâce à une communauté active de développeurs qui rendent publiques leurs améliorations. 
+
+Sachant que ce logiciel est utilisé par des scientifiques d’horizons très divers ( biologistes, statisticiens, mathématiciens, géographes...) cela permet un partage des outils développés et une convergence des disciplines vers des projets communs. C’est sans doute cela qui fait toute la force et le succès de cet outil. R est très souple et relativement facile d’utilisation. Au contraire des langages compilés (C/C++, Fortran, Pascal...) qui nécessitent la description d’un programme dans son ensemble pour son utilisation, R est un langage interprété, c’est à dire que les lignes de commandes sont exécutées interactivement par la machine. Cependant son approche est parfois déroutante pour l’utilisateur néophyte et une certaine expérience est nécessaire pour bien intégrer son fonctionnement.
+
+Néanmoins l’effort sera rapidement récompensé. En effet, de très nombreux outils sont disponibles sous forme de librairies (“packages”) qui contiennent de nombreuses fonctions de haut niveau dédiées à des tâches spécifiques. Le biologiste pourra s’appuyer sur la richesse de ce langage pour effectuer l’analyse statistique de données issues de méthodes biologiques "classiques" ou de méthodes "haut débits" (transcriptome, protéome, interactome,...).
+
+Enfin, le logiciel R est doté d’une palette d’outils graphiques très évolués permettant d’obtenir des sorties totalement paramètrables. Ainsi, Les données analysées peuvent être exportées sous des formats divers (.jpg, .png, .bmp, .ps, .pdf,.html, .txt...). 
+
+
+## Création des objets
+
+### Opérateurs d’assignation
+
+R est un langage basé sur des objets (*vector, matrix, data.frame, list, factor,*...). Généralement on utilisera l'opérateur '<-' (flèche) pour créer des objets. Pour commencer, créons un objet simple de type "vecteur" (une sorte de tableau) qui contiendra une valeur numérique. Ici le code "x <- 15" peut se lire "la variable x prend pour valeur 15" ou "on assigne 15 à x".
+
+```{r assign0, exercise=TRUE}
+x <- 15
+print(x)
+```
+
+L’opérateur d’assignation flèche '<-' peut être substitué par l’operateur '=' (on trouve souvent cet syntaxe chez les débutants dans le langage R). Cependant, on préfèrera **toujours utiliser** '<-' qui indique qu'on stocke une valeur ($15$) dans une variable nommée $(x)$. C'est d'ailleurs la recommandation d'Hadley Wickham, développeur de très nombreuses librairies de fonctions, dans son [*tidyverse style guide*](https://style.tidyverse.org/) (*cf* section 2.7).
+
+```{r assign1, exercise=TRUE, exercise.setup = "assign0"}
+# N'écrivez pas cela, même si cela fonctionne.
+x = 15
+print(x)
+```
+
+La forme suivante (*i.e* la flèche inversée) est acceptée. Cependant, on la rencontrera **extrêmement rarement** et elle n'est pas conseillée (par convention de style là aussi).
+
+```{r assign0b, exercise=TRUE}
+15 -> x
+print(x)
+```
+
+<div class="exo">
+Ecrire un code permettant de stocker 3 dans une variable x, 5 dans y puis la somme (opérateur $+$) de x et y dans z. Imprimez le contenu des 3 variables.
+
+```{r assign2, exercise=TRUE, exercise.setup = "assign1"}
+
+```
+</div>
+
+```{r assign2-solution, eval=TRUE, echo=FALSE}
+x <- 3
+y <- 5
+z <- x + y
+print(x)
+print(y)
+print(z)
+```
+
+## Elements de code
+
+### Les commentaires
+
+Le code pourra être commenté a l’aide du caractère "#". Toute commande à la suite de ce caractère ne sera pas interprétée. Cela permet d'annoter son code (donner des explications sur son fonctionnement pour soi et pour les autres).
+
+```{r assign3, exercise=TRUE}
+z <- 10
+# Le code ci-dessous n'est pas interprété. La variable z est donc inchangé.
+# z <- 56
+print(z)
+```
+
+### Séparation des instructions
+
+Les instructions peuvent être séparées par un retour à la ligne ou par le caractère **';'**.
+
+```{r assign4, exercise=TRUE}
+x <- 12; y <- 13
+cat(x) # <=> print(x)
+cat(y) # <=> print(y)
+```
+
+## Gestion des objets en mémoire
+
+### Lister et détruire les objets
+
+Les objets créés sont stockés dans la mémoire vive de l’ordinateur. Ils ne sont pas, à ce stade, stockés sur le disque. Si on quitte le programme sans sauvegarder, ils seront détruits. 
+
+Pour savoir quels objets sont disponibles (*i.e* on été créés à un instant $t$), on peut **lister** les objets en mémoire avec la fonction **ls()**. On peut détruire des objects en utilisant la fonction **rm()** (**remove**).
+
+```{r assign5, exercise=TRUE}
+# On crée des objets
+x <- 1; y <- 2; z <- 3
+# On liste les objets en mémoire
+ls()
+# On détruit x 
+rm(x)
+ls()
+```
+
+## Les fonctions
+
+### Fonctions ? 
+
+Les **objets** $x$, $y$ et $z$ sont des vecteurs ("vector") pour le langage R. Ici, ils contiennent chacun une valeur numérique. Nous avons, par ailleurs utilisé les **fonctions** **ls()** et **rm()**. Dans R, on peut appeler des fonctions pour interroger des objets et réaliser des actions à partir de ceux-ci. Les fonctions se présentent sous la forme suivante:
+
+```
+nomdelafonction(arg1= a, arg2= b,...)
+
+# Ci-dessus arg1 et arg2 (...) correspondent au noms des arguments
+# a et b correspondent aux objets que l’on souhaite passer à la fonction
+# pour qu'elle effectue une tâche en utilisant ceux-ci.
+
+```
+
+On peut par exemple utiliser la fonction **sum()** pour additionner des vecteurs. Cependant on peut lui substituer l'opérateur '+' (qui, en fait, s'apparente à un fonction cachée).
+
+
+```{r function0, exercise=TRUE }
+sum(17, 15)
+17 + 15
+```
+
+
+### Exemples d'utilisation de fonctions
+
+La fonction **c()** (**combine**) permet de combiner des valeurs (e.g numériques) dans un vecteur (*vector*). La fonction **length()** permet de connaitre la taille d'un vecteur. 
+
+
+```{r fonction1, exercise=TRUE}
+# NB: ci-dessous 1:8 produit un vecteur contenant tous les entiers de 1 à 8.
+y <- c(-50, 1:8, 70)
+print(y)
+print(length(y))
+```
+
+Les fonctions **is()** et **class()** sont des fonctions permettant de connaître le type d'un objet. Connaître le type d'un objet est important pour savoir quelles fonctions peuvent lui être appliquées. 
+
+```{r fonction2, exercise=TRUE}
+y <- c(2.567, 3.987, 4, 10.34566)
+is(y)
+class(y)
+```
+
+Ci dessous un exemple d'utilisation de la fonction **round** arrondir des valeurs numériques. 
+
+```{r fonction3, exercise=TRUE, exercise.setup = "fonction1"}
+round(y)
+```
+
+la fonction round possède plusieurs arguments: $x$ et $digits$ (qui controle le nombre de chiffre derrière la virgule).
+
+```{r}
+args(round)
+```
+
+```{r fonction3b, exercise=TRUE, exercise.setup = "fonction1"}
+round(x=y, digits = 2)
+```
+
+Notez que les noms des l’arguments peuvent être abbrégés (attention l'abréviation peut être ambiguë quand il y a de nombreux arguments ayant le même préfixe).
+
+```{r fonction4, exercise=TRUE, exercise.setup = "fonction1"}
+round(x=y, d = 2)
+```
+
+les noms des arguments peuvent aussi être omis. Cependant il devront être dans l'ordre attendu.
+
+```{r fonction4b, exercise=TRUE, exercise.setup = "fonction1"}
+round(y, 2)
+```
+
+Cela peut conduire à des erreurs (l'ordinateurs refuse d'effectuer l'opération et renvoie une erreurs) ou des comportement inattendus comme ci-dessous.
+
+```{r fonction5, exercise=TRUE, exercise.setup = "fonction1"}
+round(2, y)
+```
+
+## L'aide dans R
+
+### La fonction help()
+
+L'aide sur une fonction donnée peut être obtenu grâce à la fonction **help()**. L'aide peut aussi être appelée à l’aide du caractère "?". Cette fiche d'aide permet d'obtenir de l'information sur les arguments d'entrée, les valeurs retournée ainsi que l’utilisation à travers des exemples d'utilisation.
+
+Les différents champs de l'aide sont notamment:
+
+- **Description:**  renseigne sur le rôle de cette fonction.
+- **Usage:**  décrit la fonction et ses paramètres par défaut.
+- **Arguments:** liste les arguments à passer à cette fonction.
+- **Value:** le type de(s) l'objet(s) retourné(s) par la fonction.
+- **See Also:** autres fonctions assez similaires ou complémentaires.
+- **Examples:** quelques exemples d'utilisation de cette fonction}.
+
+<div class="exo">
+Demandez de l'aide sur la fonction round:
+
+```{r fonction6, exercise=TRUE, exercise.setup = "fonction1"}
+
+```
+
+```{r fonction6-solution}
+?round
+# ou
+help(round)
+```
+
+
+```{r helpexo, echo=FALSE}
+my_question <- c(
+    "Description",
+    "Usage",
+    "Arguments",
+    "Value",
+    "See Also",
+    "Examples"
+  )
+
+# Initialize the question
+  sortable::question_rank(
+  "Quel est l'ordre des différentes section dans la fiche d'aide ?",
+  answer(my_question, correct = TRUE),
+  answer(sample(my_question, replace=FALSE), 
+         correct = FALSE, message = "Other direction!"),
+  allow_retry = TRUE,
+  options = sortable::sortable_options(
+    animation = 150
+  ))
+```
+</div>
+
+### La fonction example()
+
+Cette fonction permet de lancer les exemples associés à une fonction donnée. 
+
+
+```{r example, exercise=TRUE }
+example(mean)
+```
+
+### La fonction apropos()
+
+Une fonction terriblement pratique qui renvoie l'ensemble des fonctions dont le nom contient
+la chaîne de caractères recherchée. Souvent, les fonctions de base dans les langages de
+programmation ont des noms assez similaires, cela aide beaucoup. Attention cette fonction
+est sensible à la casse (*i.e* minuscule/majuscule).
+
+<div class="exo">
+Recherchez toutes les fonctions dont le nom contient 'file' (*i.e* fichier). Attention 'file' doit être entre guillemets.
+
+<div class="tips">
+**NB**: En informatique on parle de guillemets simples ou simples guillemets pour faire référence  à l'apostrophe (' '). On parle de guillemets doubles ou doubles guillemets pour faire référence au guillemets (" "). Cette appélation nous vient du monde anglo-saxon (*single quote* et *double quote*). Dans le langage R, les deux formes ont la même signification et permettent de désigner une suite de caractères qu'on appelle *chaîne de caractères* (ici 'file' ou "file"). Cela permet une certaine flexibilité si une chaîne de caractères contient un guillemet simple par exemple (*e.g.* x <- "extrémités 5' et 3' des molécules d'ADN").
+</div>
+
+```{r apropos, exercise=TRUE }
+
+```
+
+```{r apropos-solution}
+apropos("file")
+```
+</div>
+
+<div class="exo">
+```{r helpexo2, echo=FALSE}
+learnr::question("Dans la question précédente, pourquoi faut-il mettre *file* entre guillemets et écrire apropos('file') et non pas apropos(file)",
+  answer("Parce que *file* sans guillemet sous-entendrait qu'il existe en mémoire un objet nommé *file*.", correct = TRUE),
+  answer("Parce que le premier argument de la fonction *apropos()* doit obligatoirement être un chaîne de caractère.", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+</div>
+
+<div class="exo">
+```{r helpexo3, echo=FALSE}
+learnr::question("Est-ce que l'instruction suivante fonctionnerait ? file <- 'file'; apropos(file)",
+  answer("Non"),
+  answer("Oui", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+</div>
+
+## Exercices
+
+### Exercice 1
+
+Répondez aux questions suivantes:
+
+<div class="exo">
+```{r exoq1, echo=FALSE }
+learnr::question("Il est conseillé d'utiliser l'opérateur '=' plutôt que '<-' pour l'assignation ?",
+  answer("oui"),
+  answer("non", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+
+```{r exoq2, echo=FALSE }
+learnr::question("Lors de l'appel à une fonction, si les arguments sont nommés, leur ordre n'importe pas.",
+  answer("oui", correct = TRUE),
+  answer("non"),
+  allow_retry = TRUE 
+)
+```
+
+```{r exoq4, echo=FALSE }
+learnr::question("Lors de l'appel à une fonction, si on abrège les noms des arguments il faut faire attention à ce que les abréviations ne soient pas ambiguës.",
+  answer("oui", correct = TRUE),
+  answer("non"),
+  allow_retry = TRUE 
+)
+```
+
+```{r exoq3, echo=FALSE }
+learnr::question("La fonction ls() permet de lister les fichiers ?",
+  answer("oui"),
+  answer("non", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+
+</div>
+
+
+<h1> Fin de la section  </h1>
+
+<!--```{r exo10, eval=TRUE, echo=FALSE } 
+htmltools::tags$button("Retour au Menu", 
+                       class="btn btn-primary",
+                       onclick = "window.location.href='https://w3docs.com';"
+                        )
+```-->
