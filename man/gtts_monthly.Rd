@@ -10,7 +10,7 @@ of Climate at a Glance (GCAG). Two datasets are provided: 1) global
 monthly mean and 2) annual mean temperature anomalies in degrees
 Celsius from 1880 to the present.}
 \format{
-A data frame with 274 rows and 3 variables
+A data frame with 3288 rows and 3 variables
 }
 \usage{
 data(gtts_monthly)
@@ -33,7 +33,7 @@ Land-Ocean Temperature Index.
 Downloaded from: https://datahub.io/core/global-temp
 
 Dataset information:
-·        Number of rows: 274
+·        Number of rows: 3288
 ·        Number of columns: 3
 
 \itemize{

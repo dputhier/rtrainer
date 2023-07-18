@@ -42,9 +42,6 @@ doc:
 install:
 	@echo ">>> Installing..."
 	@rm -f src/*.o src/*.so
-	@R CMD INSTALL .
-
-
-
+	@echo "if(!require('devtools')){install.package('devtools')}; devtools::install(reload=TRUE)" | R --slave
 
 all: doc install check test
