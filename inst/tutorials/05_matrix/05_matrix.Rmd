@@ -259,7 +259,7 @@ gradethis::grade_result(
 
 ### La fonction de transposition
 
-Il arrive que l'on ait besoin de **transposer la matrice** (souvent notée $mat^{T}$). La matrice transposée est obtenue en **échangeant les lignes et les colonnes** de la matrice d'entrée. Par exemple dans le cadre d'application en *apprentissage automatique* (*machine learning*), il est fréquent que les caractéristiques/descripteurs (*features*), ici les gènes, soient en colonnes. Dans ce cas, les objets décris (ici les échantillons) sont en lignes. On utilisera la fonction **t()**.
+Il arrive que l'on ait besoin de **transposer la matrice** (souvent notée $mat^{T}$). La matrice transposée est obtenue en **échangeant les lignes et les colonnes** de la matrice d'entrée. Par exemple dans le cadre d'application en *apprentissage automatique* (*machine learning*), il est fréquent que les caractéristiques/descripteurs (*features*), ici les gènes, soient en colonnes. Dans ce cas, les objets décrits (ici les échantillons) sont en lignes. On utilisera la fonction **t()**.
 
 ```{r exo3aasetup, echo=FALSE}
 set.seed(123)
@@ -336,7 +336,7 @@ On pourra indexer une matrice par une matrice. On utilisera typiquement ce type 
 mat == 1
 ```
 
-On pourra aussi, modifier les valeurs avec l'indexation par matrice. Ici, par exemple, on remplace les valeurs 1 par des valeurs aléatoires issues d'une loi uniforme (min=0, max=1). Cette valeur correspondra à un poids sur les arêtes (par exemple la confiance qu'on a quant à ces interactions ou la force, standardisée, de ces interactions). Notez que, pour un graphe non dirigé, la matrice d'adjacence est symétrique. Cela implique que $mat_{i,j} = mat_{j,i}$. Ce n'est pas le cas ici mais nous allons corriger cela juste après.
+On pourra aussi modifier les valeurs avec l'indexation par matrice. Ici, par exemple, on remplace les valeurs 1 par des valeurs aléatoires issues d'une loi uniforme (min=0, max=1). Cette valeur correspondra à un poids sur les arêtes (par exemple la confiance qu'on a quant à ces interactions ou la force, standardisée, de ces interactions). Notez que, pour un graphe non dirigé, la matrice d'adjacence est symétrique. Cela implique que $mat_{i,j} = mat_{j,i}$. Ce n'est pas le cas ici mais nous allons corriger cela juste après.
 
 ```{r exo4b, exercise=TRUE, exercise.setup="exo3e" }
 # La valeur de poids sera ici entre 1 et 10
@@ -367,7 +367,7 @@ plot(my_graph, edge.width=as.integer(cut(abs(E(my_graph)$weight ), breaks = 5)))
 
 ### Indexation à deux dimensions
 
-Etant donnée qu'il y a des lignes et des colonnes, on utilisera (le plus souvent) l'indexation à deux dimensions. On passera alors deux informations à l'opérateur d'indexation sous la forme **[line, column]** (ou *line* et *column* sont des vecteurs de la taille des lignes et des colonnes respectivement). Si *line* n'est pas défini (*e.g.*  [, column]), toutes les lignes sont extraites. Même principe pour **column**.
+Etant donné qu'il y a des lignes et des colonnes, on utilisera (le plus souvent) l'indexation à deux dimensions. On passera alors deux informations à l'opérateur d'indexation sous la forme **[line, column]** (ou *line* et *column* sont des vecteurs de la taille des lignes et des colonnes respectivement). Si *line* n'est pas défini (*e.g.*  [, column]), toutes les lignes sont extraites. Même principe pour **column**.
 
 <div class="exo">
 
@@ -416,10 +416,10 @@ gradethis::grade_result_strict(
 Etant donné la matrice déclarée ci-dessous:
 
 - Extraire les valeurs des cellules des colonnes 1 et 3 pour les lignes 1 et 3 et stockez le résultat dans une variable g. 
-- Extraire toutes les lignes pour lesquelles les valeurs de la colonne 1 sont supérieure à 11 et stockez le résultat dans une variable h. 
-- Extraire la cellule pour laquelle le nom de la lignes est "a" et le nom de la colonne est "B" et stockez le résultat dans une variable i. 
+- Extraire toutes les lignes pour lesquelles les valeurs de la colonne 1 sont supérieures à 11 et stockez le résultat dans une variable h. 
+- Extraire la cellule pour laquelle le nom de la ligne est "a" et le nom de la colonne est "B" et stockez le résultat dans une variable i. 
 - Extraire les cellules pour lesquelles les nom des lignes sont "a", "b" et "c" et le nom de colonnes est "B" et stockez le résultat dans une variable j. 
-- Extraire toutes les colonnes pour lesquelles les valeurs de la ligne 1 sont supérieure à 10 et stockez le résultat dans une variable k. 
+- Extraire toutes les colonnes pour lesquelles les valeurs de la ligne 1 sont supérieures à 10 et stockez le résultat dans une variable k. 
 
 ```{r matrix4a, exercise=TRUE, eval=TRUE}
 set.seed(123)
@@ -470,11 +470,11 @@ Etant donné la matrice $mat$ utilisez **apply()** pour:
 - Calculer la moyenne (**mean()**) de chacune des lignes et stockez le résultat dans la variable a.
 - Calculer la variance (**var()**) de chacune des lignes et stockez le résultat dans la variable b.
 - Calculer l'ecart-type (**sd()**) de chacune des lignes et stockez le résultat dans la variable c.
-- Calculer l'espace inter-quartile (**IQR()**) de chacune des lignes et stockez le résultat dans la variable d.
+- Calculer l'espace interquartile (**IQR()**) de chacune des lignes et stockez le résultat dans la variable d.
 - Calculer l'écart absolu médian (**mad()**) de chacune des lignes et stockez le résultat dans la variable e.
 - Calculer la valeur minimum (**min()**) de chacune des lignes et stockez le résultat dans la variable f.
 - Calculer la valeur maximum (**max()**) de chacune des lignes et stockez le résultat dans la variable g.
-- Calculer la valeur mediane (**median()**) de chacune des lignes et stockez le résultat dans la variable h.
+- Calculer la valeur médiane (**median()**) de chacune des lignes et stockez le résultat dans la variable h.
 - Appeler la fonction **summary()** sur chacune des lignes et stockez le résultat dans la variable i.
 
 ```{r matrix5, exercise=TRUE}
@@ -546,7 +546,7 @@ gradethis::grade_result(
 
 <div class="exo">
 
-- Regardez l'aide sur la fonction **quantiles()**. Calculer les valeurs du $1^{ème}$ et $3^{ème}$ quartiles de **chaque colonne**. Stocker les résultats dans q_25 et q_75 respectivment.
+- Regardez l'aide sur la fonction **quantiles()**. Calculer les valeurs du $1^{ème}$ et $3^{ème}$ quartiles de **chaque colonne**. Stocker les résultats dans q_25 et q_75 respectivement.
 
 ```{r matrix6c, exercise=TRUE }
 set.seed(123)

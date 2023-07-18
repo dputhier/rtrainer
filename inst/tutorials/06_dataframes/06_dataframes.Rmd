@@ -151,7 +151,7 @@ gradethis::gradethis_setup()
 
 ### La fonction data.frame()
 
-L'objet **data.frame** est véritablement central dans R. C'est notamment l'objet renvoyé par la fonction **read.table()** (nous la rencontrerons bientôt) lorsqu'on lit un tableau de données. C'est aussi l'objet utilisé en entrée pour créer des diagrammes avec la magnifique librairie de fonctions graphiques **ggplot2** (voir par exemple [le site ggplot2 extensions](https://exts.ggplot2.tidyverse.org/gallery/ ou [r-graph-gallery](https://r-graph-gallery.com/all-graphs.html)) pour un aperçu). C'est aussi un object permettant de stocker des informations sur des objets d'études (patients, échantillons biologiques, expériences...) et les caractéristiques (mesure, catégories...).
+L'objet **data.frame** est véritablement central dans R. C'est notamment l'objet renvoyé par la fonction **read.table()** (nous la rencontrerons bientôt) lorsqu'on lit un tableau de données. C'est aussi l'objet utilisé en entrée pour créer des diagrammes avec la magnifique librairie de fonctions graphiques **ggplot2** (voir par exemple [le site ggplot2 extensions](https://exts.ggplot2.tidyverse.org/gallery/ ou [r-graph-gallery](https://r-graph-gallery.com/all-graphs.html)) pour un aperçu). C'est aussi un objet permettant de stocker des informations sur des objets d'études (patients, échantillons biologiques, expériences...) et les caractéristiques (mesure, catégories...).
 
 Le data.frame est une matrice dont **chacune des colonnes accepte un mode différent et unique (character, numeric, boolean,...)**.
 
@@ -212,7 +212,7 @@ On pourra de la même manière **convertir une matrice en *data.frame* avec *as.
 
 <div class="exo">
 
-- Les objets *data.frame* contenant potentiellement autre chose que des valeurs numérique la fonction *hist()* ne les acceptera pas par défaut. Convertisez le *data.frame* suivant en matrice (objet $mat$) et passez cette matrice à la fonction *hist()* pour construire l'histogramme correspondant.  
+- Les objets *data.frame* contenant potentiellement autre chose que des valeurs numérique la fonction *hist()* ne les acceptera pas par défaut. Convertissez le *data.frame* suivant en matrice (objet $mat$) et passez cette matrice à la fonction *hist()* pour construire l'histogramme correspondant.  
 
 ```{r dataframe03, exercise=TRUE}
 set.seed(123)
@@ -242,7 +242,7 @@ gradethis::grade_result(
 
 ## Les jeux de données
 
-On pourra aussi utiliser un des nombreux jeux de données fournis par le logiciel R dont beaucoup sont des objets *data.frame*. Ci-dessous on charge le jeu de données **ChickWeight** (*chicken Weights*) qui contient des mesures de poids permettant évaluer l'efficacité de divers compléments alimentaires sur le taux de croissance de poulets. Ce jeux de données est founi par la librairie **datasets**. Il est donc nécessaire de charger cette librairie en mémoire (**library(datasets)**) pour avoir accès à ce jeu de données. On charge explicitement le jeux de données avec **data(ChickWeight)**.
+On pourra aussi utiliser un des nombreux jeux de données fournis par le logiciel R dont beaucoup sont des objets *data.frame*. Ci-dessous on charge le jeu de données **ChickWeight** (*chicken Weights*) qui contient des mesures de poids permettant d'évaluer l'efficacité de divers compléments alimentaires sur le taux de croissance de poulets. Ce jeux de données est fourni par la librairie **datasets**. Il est donc nécessaire de charger cette librairie en mémoire (**library(datasets)**) pour avoir accès à ce jeu de données. On charge explicitement le jeux de données avec **data(ChickWeight)**.
 
 ```{r dataframe1, exercise=TRUE}
 # On charge/active la librairie datasets

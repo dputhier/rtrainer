@@ -309,7 +309,7 @@ points(x[pos], y[pos], pch=16, col="red")
 ### Exercice
 
 <div class="exo">
-Terminez le code pour afficher en rouge les points pour lesquels les valeurs en x sont supérieures aux valeurs en y et en bleu celles pour lesquels y est supérieur à x.
+Terminez le code pour afficher en rouge les points pour lesquels les valeurs en x sont supérieures aux valeurs en y et en bleu celles pour lesquelles y est supérieur à x.
 
 ```{r vector16, exercise=TRUE, eval=FALSE}
 set.seed(123)
@@ -366,7 +366,7 @@ points(x[pos], y[pos], col="red", pch=16)
 
 ### Principe et exemples
 
-Les position d'un vecteur peuvent être nommées. Si elles le sont, on pourra extraire des position en passant leurs noms à l'opérateur d'indexation ('[]') sous la forme d'un objet vecteur.
+Les positions d'un vecteur peuvent être nommées. Si elles le sont, on pourra extraire des positions en passant leurs noms à l'opérateur d'indexation ('[]') sous la forme d'un objet vecteur.
 
 Par exemple, un vecteur pourrait contenir l'expression de gènes analysés par QPCR. Chaque position serait alors le symbole du gène.
 
@@ -390,7 +390,7 @@ Reprenons ce même vecteur:
 gene_expression
 ```
 
-On pourra éventuellement rechercher avec la fonction **grep()** les genes qui vérifient une expression régulière donnée. Les expressions régulières permettent d'effectuer **des recherches de motifs dans des chaînes de caractères**. La syntaxe founit un **ensemble d'opérateurs permettant de décrire le motif recherché**.
+On pourra éventuellement rechercher avec la fonction **grep()** les gènes qui vérifient une expression régulière donnée. Les expressions régulières permettent d'effectuer **des recherches de motifs dans des chaînes de caractères**. La syntaxe fournit un **ensemble d'opérateurs permettant de décrire le motif recherché**.
 
 vous pouvez ci-dessous (bouton *View tips*) afficher un tableau avec les expressions régulières de base.
 
@@ -425,7 +425,7 @@ vous pouvez ci-dessous (bouton *View tips*) afficher un tableau avec les express
 
 La fonction **grep()** renvoie, dans un vecteur de chaînes de caractères **les positions vérifiant une expression régulière**. Par exemple, ici, on peut chercher avec **grep()** toutes les positions contenant un gène dont le nom commence par "CD".
 
-**NB**: Par defaut **grep()** ne comprend pas certains opérateurs. L'utilisation, ci-dessous de l'argument *perl = TRUE* permet d'étendre ses capacités à tous les opérateurs. Dans le doute, il est donc préferable de positionner cet argument sur TRUE.
+**NB**: Par defaut **grep()** ne comprend pas certains opérateurs. L'utilisation, ci-dessous de l'argument *perl = TRUE* permet d'étendre ses capacités à tous les opérateurs. Dans le doute, il est donc préférable de positionner cet argument sur TRUE.
 
 ```{r vector20, exercise=TRUE, exercise.setup="vector18"}
 pos <- grep(pattern = "^CD", x = names(gene_expression), perl = TRUE)

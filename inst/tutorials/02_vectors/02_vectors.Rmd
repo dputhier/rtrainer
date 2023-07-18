@@ -152,7 +152,7 @@ Tous les éléments d'un vecteur sont de même type. Dans le langage R, on parle
 
 ### Mode numérique
 
-Nous l'avons déjà vu en partie. R permet de créer des vecteurs de numériques. Par exemple ci-dessous, on crée une suite d'entiers de 1 à 10 qui est stocké dans un vecteur.
+Nous l'avons déjà vu en partie. R permet de créer des vecteurs de numériques. Par exemple, ci-dessous, on crée une suite d'entiers de 1 à 10 qui est stocké dans un vecteur.
 
 ```{r vectornum0, exercise=TRUE}
 integers <- 1:10
@@ -171,7 +171,7 @@ class(noms) # <=> is(noms)
 
 ### Mode logique
 
-On fournit ci-dessous un exemple de vecteurs contenant des booléens (des variables à deux états, 'vrai' et 'faux' ou 0 et 1). A noter que vrai et faux sont représentés par les mots clef TRUE et FALSE (qui sont donc des termes réservés du langage). On pourra éventuellement substituer TRUE et FALSE par T et F, respectivement. Cependant cette dernière solution n'est pas conseillée pour la respecter la lisibilité et peut être, dans certain contextes (e.g. écriture d'une librairie) considéré comme une erreur.
+On fournit ci-dessous un exemple de vecteurs contenant des booléens (des variables à deux états, 'vrai' et 'faux' ou 0 et 1). A noter que vrai et faux sont représentés par les mots clés TRUE et FALSE (qui sont donc des termes réservés du langage). On pourra éventuellement substituer TRUE et FALSE par T et F, respectivement. Cependant cette dernière solution n'est pas conseillée pour la respecter la lisibilité et peut être, dans certain contextes (e.g. écriture d'une librairie) considéré comme une erreur.
 
 ```{r vector1, exercise=TRUE}
 logic <- c(TRUE, FALSE, TRUE) # éventuellement: logic <- c(T, F, T)
@@ -364,7 +364,7 @@ gradethis::grade_result(
 
 ### La fonction seq()
 
-La fonction eq permet de créer des séquences de valeurs numériques espacées de manière régulière. On défini une valeur de départ (**from**), une valeur d'arrivée (**to**) et si on incrémente selon un pas défini (**by**) ou si on demande un nombre cible de valeurs (**length.out**).
+La fonction eq permet de créer des séquences de valeurs numériques espacées de manière régulière. On définit une valeur de départ (**from**), une valeur d'arrivée (**to**) et si on incrémente selon un pas défini (**by**) ou si on demande un nombre cible de valeurs (**length.out**).
 
 <div class="exo">
 - Regardez l'aide sur la fonction **seq()** et proposez :
@@ -397,7 +397,7 @@ gradethis::grade_result(
 
 ### Les fonctions de génération de valeurs aléatoires
 
-R permet de générez des nombres aléatoires (*i.e.* **r**andom) issus de distributions diverses et variées. 
+R permet de générer des nombres aléatoires (*i.e.* **r**andom) issus de distributions diverses et variées. 
 
 - **rnorm()**: loi normale (deux paramètres: moyenne et écart-type).
 - **runif()**: loi uniforme (deux paramètres: valeurs minimum et maximum).
@@ -420,14 +420,14 @@ head(x)
 
 ### Visualiser les distributions des valeurs générées 
 
-On peut dresser l'histogramme de cette distribution avec la fonction **hist()**. L'argument **breaks** contrôle le nombre d'intervals dans l'histogram.
+On peut dresser l'histogramme de cette distribution avec la fonction **hist()**. L'argument **breaks** contrôle le nombre d'intervalles dans l'histogram.
 
 ```{r vector5, exercise=TRUE, exercise.setup = "vector4"}
 hist(x, breaks = 20, color="blue")
 ```
 
 <div class="exo">
-Dressez la distribution de $x$ avec **hist()** en utilisant des valeurs croissantes $(30, 50, 100)$ pour le paramètre **breaks**. Qu'observez vous ?
+Dressez la distribution de $x$ avec **hist()** en utilisant des valeurs croissantes $(30, 50, 100)$ pour le paramètre **breaks**. Qu'observez-vous ?
 
 
 ```{r vector5b, exercise=TRUE, exercise.setup = "vector4"}
@@ -621,12 +621,12 @@ print(sample(x=1:10, size = 5, replace = FALSE))
 ```
 </div>
 
-## Operations mathématiques sur les vecteurs
+## Opérations mathématiques sur les vecteurs
 
 ### Opérateurs mathématiques
 
-On peut effectuer des opérations mathématiques sur les vecteurs à l'aide d'opérateurs classiques: +, -, \*, \\\ ... Pour élever à la puissance on utilise l'accent circonflexe (^). Ces opérations seront 'vectorisés' (*i.e* appliquées à tous les éléments du/des vecteur(s)). Pour ceux qui connaîtrait d'autres langages, cela se  substitue aux boucles "for" et allège fortement la syntaxe.  
-La structure vectorielle du langage rend les l'itération sur les éléments du vecteur implicite. 
+On peut effectuer des opérations mathématiques sur les vecteurs à l'aide d'opérateurs classiques: +, -, \*, \\\ ... Pour élever à la puissance on utilise l'accent circonflexe (^). Ces opérations seront 'vectorisés' (*i.e* appliquées à tous les éléments du/des vecteur(s)). Pour ceux qui connaîtraient d'autres langages, cela se  substitue aux boucles "for" et allège fortement la syntaxe.  
+La structure vectorielle du langage rend implicites les itérations sur les éléments du vecteur. 
 L'avantage de cette vectorisation est d'effectuer des opérations très complexes en quelques lignes de code.
 Pour additionner deux vecteurs on écrira simplement:
 
@@ -836,7 +836,7 @@ learnr::question("Soient x et y deux vecteurs numériques, quelles sont les inst
 ### Exercice 2
 
 <div class="exo">
-Consideront deux vecteurs $x$ et $y$ (*cf* ci-dessous) dont chaque position $i$ correspondrait au niveau d'Interféron de types I mesuré avant ($x$) et après ($y$) une infection dans différents patients (1, 2, 3...50).
+Considérons deux vecteurs $x$ et $y$ (*cf* ci-dessous) dont chaque position $i$ correspondrait au niveau d'Interféron de types I mesuré avant ($x$) et après ($y$) une infection dans différents patients (1, 2, 3...50).
 
 - Calculez le ratio d'induction (en linéaire) de l'induction de l'interféron. Stockez le dans a.
 - Calculez le logarithme (en base 2) du ratio en utilisant la fonction **log2()**. Stockez le dans b.

@@ -52,7 +52,7 @@ print(p.jt)
 
 ## Histogrammes et densités
 
-Dans le cas de l'histogramme, l'axe des x correspond à des intervals (*bins*) et l'axe des y au nombre de fois on les valeurs de comptage sont observés dans ces intervals. Il n'y aura donc qu'une seule variable à fournir pour la fonction *aes*.
+Dans le cas de l'histogramme, l'axe des x correspond à des intervals (*bins*) et l'axe des y au nombre de fois où les valeurs de comptage sont observées dans ces intervalles. Il n'y aura donc qu'une seule variable à fournir pour la fonction *aes*.
 
 ```{r, fig.show='asis'}
 
@@ -86,7 +86,7 @@ p.bp + geom_jitter() + geom_rug()
 
 # Facettes
 
-L'utilisation des facettes permet d'explorer les données en fonction d'un facteur ou d'un groupe de facteurs donnés. Pour l'exemple suivant nous allons créer une matrice contenant les résultats d'un test ELISA fictif dans lequel on mesure à 2 temps différents (jours) les expériences réalisés par quatres opérateurs différents.
+L'utilisation des facettes permet d'explorer les données en fonction d'un facteur ou d'un groupe de facteurs donnés. Pour l'exemple suivant nous allons créer une matrice contenant les résultats d'un test ELISA fictif dans lequel on mesure à 2 temps différents (jours) les expériences réalisées par quatre opérateurs différents.
 
 
 ```{r, fig.show='asis'}
@@ -124,7 +124,7 @@ p + geom_histogram() +
         )
 ```
 
-Dans un but exploratoire, on peut, de même, analyser les résultats obtenues dans chaques ligne de l’ELISA en fonction des colonnes Il suffit pour cela d’indiquer le formule suivante rows ~ columns. Dans l’exemple suivant on fait appelle à la fonction theme() pour personnaliser un peu le graphique. Notez que chaque argument de la fonction theme() doit recevoir un objet renvoyé par les fonction element_rect(), element_text(), ou element_line() qui correspondent respectivement à des éléments rectangulaires, du texte ou des lignes.
+Dans un but exploratoire, on peut, de même, analyser les résultats obtenues dans chaques ligne de l’ELISA en fonction des colonnes Il suffit pour cela d’indiquer le formule suivante rows ~ columns. Dans l’exemple suivant on fait appelle à la fonction **theme()** pour personnaliser un peu le graphique. Notez que chaque argument de la fonction **theme()** doit recevoir un objet renvoyé par les fonction **element_rect()**, **element_text()**, ou **element_line()** qui correspondent respectivement à des éléments rectangulaires, du texte ou des lignes.
 
 ```{r}
 ## Diagram facetted with rows and columns as variable.

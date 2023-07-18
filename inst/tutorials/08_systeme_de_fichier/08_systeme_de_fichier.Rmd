@@ -162,7 +162,7 @@ getwd()
 
 La fonction **dir.create** permet de créer des répertoires. Ici nous allons créer un répertoire dans un dossier système, temporaire, pour ne pas encombrer votre espace de travail.
 
-la fonction **tempdir()** permet de créer **un chemin vers un répertoire temporaire** (sans créer le dossier correspondant). Cette fonction fonctionne **sur tous les système d'exploitation (Windows, OSX, Linux...)**. Elle définira un chemin **à l'intérieur du répertoire parent dédié aux fichiers/dossiers temporaires** (*e.g* le dossier /tmp sous Linux et quelque chose comme C:\\Users\\nom_utilisateur\\AppData\\Local\\Temp sous windows). 
+la fonction **tempdir()** permet de créer **un chemin vers un répertoire temporaire** (sans créer le dossier correspondant). Cette fonction fonctionne **sur tous les systèmes d'exploitation (Windows, OSX, Linux...)**. Elle définira un chemin **à l'intérieur du répertoire parent dédié aux fichiers/dossiers temporaires** (*e.g* le dossier /tmp sous Linux et quelque chose comme C:\\Users\\nom_utilisateur\\AppData\\Local\\Temp sous windows). 
 
 ```{r tempdir_0, exercise=TRUE}
 tmp_dir_path <- tempdir()
@@ -175,13 +175,13 @@ Ou peut **créer, ensuite, le répertoire correspondant** avec la fonction **dir
 dir.create(tmp_dir_path)
 ```
 
-**NB:** Ci-dessous, le répertoire est temporaire. Sous Linux il sera délété au prochain redémarrage de la machine (à moins que vous ne le délétiez avant). 
+**NB:** Ci-dessous, le répertoire est temporaire. Sous Linux il sera délété au prochain redémarrage de la machine (à moins que vous ne le déletiez avant). 
 
 
 
 ## La fonction dir()
 
-On pourra lister les fichiers dans un répertoire à l'aide de la fonction **dir()** (directory). La valeur renvoyée par **dir()** est un vecteur de chaînes de caractères. **A ce stade notre dossier ne devrait rien contenir**. Cependant ici nous travaillons **dans une application web** et ce pourrait être **un peu différent**, vous pourriez y trouver des fichiers préfixés par *lrn-exa* (ils sont liés au librairies utilisées pour ce tutoriel). **Ne pas en tenir compte**.
+On pourra lister les fichiers dans un répertoire à l'aide de la fonction **dir()** (directory). La valeur renvoyée par **dir()** est un vecteur de chaînes de caractères. **A ce stade notre dossier ne devrait rien contenir**. Cependant ici nous travaillons **dans une application web** et ce pourrait être **un peu différent**, vous pourriez y trouver des fichiers préfixés par *lrn-exa* (ils sont liés aux librairies utilisées pour ce tutoriel). **Ne pas en tenir compte**.
 
 
 ```{r exodir, exercise=TRUE, exercise.setup="tempdir"}
@@ -192,7 +192,7 @@ dir(tmp_dir_path)
 
 ### Créer des chemins
 
-On peut utiliser la fonction **file.path()** pour créer un chemin vers un objet (dossier ou fichier). Etant donné que le format des chemins diffère d'un système d'exploitation à l'autre (Linux, Windows, OSX...), en utilisant **file.path** le chemin produit sera adpaté à la plateforme  sur laquelle R est installé. L'utilisation de file.path() permet donc d'avoir un code compatible entre les différents systèmes d'exploitation.
+On peut utiliser la fonction **file.path()** pour créer un chemin vers un objet (dossier ou fichier). Etant donné que le format des chemins diffère d'un système d'exploitation à l'autre (Linux, Windows, OSX...), en utilisant **file.path** le chemin produit sera adapté à la plateforme  sur laquelle R est installé. L'utilisation de file.path() permet donc d'avoir un code compatible entre les différents systèmes d'exploitation.
 
 ```{r filepath, exercise=TRUE, exercise.setup="tempdir" }
 # Ici on crée 5 chemins différents
@@ -200,7 +200,7 @@ fp <- file.path(tmp_dir_path, "projects", paste0("project_", 1:5))
 fp
 ```
 
-Ensuite on peut créer les dossiers correspondant. Comme il y en a plusieurs et que **dir.create()** n'en accepte qu'un, on va **'appliquer'** (avec **sapply**) à toutes les positions du vecteur **fp** la fonction **dir.create()**. Par défaut **dir.create()** n'accepte pas de créer un dossier enfant si le dossier parent n'existe pas (ici "projects"). On le force à accepter de le faire en indiquant **recursive=TRUE**. Comme pour l'ensemble des fonction de la **famille apply**, les arguments supplémentaires de la fonction appelée (**dir.create**) son passés à la fin (**recursive=TRUE, showWarnings=FALSE**).
+Ensuite on peut créer les dossiers correspondants. Comme il y en a plusieurs et que **dir.create()** n'en accepte qu'un, on va **'appliquer'** (avec **sapply**) à toutes les positions du vecteur **fp** la fonction **dir.create()**. Par défaut **dir.create()** n'accepte pas de créer un dossier enfant si le dossier parent n'existe pas (ici "projects"). On le force à accepter de le faire en indiquant **recursive=TRUE**. Comme pour l'ensemble des fonction de la **famille apply**, les arguments supplémentaires de la fonction appelée (**dir.create**) son passés à la fin (**recursive=TRUE, showWarnings=FALSE**).
 
 **NB:** si le dossier n'existe pas la sapply renverra *TRUE* sinon *FALSE*.
 
@@ -253,7 +253,7 @@ dir_tree(file.path(tmp_dir_path, "projects"))
 
 La fonction **setwd()** (*set working directory*) permet de **se déplacer dans l'arborescence** et d'aller d'un répertoire à un autre (et donc de définir un **nouveau répertoire de travail**). Ce nouveau répertoire deviendra le répertoire dans lequel R cherchera, par défaut, les documents (fichiers et dossiers). On passera simplement le nom du répertoire de destination à **setwd()**. Après avoir utilisé **setwd()** on peut vérifier sa position dans l'arborescence avec **getwd()**. 
 
-Déplacçons nous dans le répertoire *project/project_1.
+Déplaçons nous dans le répertoire *project/project_1.
 
 ```{r setwd, exercise=TRUE, exercise.setup="exorecap" }
 setwd(file.path(tmp_dir_path, "projects", "project_1"))
@@ -329,7 +329,7 @@ Cette commande est **incontournable** puisqu'elle permettra la **lecture de tabl
 
 - Les fichiers dont **l'extension est ".csv" (*comma separated values*)** et dont les colonnes sont **séparées par des virgules**.
 - Les fichiers dont dont **l'extension est ".tsv" ou ".tab" (*tab separated value*)** et dont les colonnes sont **séparées par des tabulations** (voir prochaine section). 
-- Potentiellement des fichiers dont l'extension est, **imprécisement, définie comme ".txt"** (*texte*) et qu'on aurait du nommer avec l'extension ".csv" ou  ".tsv/.tab" car il contiennent des données en colonnes...
+- Potentiellement des fichiers dont l'extension est, **imprécisément, définie comme ".txt"** (*texte*) et qu'on aurait du nommer avec l'extension ".csv" ou  ".tsv/.tab" car il contiennent des données en colonnes...
 
 Tous ces fichiers .csv", ".tsv" et ".txt" sont considérés comme des **fichiers plats**. C'est à dire qu'ils ne contiennent que des caractères et aucune information de mise en forme (e.g gras, italique, souligné comme un document word). 
 
@@ -415,7 +415,7 @@ Les principaux arguments de **read.table** sont:
 - **skip**: Passer les n premières lignes avant la lecture.
 - **sep**: le type de séparateurs de colonnes (e.g "\t", une tabulation qui est le séparateur le plus classique).
 - **row.names**: la colonne contenant les noms des lignes (e.g, 1)
-- **quote**: le délimiter de champs (à positionner plutôt sur "")
+- **quote**: le délimiteur de champs (à positionner plutôt sur "")
 - **comment.char**: par défaut "#". Le texte précédé de ce caractère n'est pas lu. A utiliser pour des lignes de commentaires.
 
 <div class="exo">

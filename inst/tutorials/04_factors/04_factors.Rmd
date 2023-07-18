@@ -219,7 +219,7 @@ La fonction **table()** permet de renvoyer les effectifs de chacune des catégor
 table(ttmt)
 ```
 
-Si il y a plusieurs variables catégorielles (*i.e.* facteurs), ont pourra là aussi compter les effectifs. Par exemple si on connait le genre des patients.
+Si il y a plusieurs variables catégorielles (*i.e.* facteurs), ont pourra là aussi compter les effectifs. Par exemple, si on connait le genre des patients.
 
 ```{r exo5, exercise=TRUE, exercise.setup="exo3b" }
 set.seed(123)
@@ -244,9 +244,9 @@ mosaicplot(table(ttmt, gender), color = c("salmon", "olivedrab"), main="Mosaic p
 
 <div class="exo">
 
-- Etant donné la categorie age comptez le nombre d'individus dans les différentes modalités à travers les facteurs ttmt, gender et age.
+- Etant donné la catégorie $age$ comptez le nombre d'individus dans les différentes modalités à travers les facteurs $ttmt$, $gender$ et $age$.
 
-**NB:** Le premier argument de table (*cf* *help(table)*) est '...' ce qui indique qu'on peut passer autant de facteur que l'on souhaite en argument.
+**NB:** Le premier argument de table (*cf* *help(table)*) est '...' ce qui indique qu'on peut passer autant de facteurs que l'on souhaite en argument.
 
 ```{r exo5c, exercise=TRUE , exercise.setup="exo6"}
 set.seed(456)
@@ -264,7 +264,7 @@ table(ttmt,  gender, age)
 
 ### Création de variables catégorielles ordinales
 
-Il est possible de créer des variables catégorielles ordinales dans lesquels il existe une relation d'ordre entre les catégories possibles. Par exemple le traitement 2 est plus puissant que le traitement 1 (e.g. dose différentes). 
+Il est possible de créer des variables catégorielles ordinales dans lesquels il existe une relation d'ordre entre les catégories possibles. Par exemple le traitement 2 est plus puissant que le traitement 1 (e.g. doses différentes). 
 
 ```{r exo6, exercise=TRUE, exercise.setup="exo5" }
 ttmt <- factor(ttmt, ordered = TRUE)
@@ -314,7 +314,7 @@ On peut avoir plusieurs variables catégorielles pour calculer cette moyenne.
 tapply(infection, list(ttmt, gender), mean)
 ```
 
-Ces facteurs sont extrêmement intéressants aussi pour des opérations graphiques. Par exemple, ci-dessous on réalise des boites à moustache en fonction des catégories de patient. 
+Ces facteurs sont extrêmement intéressants aussi pour des opérations graphiques. Par exemple, ci-dessous on réalise des boîtes à moustache en fonction des catégories de patient. 
 
 Tout d'abord, tout simplement l'infection fonction (*~*) du traitement.
 
@@ -344,14 +344,14 @@ is(infection_class)
 print(levels(infection_class))
 ```
 
-Maintenant qu'on a crée des classes de niveau d'infection, on pourra créer le tableau de contingence correspondante. 
+Maintenant qu'on a créé des classes de niveau d'infection, on pourra créer le tableau de contingence correspondante. 
 
 ```{r exo10_1, exercise=TRUE, exercise.setup="exo10_0"}
 cont_table <- table(infection_class, ttmt)
 cont_table
 ```
 
-Nous reverrons l'utilisation de cet objet *factor* plus en détail par suite.
+Nous reverrons l'utilisation de cet objet *factor* plus en détail par la suite.
 
 
 ## Exercices

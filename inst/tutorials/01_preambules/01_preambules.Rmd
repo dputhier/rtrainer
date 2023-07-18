@@ -145,11 +145,11 @@ gradethis::gradethis_setup()
 
 L’avènement de la technologie des techniques d’analyse biologique "hauts débits", conduit à la génération de données toujours plus volumineuses. Il est donc devenu courant pour le biologiste de manipuler quelques milliers (voire millions) de valeurs. Il convient donc de pouvoir utiliser des logiciels flexibles permettant l’automatisation des procédures de lecture, de traitement et d’analyse statistique des données. R est un système d’analyse statistique dont le développement a été initié par Robert Gentleman et Ross Ihaka. R fonctionne sur de nombreuses plate-formes (*Unix*, *Linux*, *Windows*, *Macintosh*). C’est un logiciel libre. Cette notion de liberté d’utilisation suggère que ce logiciel est en perpétuelle évolution notamment grâce à une communauté active de développeurs qui rendent publiques leurs améliorations. 
 
-Sachant que ce logiciel est utilisé par des scientifiques d’horizons très divers ( biologistes, statisticiens, mathématiciens, géographes...) cela permet un partage des outils développés et une convergence des disciplines vers des projets communs. C’est sans doute cela qui fait toute la force et le succès de cet outil. R est très souple et relativement facile d’utilisation. Au contraire des langages compilés (C/C++, Fortran, Pascal...) qui nécessitent la description d’un programme dans son ensemble pour son utilisation, R est un langage interprété, c’est à dire que les lignes de commandes sont exécutées interactivement par la machine. Cependant son approche est parfois déroutante pour l’utilisateur néophyte et une certaine expérience est nécessaire pour bien intégrer son fonctionnement.
+Sachant que ce logiciel est utilisé par des scientifiques d’horizons très divers ( biologistes, statisticiens, mathématiciens, géographes...) cela permet un partage des outils développés et une convergence des disciplines vers des projets communs. C’est sans doute cela qui fait toute la force et le succès de cet outil. R est très souple et relativement facile d’utilisation. Au contraire des langages compilés (C/C++, Fortran, Pascal...) qui nécessitent la description d’un programme dans son ensemble pour son utilisation, R est un langage interprété, c’est-à-dire que les lignes de commandes sont exécutées interactivement par la machine. Cependant son approche est parfois déroutante pour l’utilisateur néophyte et une certaine expérience est nécessaire pour bien intégrer son fonctionnement.
 
 Néanmoins l’effort sera rapidement récompensé. En effet, de très nombreux outils sont disponibles sous forme de librairies (“packages”) qui contiennent de nombreuses fonctions de haut niveau dédiées à des tâches spécifiques. Le biologiste pourra s’appuyer sur la richesse de ce langage pour effectuer l’analyse statistique de données issues de méthodes biologiques "classiques" ou de méthodes "haut débits" (transcriptome, protéome, interactome,...).
 
-Enfin, le logiciel R est doté d’une palette d’outils graphiques très évolués permettant d’obtenir des sorties totalement paramètrables. Ainsi, Les données analysées peuvent être exportées sous des formats divers (.jpg, .png, .bmp, .ps, .pdf,.html, .txt...). 
+Enfin, le logiciel R est doté d’une palette d’outils graphiques très évolués permettant d’obtenir des sorties totalement paramétrables. Ainsi, Les données analysées peuvent être exportées sous des formats divers (.jpg, .png, .bmp, .ps, .pdf,.html, .txt...). 
 
 
 ## Création des objets
@@ -163,7 +163,7 @@ x <- 15
 print(x)
 ```
 
-L’opérateur d’assignation flèche '<-' peut être substitué par l’operateur '=' (on trouve souvent cet syntaxe chez les débutants dans le langage R). Cependant, on préfèrera **toujours utiliser** '<-' qui indique qu'on stocke une valeur ($15$) dans une variable nommée $(x)$. C'est d'ailleurs la recommandation d'Hadley Wickham, développeur de très nombreuses librairies de fonctions, dans son [*tidyverse style guide*](https://style.tidyverse.org/) (*cf* section 2.7).
+L’opérateur d’assignation flèche '<-' peut être substitué par l’opérateur '=' (on trouve souvent cet syntaxe chez les débutants dans le langage R). Cependant, on préfèrera **toujours utiliser** '<-' qui indique qu'on stocke une valeur ($15$) dans une variable nommée $(x)$. C'est d'ailleurs la recommandation d'Hadley Wickham, développeur de très nombreuses librairies de fonctions, dans son [*tidyverse style guide*](https://style.tidyverse.org/) (*cf* section 2.7).
 
 ```{r assign1, exercise=TRUE, exercise.setup = "assign0"}
 # N'écrivez pas cela, même si cela fonctionne.
@@ -199,7 +199,7 @@ print(z)
 
 ### Les commentaires
 
-Le code pourra être commenté a l’aide du caractère "#". Toute commande à la suite de ce caractère ne sera pas interprétée. Cela permet d'annoter son code (donner des explications sur son fonctionnement pour soi et pour les autres).
+Le code pourra être commenté à l’aide du caractère "#". Toute commande à la suite de ce caractère ne sera pas interprétée. Cela permet d'annoter son code (donner des explications sur son fonctionnement pour soi et pour les autres).
 
 ```{r assign3, exercise=TRUE}
 z <- 10
@@ -224,7 +224,7 @@ cat(y) # <=> print(y)
 
 Les objets créés sont stockés dans la mémoire vive de l’ordinateur. Ils ne sont pas, à ce stade, stockés sur le disque. Si on quitte le programme sans sauvegarder, ils seront détruits. 
 
-Pour savoir quels objets sont disponibles (*i.e* on été créés à un instant $t$), on peut **lister** les objets en mémoire avec la fonction **ls()**. On peut détruire des objects en utilisant la fonction **rm()** (**remove**).
+Pour savoir quels objets sont disponibles (*i.e* ont été créés à un instant $t$), on peut **lister** les objets en mémoire avec la fonction **ls()**. On peut détruire des objets en utilisant la fonction **rm()** (**remove**).
 
 ```{r assign5, exercise=TRUE}
 # On crée des objets
@@ -262,7 +262,7 @@ sum(17, 15)
 
 ### Exemples d'utilisation de fonctions
 
-La fonction **c()** (**combine**) permet de combiner des valeurs (e.g numériques) dans un vecteur (*vector*). La fonction **length()** permet de connaitre la taille d'un vecteur. 
+La fonction **c()** (**combine**) permet de combiner des valeurs (e.g numériques) dans un vecteur (*vector*). La fonction **length()** permet de connaître la taille d'un vecteur. 
 
 
 ```{r fonction1, exercise=TRUE}
@@ -286,7 +286,7 @@ Ci dessous un exemple d'utilisation de la fonction **round** arrondir des valeur
 round(y)
 ```
 
-la fonction round possède plusieurs arguments: $x$ et $digits$ (qui controle le nombre de chiffre derrière la virgule).
+La fonction round possède plusieurs arguments: $x$ et $digits$ (qui contrôle le nombre de chiffres derrière la virgule).
 
 ```{r}
 args(round)
@@ -296,7 +296,7 @@ args(round)
 round(x=y, digits = 2)
 ```
 
-Notez que les noms des l’arguments peuvent être abbrégés (attention l'abréviation peut être ambiguë quand il y a de nombreux arguments ayant le même préfixe).
+Notez que les noms des arguments peuvent être abrégés (attention l'abréviation peut être ambiguë quand il y a de nombreux arguments ayant le même préfixe).
 
 ```{r fonction4, exercise=TRUE, exercise.setup = "fonction1"}
 round(x=y, d = 2)
@@ -308,7 +308,7 @@ les noms des arguments peuvent aussi être omis. Cependant il devront être dans
 round(y, 2)
 ```
 
-Cela peut conduire à des erreurs (l'ordinateurs refuse d'effectuer l'opération et renvoie une erreurs) ou des comportement inattendus comme ci-dessous.
+Cela peut conduire à des erreurs (l'ordinateur refuse d'effectuer l'opération et renvoie une erreur) ou des comportements inattendus comme ci-dessous.
 
 ```{r fonction5, exercise=TRUE, exercise.setup = "fonction1"}
 round(2, y)
@@ -318,7 +318,7 @@ round(2, y)
 
 ### La fonction help()
 
-L'aide sur une fonction donnée peut être obtenu grâce à la fonction **help()**. L'aide peut aussi être appelée à l’aide du caractère "?". Cette fiche d'aide permet d'obtenir de l'information sur les arguments d'entrée, les valeurs retournée ainsi que l’utilisation à travers des exemples d'utilisation.
+L'aide sur une fonction donnée peut être obtenu grâce à la fonction **help()**. L'aide peut aussi être appelée à l’aide du caractère "?". Cette fiche d'aide permet d'obtenir de l'information sur les arguments d'entrée, les valeurs retournées ainsi que l’utilisation à travers des exemples d'utilisation.
 
 Les différents champs de l'aide sont notamment:
 
@@ -386,7 +386,7 @@ est sensible à la casse (*i.e* minuscule/majuscule).
 Recherchez toutes les fonctions dont le nom contient 'file' (*i.e* fichier). Attention 'file' doit être entre guillemets.
 
 <div class="tips">
-**NB**: En informatique on parle de guillemets simples ou simples guillemets pour faire référence  à l'apostrophe (' '). On parle de guillemets doubles ou doubles guillemets pour faire référence au guillemets (" "). Cette appélation nous vient du monde anglo-saxon (*single quote* et *double quote*). Dans le langage R, les deux formes ont la même signification et permettent de désigner une suite de caractères qu'on appelle *chaîne de caractères* (ici 'file' ou "file"). Cela permet une certaine flexibilité si une chaîne de caractères contient un guillemet simple par exemple (*e.g.* x <- "extrémités 5' et 3' des molécules d'ADN").
+**NB**: En informatique on parle de guillemets simples ou simples guillemets pour faire référence  à l'apostrophe (' '). On parle de guillemets doubles ou doubles guillemets pour faire référence au guillemets (" "). Cette appellation nous vient du monde anglo-saxon (*single quote* et *double quote*). Dans le langage R, les deux formes ont la même signification et permettent de désigner une suite de caractères qu'on appelle *chaîne de caractères* (ici 'file' ou "file"). Cela permet une certaine flexibilité si une chaîne de caractères contient un guillemet simple par exemple (*e.g.* x <- "extrémités 5' et 3' des molécules d'ADN").
 </div>
 
 ```{r apropos, exercise=TRUE }

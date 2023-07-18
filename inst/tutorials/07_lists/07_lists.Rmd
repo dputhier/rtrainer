@@ -151,7 +151,7 @@ gradethis::gradethis_setup()
 ### Listes ?
 
 L'objet **list**, est l'objet **le plus flexible** des objets basiques de R. Il ne possède **pas de contraintes de tailles** et on peut donc y placer **des objets de tailles différentes**. De même, il ne contient **pas de contraintes de
-type** et on pourra donc y **stocker des objets très divers**. Etant donné cette flexibilité, les fonctions peuvent renvoyer les résultats sous cette forme (exemple : une liste contenant des vecteurs, des matrices et autres objets divers et variés issus d'un calcul). Chaque élément de la liste peut possèder un nom. Ces noms sont accessibles via la fonction **names()** comme pour les vecteurs.
+type** et on pourra donc y **stocker des objets très divers**. Etant donné cette flexibilité, les fonctions peuvent renvoyer les résultats sous cette forme (exemple : une liste contenant des vecteurs, des matrices et autres objets divers et variés issus d'un calcul). Chaque élément de la liste peut posséder un nom. Ces noms sont accessibles via la fonction **names()** comme pour les vecteurs.
 
 ```{r exo1, exercise=TRUE}
 my_list <- list(a_vector = 1:5, 
@@ -173,7 +173,7 @@ length(my_list)
 
 ### La fonction d'indexation '['
 
-Attention, dans le cas des listes, la fonction d'indexation ("[") renvoie une sous-liste. Elle est donc utile produire une nouvelle liste qui est un sous-ensemble de la liste de départ.
+Attention, dans le cas des listes, la fonction d'indexation ("[") renvoie une sous-liste. Elle est donc utile pour produire une nouvelle liste qui est un sous-ensemble de la liste de départ.
 
 ```{r exo2, exercise=TRUE, exercise.setup="exo1"}
 sub_list <- my_list[c(1,3)]
@@ -201,7 +201,7 @@ my_list[['a_vector']]
 
 ### La fonction d'indexation $
 
-De même que pour les objets  *data.frame*, on pourra, de plus utiliser l'opérateur '$' pour indexer la liste.
+De même que pour les objets  *data.frame*, on pourra, de plus, utiliser l'opérateur '$' pour indexer la liste.
 
 ```{r exo_4, exercise=TRUE, exercise.setup="exo1"  }
 # Mêmes résultats
