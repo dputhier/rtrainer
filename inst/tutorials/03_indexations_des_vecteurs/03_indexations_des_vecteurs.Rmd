@@ -167,6 +167,8 @@ Nous allons présenter ces différents cas dans la suite.
 
 ## Indexation des vecteurs par position
 
+### Principe
+
 L’argument de l'opérateur d'indexation sera ici un ensemble de positions au format numérique. 
 
 **NB:** L'indexation dans R est **"one-based"**: **l'accès à la première position se fait avec la valeur d'index 1** (au contraire du langage Python pour lequel l'indexation est **"zero-based"**, on accède à la première position avec la valeur 0).
@@ -198,6 +200,7 @@ print(x[-c(1,3)])
 print(x[-c(3:5)])
 ```
 
+### Exercice 
 
 <div class="exo">
 - Etant donnée le vecteur ci-dessous, utilisez l'opérateur d'indexation et :
@@ -233,6 +236,8 @@ gradethis::grade_result(
 
 ## Indexation logique des vecteurs
 
+### Principe
+
 Le principe est de passer à l'opérateur d'indexation un vecteur logique de même taille que le vecteur. **Seul les position vraies (TRUE), seront renvoyées/sélectionnées**.
 
 ```{r vector14, exercise=TRUE}
@@ -249,6 +254,8 @@ x > 0
 x[x > 0]
 ```
 Nous avons vu que l'on peut effectuer des opérations logiques avec les opérateurs "&" et "|". On peut donc aussi utiliser ces opérateurs pour tester les positions d'un vecteur sur la base d'un autre vecteur (si ils ont tous les deux mêmes tailles). 
+
+### Exemple
 
 Imaginons par exemple les coordonnées x et y de points en 2D. 
 
@@ -299,6 +306,7 @@ pos <- x > 0 & y > 0
 points(x[pos], y[pos], pch=16, col="red")
 ```
 
+### Exercice
 
 <div class="exo">
 Terminez le code pour afficher en rouge les points pour lesquels les valeurs en x sont supérieures aux valeurs en y et en bleu celles pour lesquels y est supérieur à x.
@@ -356,6 +364,8 @@ points(x[pos], y[pos], col="red", pch=16)
 
 ##  Indexation des vecteurs par les noms des positions
 
+### Principe et exemples
+
 Les position d'un vecteur peuvent être nommées. Si elles le sont, on pourra extraire des position en passant leurs noms à l'opérateur d'indexation ('[]') sous la forme d'un objet vecteur.
 
 Par exemple, un vecteur pourrait contenir l'expression de gènes analysés par QPCR. Chaque position serait alors le symbole du gène.
@@ -372,7 +382,7 @@ On pourra donc naturellement rechercher l'expression des gènes dans le vecteur 
 gene_expression[c("ZAP70", "CD3E", "CD4")]
 ```
 
-##  Utilisation d'expressions régulières pour l'indexation
+###  Utilisation d'expressions régulières pour l'indexation
 
 Reprenons ce même vecteur:
 
@@ -417,16 +427,18 @@ La fonction **grep()** renvoie, dans un vecteur de chaînes de caractères **les
 
 **NB**: Par defaut **grep()** ne comprend pas certains opérateurs. L'utilisation, ci-dessous de l'argument *perl = TRUE* permet d'étendre ses capacités à tous les opérateurs. Dans le doute, il est donc préferable de positionner cet argument sur TRUE.
 
-```{r vector20, exercise=TRUE, eval=F, exercise.setup="vector18"}
+```{r vector20, exercise=TRUE, exercise.setup="vector18"}
 pos <- grep(pattern = "^CD", x = names(gene_expression), perl = TRUE)
 pos
 ```
 
 On peut ensuite simplement extraire ces positions.
 
-```{r vector20_1, exercise=TRUE, eval=F, exercise.setup="vector20"}
+```{r vector20_1, exercise=TRUE, exercise.setup="vector20"}
 gene_expression[pos]
 ```
+
+### Exercices
 
 <div class="exo">
 

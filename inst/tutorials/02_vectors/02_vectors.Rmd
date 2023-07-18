@@ -875,7 +875,6 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-
 <h1> Fin de la section  </h1>
 
 <!--```{r exo10, eval=TRUE, echo=FALSE } 

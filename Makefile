@@ -17,21 +17,22 @@ help:
 	@echo ""
 
 clean:
-	@rm -f src/*.o src/*.so; rm -f tutoR.Rcheck/dbfmcl/libs/dbfmcl.so; rm -rf ./dbfmcl.Rcheck; rm -rf ..Rcheck, rm -rf ./..Rcheck/
-	@rm -rf /tmp/dbfmcl; rm -rf *dbf_out.txt; rm -rf *mcl_out.txt  rm -rf ./tutoR.Rcheck
+	@rm -f src/*.o src/*.so; rm -f rtrainer.Rcheck/dbfmcl/libs/dbfmcl.so; rm -rf ./dbfmcl.Rcheck; rm -rf ..Rcheck, rm -rf ./..Rcheck/
+	@rm -rf /tmp/dbfmcl; rm -rf *dbf_out.txt; rm -rf *mcl_out.txt  rm -rf ./rtrainer.Rcheck
 	@rm -f tests/testthat/Rplot*; rm -rf tests/testthat/_snaps
+	@rm -f *~
 
 check: clean
-	@rm -rf /tmp/tutoR; mkdir -p /tmp/tutoR; cp -r ./* /tmp/tutoR; cd /tmp/tutoR; \
-	rm -f src/*.o src/*.so; rm -f tutoR.Rcheck/dbfmcl/libs/dbfmcl.so; \
-	cd ..; R CMD build tutoR; R CMD check tutoR_$(VERSION).tar.gz
+	@rm -rf /tmp/rtrainer; mkdir -p /tmp/rtrainer; cp -r ./* /tmp/rtrainer; cd /tmp/rtrainer; \
+	rm -f src/*.o src/*.so; rm -f rtrainer.Rcheck/dbfmcl/libs/dbfmcl.so; \
+	cd ..; R CMD build rtrainer; R CMD check rtrainer_$(VERSION).tar.gz
 
 run_example:
 	@echo "devtools::run_examples(pkg = '.')" | R --slave
 
 checkfast: clean
-	@rm -rf /tmp/tutoR; mkdir -p /tmp/tutoR; cp -r ./* /tmp/tutoR; cd /tmp/tutoR; \
-	rm -f src/*.o src/*.so; rm -f tutoR.Rcheck/dbfmcl/libs/dbfmcl.so; \
+	@rm -rf /tmp/rtrainer; mkdir -p /tmp/rtrainer; cp -r ./* /tmp/rtrainer; cd /tmp/rtrainer; \
+	rm -f src/*.o src/*.so; rm -f rtrainer.Rcheck/dbfmcl/libs/dbfmcl.so; \
 	R CMD check --no-install .
 
 doc:
