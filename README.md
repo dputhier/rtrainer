@@ -2,7 +2,7 @@
 
 This software is still in development. 
 
-The rtrainer package aims at providing a set of tutorial for learning R.
+The rtrainer package aims at providing a set of tutorials for learning R.
 
 # Installation
 
