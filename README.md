@@ -19,4 +19,7 @@ The list of available tutorials can be obtained using:
 
     library(learnr)
     learnr::available_tutorials("rtrainer")
+
+Run a tutorial using the following command:
+
     learnr::run_tutorial("03_indexations_des_vecteurs", "rtrainer")
