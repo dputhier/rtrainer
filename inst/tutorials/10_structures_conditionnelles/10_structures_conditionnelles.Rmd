@@ -1,0 +1,273 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "Structures conditionnelles"
+output:
+  learnr::tutorial:
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #FFEEFF;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+## Principe et syntaxe
+
+Lorsque l'on développe un **code informatique** on a généralement besoin de poser des questions au système à propos du  contenu d'une variable ou plusieurs variables (e.g. l'utilisateur a-t-il soumis un fichier qui existe, a-t-il soumis une réponse valide, l'utilisateur a-t-il un mot de passe ?). C'est l'objectif des structures conditionnelles.
+
+Une structure conditionnelle **permet de tester si une condition est vraie ou fausse**. Ces structures conditionnelles **évaluent** de manière générale **un test renvoyant une variable logique** (vrai/faux):
+
+  - a > 4
+  - b < 4
+  - 5 < b & b < 10
+  - a == 'hamster'
+  - a %in% c('hamster', 'chien', 'chat')
+  - ...
+
+Dans la structure **if/else classique, on exécutera un certain nombre d'instructions si la condition est vraie, et un autre jeu d'intructions si celle-ci s'avère fausse**.
+
+```
+x <- 3 < 4
+
+if(x) {
+  
+  cat("C'est vrai.\n")
+  cat("Je confirme.")
+  
+} else {
+  
+  cat("C'est faux.\n")
+  cat("Je confirme que c'est faux !")
+  
+}
+```
+
+On pourra aussi rencontrer **if sans else**.
+
+```
+x <- 4 > 3 & 5 < 6
+
+if(x) {
+  
+  cat("C'est vrai.\n")
+  cat("Je confirme.")
+  
+}
+```
+
+On encore **if/elseif/else**.
+
+```
+x <- 3
+
+if(x == 1) {
+  
+  cat("x vaut 1.\n")
+  
+}else if(x==2){
+  
+  cat("x vaut 2.\n")
+  
+}else{
+  
+    cat("x ne vaut pas 1 ou 2.\n")
+}
+```
+
+## La fonction ifelse()
+
+En plus de la construction des constructions classiques que nous venons de voir et qui sont retrouvées dans de nombreux langages, R propose une version vectorisée. Cette fonction, **ifelse()** permet d'itérer sur un vecteur. La forme est la suivante :
+
+```
+ifelse(vecteur booléen,  valeur_renvoyée_si_la_position_est_vrai,
+       valeur_renvoyée_si_la_position_est_fausse)
+```
+
+Ci-dessous un exemple plus concret.
+
+```{r ifelsevector, exercise=TRUE}
+set.seed(123)
+x <- sample(c(1,2), size=10, replace=TRUE)
+print(x)
+x <- ifelse(x == 1,'chat', 'hamster')
+print(x) 
+```
+
+
+<div class="exo">
+
+- On pourrait parvenir au même résultat que le résultat précédent en passant par un facteur. Quel serait le code ?
+
+```{r exoifelse, exercise=TRUE }
+set.seed(123)
+x <- sample(c(1,2), size=10, replace=TRUE)
+```
+
+```{r exoifelse-solution}
+# sur plusieurs lignes
+x <- factor(x)
+levels(x) <- c('chat', 'hamster')
+x <- as.character(x)
+·
+# ou sur une seule...
+x <- as.character(factor(x, levels = c('chat', 'hamster')))
+```
+</div>
+
+
+## Exercises
+
+<div class="exo">
+
+- Téléchargez le fichier suivant au format tabulé et contenant des informations sur les transcrits humains. Ces informations ont été obtenues à partir de la base de données [ensembl](https://www.ensembl.org/index.html). 
+- Affichez les noms de colonnes.
+- En utilisant la fonction **ifelse()** Créez une nouvelle colonne nommée *mono_exonic* dont la valeur sera 'yes' si le transcrit contient un exon (colonne nb_exons) ou 'no' sinon.  
+
+```{r txGRCh38, exercise=TRUE }
+## The URL pointing to the dataset
+url <- "https://zenodo.org/record/8162302/files/Homo_sapiens.GRCh38.110.chr.tsv"
+tx_info <- read.table(file=url, header=TRUE, sep="\t", row.name=11)
+```
+
+```{r txGRCh38-solution}
+tx_info$mono_exonic <- ifelse(tx_info$nb_exons == 1, 'yes', 'no')
+```
+
+```{r txGRCh38-check }
+gradethis::grade_result(
+  pass_if(~ table(tx_info$mono_exonic)[1] == 226714)
+)
+```
+</div>
+
+
+

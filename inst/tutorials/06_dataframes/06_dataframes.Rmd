@@ -303,26 +303,34 @@ gradethis::grade_result(
 
  On peut indexer un data.frame en interrogeant les lignes et colonnes, comme une matrice. Comme pour une matrice, on pourra utiliser **l'indexation par position, l'indexation logique, et l'indexation par nom des positions**. Cependant, le *data.frame** bénéficie d'un opérateur d'indexation supplémentaire, le dollar '$'.
 
-Tapez `chickwts$` et pressez la touche <TAB> (tabulation) pour afficher le contenu de la colonne *feed*. Faites de même pour la colonne *weight*.
+Tapez `ChickWeight$` et pressez la touche <TAB> (tabulation) pour afficher le contenu de la colonne *feed*. Faites de même pour la colonne *weight*.
 
 ```{r dataframe3, exercise=TRUE, setup.exercice="dataframe1"}
 # Mettez votre curseur après chickwts, tapez '$' et 
 # appuyez sur la touche tabulation (<TAB>)
-chickwts
+ChickWeight
 ```
 
 En utilisant l'indexation logique que nous avons vu sur les vecteurs et les matrices, on pourra donc écrire les choses suivantes pour sélectionner des lignes dans le *data.frame*:
 
 ```{r idx1, exercise=TRUE, setup.exercice="dataframe1"}
-chickwts[chickwts$weight > 400, ]
+ChickWeight[ChickWeight$weight > 400, ]
 ```
 
 On encore:
 
 ```{r idx2, exercise=TRUE, setup.exercice="dataframe1"}
-chickwts[chickwts$weight > 400 & chickwts$feed == "casein",  ]
+ChickWeight[ChickWeight$weight > 400 & chickwts$feed == "casein",  ]
 ```
 
+## Ajouter des colonnes
+
+On peut facilement ajouter une colonne à un **data.frame** en utilisant notamment l'opérateur *$*.
+
+```{r addcol, exercise=TRUE, setup.exercice="dataframe1"}
+ChickWeight$genotype <- sample(c("wild_type", "transgenic"), size=nrow(ChickWeight), replace=TRUE)
+head(ChickWeight)                        
+```
 
 ## 'wide' vs 'long'
 
