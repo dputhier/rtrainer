@@ -203,7 +203,7 @@ Le code pourra être commenté à l’aide du caractère "#". Toute commande à 
 
 ```{r assign3, exercise=TRUE}
 z <- 10
-# Le code ci-dessous n'est pas interprété. La variable z est donc inchangé.
+# Le code ci-dessous n'est pas interprété. La variable z est donc inchangée.
 # z <- 56
 print(z)
 ```
