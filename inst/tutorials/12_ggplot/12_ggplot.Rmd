@@ -1742,6 +1742,9 @@ file_path <- file.path(dir_path, "Homo_sapiens.GRCh38.110.subset_2.tsv.gz")
 if(!file.exists(file_path)) download.file(url=url, destfile = file_path, quiet = TRUE)
 tx_info <- read.table(file=file_path, header=TRUE, sep="\t", row.names=6)
 tx_info$tx_genomic_size_log10 <- log10(tx_info$tx_genomic_size)
+```
+
+```{r txgenomicsizeprep_2, echo=FALSE}
 p <- ggplot(data=tx_info, 
             mapping=aes(x=tx_genomic_size_log10)) + 
      geom_histogram(bins=50) +
@@ -1751,15 +1754,13 @@ p <- ggplot(data=tx_info,
      theme(panel.grid.minor = element_blank(), 
            strip.text.y = element_text(angle=0, size=5), 
            axis.text.y = element_text(size=5))
-     
 ```
 
-```{r txgenomicsize, exercise=TRUE , exercise.setup="prepare_tx_human"}
+```{r txgenomicsize, exercise=TRUE , exercise.setup="txgenomicsizeprep"}
 
 ```
 
 ```{r txgenomicsize-solution}
-tx_info$tx_genomic_size_log10 <- log10(tx_info$tx_genomic_size)
 p <- ggplot(data=tx_info, 
             mapping=aes(x=tx_genomic_size_log10)) + 
      geom_histogram(bins=50) +
@@ -1777,10 +1778,9 @@ gradethis::grade_result(
   pass_if(~identical( txgenomicsize, txgenomicsize ))
 )
 ```
+
 </div> 
-- Même question. 
 
-- Utilisez geom_density().
-
+IN PROGRESS
 
 
