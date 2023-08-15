@@ -107,7 +107,7 @@ https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
   padding-bottom: 5px;
   padding-left: 5px;
   padding-right: 5px;
-  background-color: #FFEEFF;
+  background-color: #fcede3;
   color: rgb(51, 51,153);
 }
 .tips {
@@ -200,6 +200,60 @@ print(x[-c(1,3)])
 print(x[-c(3:5)])
 ```
 
+### La fonction order()
+
+La fonction `order()` est utilisée pour obtenir un vecteur d'index qui permet de trier un vecteur donné dans l'ordre croissant ou décroissant. On l'utilisera généralement pour appliquer un tri à un vecteur et s'assurer que, dans un autre, les correspondances des positions sont conservées. 
+
+Supposons que nous ayons deux vecteurs de données non trié.
+
+```{r order_1, exercise=TRUE}
+set.seed(123)
+x <- round(runif(n=10, min=1, max=20), digits = 0)
+y <- sample(letters[1:3], size = 10, replace = TRUE)
+```
+
+Si on souhaite trier `x` mais appliquer à `y` les mêmes changements de position que `x`, on pourra écrire tout d'abord récupérer, avec `order()`, un vecteur d'indices permettant le tri. Ici `x_ord`
+
+```{r order_2, exercise=TRUE, exercise.setup="order_1" }
+x_ord <- order(x, decreasing = FALSE)
+print(x_ord)
+```
+
+Ensuite on peut appliquer ces indices à `x`et `y`.
+
+```{r order_3, exercise=TRUE, exercise.setup="order_2" }
+x_sorted <- x[x_ord]
+print(x_sorted)
+y_reordered <- y[x_ord]
+print(y_reordered)
+```
+
+<div class="exo">
+- Soient les deux vecteurs ci-dessous. Effectuer un tri décroissant sur `x` et appliquez la même permutation de position à `y`. les noms des variables resteront inchangés à l'issue du tri.
+  
+```{r exoorder, exercise=TRUE}
+set.seed(456)
+x <- round(runif(n=10, min=1, max=20), digits = 0)
+y <- sample(LETTERS[1:3], size = 10, replace = TRUE)
+print(y)
+```
+
+```{r exoorder-solution}
+x_ord <- order(x, decreasing = TRUE)
+x <- x[x_ord]
+y <- y[x_ord]
+print(y)
+```
+
+```{r exoorder-check}
+gradethis::grade_result(
+  pass_if(~ all(x == c(17, 16, 15, 8, 7, 6, 6, 5, 3, 3))),
+  pass_if(~ all(y == c("B", "C", "C", "A", "C", "B", "B", "A", "B", "C"))) 
+)
+```
+</div>
+
+
 ### Exercice 
 
 <div class="exo">
@@ -231,7 +285,6 @@ gradethis::grade_result(
 )
 ```
 </div>
-
 
 
 ## Indexation logique des vecteurs
@@ -288,7 +341,7 @@ abline(h= 0, col="black")
 abline(a= 0, b=1, col="black")
 ```
 
-On pourra par exemple facilement colorer les points sur l'axe des x et sur l'axe des y. Par exemple, ici, tous les points positifs en x et y.
+En utilisant l'indexation, on pourra sélectionner des points à mettre en exergue. Par exemple on pourra facilement colorer les points positives sur l'axe des x et sur l'axe des y. Pour ce faire, on utilisera `points()` qui permet de superposer des points à un diagramme existant. 
 
 ```{r vector15b, exercise=TRUE, exercise.setup="vector15" }
 plot(x, y)

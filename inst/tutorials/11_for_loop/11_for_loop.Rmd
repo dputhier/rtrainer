@@ -1,0 +1,225 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "Boucles for"
+output:
+  learnr::tutorial:
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+## Principe et syntaxe
+
+### Présentation
+
+Lorsque l'on développe un **code informatique** on a généralement besoin de **parcourir les éléments stockés dans des objets** eux-mêmes stockés en mémoire (*e.g* vecteurs, matrices...). Suivant la problématique on peut souhaiter parcourir des utilisateurs, des tarifs, des produits, des chromosomes, des gènes... Nous avons déjà vu que :
+
+- les fonctions de la famille **apply** sont une solution pour appliquer des fonctions sur les éléments d'objet. 
+
+- De même **la vectorisation** permet de parcourir implicitement des objets pour effecter des opérations (e.g. `x + 1` pour parcourir tous les éléments d'un vecteur $x$ et leur ajouter `1`).
+
+R propose en plus, la **structure classique de la boucle for** retrouvée dans de nombreux langages. La syntaxe de la boucle for est donnée ci-dessous. 
+
+  - `element` est une variable dont le **nommage est libre** mais dont le nom sera choisi pour être explicite. L'objet element sera **instancié (défini en mémoire) lors du démarage de la boucle**. Il n'y a donc pas besoins de le déclarer/créé au préalable. 
+  - `my_object` est **un objet pré-existant**. Il devra avoir été préalablement déclaré dans le code. 
+  - `my_object` doit être **un object itérable**. Il doit être conçu pour être parcouru. C'est le cas des vecteurs, matrices, data.frames, listes... 
+
+```
+for(element in my_object){ 
+    instruction 1
+    instruction 2
+    ...
+    instruction n
+    }
+```
+
+## Exercices
+
+```{r createfile, echo=FALSE, eval=TRUE, include=FALSE }
+tmp_path <- rtrainer::write_fasta_fragilaria()
+```
+
+<div class="exo">
+
+- Etant donné le chemin suivant (`tmp_path`), listez (`dir()`) tous les fichiers dans ce dossier. Regardez le contenu de l'un d'entre eux avec `file.show()`. 
+- En utilisant une **boucle for** lisez les avec `scan()` (`what="character"`, `sep = "\n"`) et stockez itérativement leur contenu (*i.e* l'objet renvoyé par `scan()`) dans une liste nommée `my_seq`.
+
+**NB:** 
+
+```{r createfile_exo, exercise=TRUE , exercise.setup="createfile"}
+tmp_path
+```
+
+```{r createfile_exo-solution}
+my_seq <- list()
+for(i in file.path(tmp_path, dir(tmp_path))){
+  my_seq[[basename(i)]] <- scan(file=i, what="character", sep = "\n")
+}
+```
+
+```{r createfile_exo-check }
+gradethis::grade_result(
+  pass_if(~ length(my_seq) > 10),
+  pass_if(~ "AGTGACCGTTACGAATCTGGTGTAATTCCTTACGCTAAAATGGGTTACTGGGATGCTTCATACGCTGTAAAAACTACTGA" %in% unlist(lapply(my_seq, "[", 2)))
+)
+```
+</div>
+
+<div class="exo">
+
+- Effectuez le même travail en appliquant avec `sapply()` la fonction `scan()` (avec les mêmes arguments) à tous les fichiers stockés préalablement dans un **vecteur**.
+- Stockez le résultat dans `my_seq`
+
+**NB:** 
+
+```{r createfile_exo_2, exercise=TRUE , exercise.setup="createfile"}
+tmp_path
+```
+
+```{r createfile_exo_2-solution}
+all_file_path <- file.path(tmp_path, dir(tmp_path))
+my_seq <- sapply(all_file_path, FUN = scan, what="character", sep = "\n")
+```
+
+```{r createfile_exo_2-check }
+gradethis::grade_result(
+  pass_if(~ length(my_seq) > 10),
+  pass_if(~ "AGTGACCGTTACGAATCTGGTGTAATTCCTTACGCTAAAATGGGTTACTGGGATGCTTCATACGCTGTAAAAACTACTGA" %in% unlist(lapply(my_seq, "[", 2)))
+)
+```
+</div>
+
+
+

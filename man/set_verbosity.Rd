@@ -5,6 +5,8 @@
 \title{Set the verbosity level for the rtrainer package}
 \usage{
 set_verbosity(verbosity_value)
+
+set_verbosity(verbosity_value)
 }
 \arguments{
 \item{verbosity_value}{A non-negative integer indicating the verbosity level to be set.}
@@ -15,8 +17,19 @@ which controls the amount of information that is printed to the console by
 the \code{\link{print_msg}} function. The verbosity level can be set to
 any non-negative integer, with higher values indicating more detailed output.
 By default, the verbosity level is set to 1.
+
+This function sets the verbosity level for the rtrainer package,
+which controls the amount of information that is printed to the console by
+the \code{\link{print_msg}} function. The verbosity level can be set to
+any non-negative integer, with higher values indicating more detailed output.
+By default, the verbosity level is set to 1.
 }
 \examples{
+# Set verbosity level to 2
+set_verbosity(2)
+
+# Set verbosity level to 0
+set_verbosity(0)
 # Set verbosity level to 2
 set_verbosity(2)
 

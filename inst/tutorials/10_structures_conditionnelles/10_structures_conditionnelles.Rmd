@@ -107,7 +107,7 @@ https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
   padding-bottom: 5px;
   padding-left: 5px;
   padding-right: 5px;
-  background-color: #FFEEFF;
+  background-color: #fcede3;
   color: rgb(51, 51,153);
 }
 .tips {
@@ -142,7 +142,7 @@ gradethis::gradethis_setup()
 
 ## Principe et syntaxe
 
-Lorsque l'on développe un **code informatique** on a généralement besoin de poser des questions au système à propos du  contenu d'une variable ou plusieurs variables (e.g. l'utilisateur a-t-il soumis un fichier qui existe, a-t-il soumis une réponse valide, l'utilisateur a-t-il un mot de passe ?). C'est l'objectif des structures conditionnelles.
+Lorsque l'on développe un **code informatique** on a généralement besoin de **poser des questions au système** à propos du  **contenu d'une variable** ou plusieurs variables (e.g. l'utilisateur a-t-il soumis un fichier qui existe, a-t-il soumis une réponse valide, l'utilisateur a-t-il un mot de passe ?). C'est l'**objectif des structures conditionnelles**.
 
 Une structure conditionnelle **permet de tester si une condition est vraie ou fausse**. Ces structures conditionnelles **évaluent** de manière générale **un test renvoyant une variable logique** (vrai/faux):
 
@@ -222,10 +222,9 @@ x <- ifelse(x == 1,'chat', 'hamster')
 print(x) 
 ```
 
-
 <div class="exo">
 
-- On pourrait parvenir au même résultat que le résultat précédent en passant par un facteur. Quel serait le code ?
+- On pourrait parvenir au même résultat que le résultat précédent en transformant x en facteur, en modifiant les niveau et en transformant x en chaîne de caractères. Quel serait le code ?
 
 ```{r exoifelse, exercise=TRUE }
 set.seed(123)
@@ -243,30 +242,38 @@ x <- as.character(factor(x, levels = c('chat', 'hamster')))
 ```
 </div>
 
-
 ## Exercises
 
 <div class="exo">
 
-- Téléchargez le fichier suivant au format tabulé et contenant des informations sur les transcrits humains. Ces informations ont été obtenues à partir de la base de données [ensembl](https://www.ensembl.org/index.html). 
+- Téléchargez le fichier suivant au format tabulé et contenant des informations sur 10 000 transcrits humains. Ces informations ont été obtenues à partir de la base de données [ensembl](https://www.ensembl.org/index.html). 
 - Affichez les noms de colonnes.
-- En utilisant la fonction **ifelse()** Créez une nouvelle colonne nommée *mono_exonic* dont la valeur sera 'yes' si le transcrit contient un exon (colonne nb_exons) ou 'no' sinon.  
+- En utilisant la fonction **ifelse()** Créez une nouvelle colonne nommée *mono_exonic* dont la valeur sera 'mono' si le transcrit contient un exon (colonne nb_exons) ou 'multi' sinon.
+- Utilisez `table()` pour compter les occurrences de *mono* et *multi* dans la colonne *mono_exonic*. Stockez le résultat dans `count_mono_exonic`.
+- Représentez `count_mono_exonic` avec la fonction `barplot()`.
 
-```{r txGRCh38, exercise=TRUE }
+
+```{r txGRCh38, exercise=TRUE, exercise.lines=6}
 ## The URL pointing to the dataset
-url <- "https://zenodo.org/record/8162302/files/Homo_sapiens.GRCh38.110.chr.tsv"
+url <- "https://zenodo.org/record/8171242/files/Homo_sapiens.GRCh38.110.chr_10k.tsv"
 tx_info <- read.table(file=url, header=TRUE, sep="\t", row.name=11)
 ```
 
 ```{r txGRCh38-solution}
-tx_info$mono_exonic <- ifelse(tx_info$nb_exons == 1, 'yes', 'no')
+## The URL pointing to the dataset
+url <- "https://zenodo.org/record/8171242/files/Homo_sapiens.GRCh38.110.chr_10k.tsv"
+tx_info <- read.table(file=url, header=TRUE, sep="\t", row.name=11)
+tx_info$mono_exonic <- ifelse(tx_info$nb_exons == 1, 'mono', 'multi')
+count_mono_exonic <- table(tx_info$mono_exonic)
+barplot(count_mono_exonic)
 ```
 
 ```{r txGRCh38-check }
 gradethis::grade_result(
-  pass_if(~ table(tx_info$mono_exonic)[1] == 226714)
+  pass_if(~ table(tx_info$mono_exonic)[1] == 1203)
 )
 ```
+
 </div>
 
 

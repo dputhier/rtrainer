@@ -107,3 +107,77 @@ print_msg <-
         cat(paste("|-- INFO : ", msg, "\n"))
     }
   }
+
+#################################################################
+##    set_verbosity
+#################################################################
+#' Set the verbosity level for the rtrainer package
+#'
+#' This function sets the verbosity level for the rtrainer package,
+#' which controls the amount of information that is printed to the console by
+#' the \code{\link{print_msg}} function. The verbosity level can be set to
+#'  any non-negative integer, with higher values indicating more detailed output.
+#'  By default, the verbosity level is set to 1.
+#'
+#' @param verbosity_value A non-negative integer indicating the verbosity level to be set.
+#'
+#' @return NULL
+#'
+#' @export
+#'
+#' @examples
+#' # Set verbosity level to 2
+#' set_verbosity(2)
+#'
+#' # Set verbosity level to 0
+#' set_verbosity(0)
+
+# 0 : No message
+# 1 : Display only INFO type message
+# 2 : Display both INFO and DEBUG type message
+
+set_verbosity <- function(verbosity_value) {
+  if (!is.null(verbosity_value) &
+      verbosity_value >= 0 & is.numeric(verbosity_value)) {
+    options(rtrainer_verbosity = verbosity_value)
+  }
+}
+
+#################################################################
+##    write_fasta_fragilaria()
+#################################################################
+#' @title Writes the fragilaria dataset to files
+#'
+#' @description
+#' Writes the fragilaria dataset to files
+#'
+#' @return The paths to the directory where file have been stored.
+#' 
+#' @examples
+#' write_fasta_fragilaria()
+#' @export write_fasta_fragilaria
+#' 
+write_fasta_fragilaria <- function(dir_path=NULL){
+  if(is.null(dir_path)){
+    tmp_dir_path <- tempdir()
+    tmp_dir_path <- file.path(tmp_dir_path, "fragilaria")
+  }
+  
+  dir.create(tmp_dir_path, recursive = TRUE)
+
+  data(fragilaria, package = "bioseq")
+  fra_data <- bioseq::read_fasta(fragilaria)
+  
+  
+  for(seq in names(fra_data)){
+    bioseq::write_fasta(fra_data[seq], 
+                        file = file.path(tmp_dir_path, 
+                                         paste0(gsub("[^A-Za-z0-9\\-\\._]", "_", seq), 
+                                                ".fasta")), 
+                        block_length = 80)
+  }
+  
+  return(tmp_dir_path)
+}
+
+
