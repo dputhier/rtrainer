@@ -410,7 +410,7 @@ print(p)
 
 ```{r colpoints-check}
  
-gradethis::grade_result(
+gradethis::grade_result_strict(
   pass_if(~ any(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$colour)) != c("#21908CFF", 
                                                                              "#3B528BFF", 
                                                                              "#440154FF", 
@@ -495,7 +495,7 @@ p <- ggplot(data = diamonds, aes(x = price, fill=cut)) +
 ```
 
 ```{r histocut-check}
-gradethis::grade_result(
+gradethis::grade_result_strict(
   pass_if(~ any(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$fill)) != c("#21908CFF", "#3B528BFF", "#440154FF", "#5DC863FF", "#FDE725FF")) == TRUE)
 )
 ```
@@ -555,7 +555,7 @@ print(p)
 
 ```{r vardens_2-check}
 my_test <- any(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$colour)) != c("#21908CFF", "#3B528BFF", "#440154FF", "#5DC863FF", "#FDE725FF"))
-gradethis::grade_result(
+gradethis::grade_result_strict(
   pass_if(~ my_test)
 )
 ```
@@ -587,7 +587,7 @@ print(p)
 
 ```{r vardens_3-check}
 my_test <- any(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$fill)) != c("#21908CFF", "#3B528BFF", "#440154FF", "#5DC863FF", "#FDE725FF"))
-gradethis::grade_result(
+gradethis::grade_result_strict(
   pass_if(~ my_test)
 )
 ```
@@ -645,7 +645,7 @@ print(p)
 
 ```{r violin-check}
 
-gradethis::grade_result(
+gradethis::grade_result_strict(
   pass_if(~ p$labels$x == "cut"),
   pass_if(~ p$labels$y == "price"),
   pass_if(~ p$labels$fill == "cut"),
@@ -1714,7 +1714,7 @@ print(p)
 
 ```{r nbgenes-check }
 
-gradethis::grade_result(
+gradethis::grade_result_strict(
   pass_if(~ as.character(p$mapping$x)[2] == "seqid"),
   pass_if(~ p$labels$y == "seqid"),
   pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBar")
@@ -1722,7 +1722,7 @@ gradethis::grade_result(
 ```
 </div>
 
-### Question 2
+### Taille des transcrits
 
 <div class="exo">
 
@@ -1742,19 +1742,32 @@ file_path <- file.path(dir_path, "Homo_sapiens.GRCh38.110.subset_2.tsv.gz")
 if(!file.exists(file_path)) download.file(url=url, destfile = file_path, quiet = TRUE)
 tx_info <- read.table(file=file_path, header=TRUE, sep="\t", row.names=6)
 tx_info$tx_genomic_size_log10 <- log10(tx_info$tx_genomic_size)
+
 ```
 
-```{r txgenomicsizeprep_2, echo=FALSE}
+```{r displaytxgenomicsize, echo=FALSE, fig.height=6, fig.width=4 }
+options(timeout=10000)
+dir_path <- file.path(fs::path_home(), ".rtrainer")
+dir.create(dir_path, showWarnings = FALSE)
+## L'url pointant sur le jeu de données.
+url <- "https://zenodo.org/record/8211383/files/Homo_sapiens.GRCh38.110.subset_2.tsv.gz"
+# Téléchargement 
+file_path <- file.path(dir_path, "Homo_sapiens.GRCh38.110.subset_2.tsv.gz")
+if(!file.exists(file_path)) download.file(url=url, destfile = file_path, quiet = TRUE)
+tx_info <- read.table(file=file_path, header=TRUE, sep="\t", row.names=6)
+tx_info$tx_genomic_size_log10 <- log10(tx_info$tx_genomic_size)
 p <- ggplot(data=tx_info, 
             mapping=aes(x=tx_genomic_size_log10)) + 
-     geom_histogram(bins=50) +
+     geom_histogram(bins=100) +
      facet_grid(gene_biotype~., scale="free_y") + 
      labs(x="Taille génomique des transcrits (log10)") +
      theme_bw() +
      theme(panel.grid.minor = element_blank(), 
            strip.text.y = element_text(angle=0, size=5), 
            axis.text.y = element_text(size=5))
+print(p)
 ```
+
 
 ```{r txgenomicsize, exercise=TRUE , exercise.setup="txgenomicsizeprep"}
 
@@ -1774,13 +1787,100 @@ p <- ggplot(data=tx_info,
 ```
 
 ```{r txgenomicsize-check }
-gradethis::grade_result(
-  pass_if(~identical( txgenomicsize, txgenomicsize ))
+
+gradethis::grade_result_strict(
+  pass_if(~ length(levels(ggplot2::ggplot_build(p)$data[[1]]$PANEL)) == 12),
+  pass_if(~ p$labels$y == "count"),
+  pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBar")
+)
+```
+
+
+```{r q1, echo=FALSE }
+learnr::question("D'après la source disponible à [cette adresse](http://www.ensembl.org/info/genome/genebuild/biotypes.html), comment peut-on expliquer que la taille de la classe *processed pseudogene* soit inférieure à la classe *protein coding* ?",
+  answer("On pense que ces gènes ne possèdent pas d'UTR."),
+  answer("On pense que ces gènes on des exons plus courts."),
+  answer("On pense qu'ils résultent d'un ARN mature (donc sans introns) s'étant réinséré, après transcription inverse, dans le génome.", correct = TRUE),
+  allow_retry = TRUE 
 )
 ```
 
 </div> 
 
-IN PROGRESS
+### Nombre d'exons
+
+Si les *processed pseudogene* n'ont plus d'introns, on ne devrait trouver qu'un seul exon...
+
+<div class="exo">
+
+Transformez la colonne `nb_exons` en logarithme et placez le résultat dans la colonne `nb_exons_log10`. Que pouvez-vous dire du nombre d'exons (`nb_exons_log10`) pour les transcrits en fonction du "gene_biotype" ? Utilisez un graphique de type *boxplot* ou *violin* pour présenter cette information.
+
+```{r nbexons, exercise=TRUE , exercise.setup="txgenomicsizeprep"}
+
+```
+
+```{r nbexons-solution}
+biotypes <- unique(tx_info$gene_biotype)
+palette <- setNames(rainbow(length(biotypes)), biotypes)
+tx_info$nb_exons_log10 <- log10(tx_info$nb_exons)
+p <- ggplot(data=tx_info, 
+            mapping=aes(x=gene_biotype, 
+                        y=nb_exons_log10,
+                        fill=gene_biotype)) + 
+     geom_boxplot() +
+     theme_minimal() + 
+     labs(y="Nombre d'exons (log10)") +
+     coord_flip() +
+     scale_fill_manual(values=palette) +
+     theme(legend.position = "none")
+     
+print(p)
+```
+
+```{r nbexons-check }
+gradethis::grade_result_strict(
+  pass_if(~ as.character(p$mapping$y)[2] == "nb_exons_log10"),
+  pass_if(~ as.character(p$mapping$x)[2] == "gene_biotype"),
+  pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBoxplot")
+  
+)
+```
+</div>
+
+### Distribution chromosomique des types de genes
+
+<div class="exo">
+
+- Produisez un diagramme à barres (`geom_bar`) montrant le nombre de transcrits de chaque classe gene_biotype sur chaque chromosome. Utilisez `geom_bar()` avec l'argument `position` fixé à `stack`, `dodge` ou `fill`. En fonction de cet argument, avez-vous le même sentiment sur la façon dont la distribution du biotype de gène à travers les chromosomes. Quels sont les avantages et les inconvénients de chaque représentation ? Que peut-on dire des types de gènes présents sur le chromosome Y ?
+
+```{r distchrombiotypes, exercise=TRUE , exercise.setup="exosetup"}
+
+```
+
+```{r distchrombiotypes-solution}
+
+tx_info$nb_exons_log10 <- log10(tx_info$nb_exons)
+p <- ggplot(data=tx_info, 
+            mapping=aes(x=seqid, 
+                        fill=gene_biotype)) + 
+     geom_bar(position="fill") +
+     theme_minimal() + 
+     labs(y="Nombre", 
+          x="Chromosome") +
+     coord_flip() +
+     theme(legend.position = "bottom")
+     
+print(p)
+```
+
+```{r distchrombiotypes-check }
+gradethis::grade_result_strict(
+  pass_if(~ as.character(p$mapping$x)[2] == "seqid"),
+  pass_if(~ as.character(p$mapping$fill)[2] == "gene_biotype"),
+  pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBar")
+  
+)
+```
+</div>
 
 
