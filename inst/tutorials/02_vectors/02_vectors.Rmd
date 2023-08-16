@@ -320,7 +320,7 @@ gradethis::grade_result(
 </div>
 
 
-Pour finir sur les valeurs booléennes, on peut ajouter que même si une variable n'est pas booléenne, elle peut être testée. Dans ce cas, pour un numérique toute les valeurs non nulles sont considérés comme vraies:
+Pour finir sur les valeurs booléennes, on peut ajouter que même si une variable n'est pas booléenne, elle peut être testée. On peut par exemple tester directement un numérique. La règle suivante s'applique alors: toutes les valeurs non nulles sont considérées comme vraies:
 
 
 ```{r exo2b, exercise=TRUE}
@@ -364,10 +364,10 @@ gradethis::grade_result(
 
 ### La fonction seq()
 
-La fonction eq permet de créer des séquences de valeurs numériques espacées de manière régulière. On définit une valeur de départ (**from**), une valeur d'arrivée (**to**) et si on incrémente selon un pas défini (**by**) ou si on demande un nombre cible de valeurs (**length.out**).
+La fonction `seq()` permet de créer des séquences de valeurs numériques espacées de manière régulière. On définit une valeur de départ (`from`), une valeur d'arrivée (`to`) et on incrémente selon un pas défini (`by`) ou un nombre cible de valeurs (`length.out`).
 
 <div class="exo">
-- Regardez l'aide sur la fonction **seq()** et proposez :
+- Regardez l'aide sur la fonction `seq()` et proposez :
 
   - Une instruction pour créer un vecteur $a$ contenant des valeurs régulièrement espacés (par pas de 0,1) entre 1 et 10.
   - Une instruction pour créer un vecteur $b$ contenant 20 valeurs régulièrement espacées entre 1 et 10.  
@@ -377,16 +377,16 @@ La fonction eq permet de créer des séquences de valeurs numériques espacées 
 ```
 
 ```{r seq1-solution}
-a <- seq(from=0, to=1, by=0.1)
+a <- seq(from=1, to=10, by=0.1)
 print(a)
-b <- seq(from=0, to=1, length.out=20)
+b <- seq(from=1, to=10, length.out=20)
 print(b)
 ```
 
 ```{r seq1-check}
 gradethis::grade_result(
-  pass_if(~ sum(a) == 5.5),
-  pass_if(~ round(sum(b), 2) == 10)
+  pass_if(~ sum(a) == 505),
+  pass_if(~ round(sum(b), 2) == 110)
 )
 ```
 </div>
