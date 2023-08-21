@@ -169,7 +169,6 @@ print(x)
 L’opérateur d’assignation flèche '<-' peut être substitué par l’opérateur '=' (on trouve souvent cet syntaxe chez les débutants dans le langage R). Cependant, on préfèrera **toujours utiliser** '<-' qui indique qu'on stocke une valeur ($15$) dans une variable nommée $(x)$. C'est d'ailleurs la recommandation d'Hadley Wickham, développeur de très nombreuses librairies de fonctions, dans son [*tidyverse style guide*](https://style.tidyverse.org/) (*cf* section 2.7).
 
 ```{r assign1, exercise=TRUE, exercise.setup = "assign0"}
-# N'écrivez pas cela, même si cela fonctionne.
 x = 15
 print(x)
 ```
@@ -239,6 +238,17 @@ rm(x)
 ls()
 ```
 
+### Variables prédéfinies
+
+Il existe un certaine nombre de variables qui sont prédéfinies dans l'environnement R. On peut citer `LETTERS` (alphabet en majuscules),  `letters` (alphabet en minuscules), `pi` (...). On les utilisera dans le code en fonction de nos besoins.
+
+```{r}
+letters
+LETTERS
+pi
+```
+
+
 ## Les fonctions
 
 ### Fonctions ? 
@@ -249,12 +259,12 @@ Les **objets** $x$, $y$ et $z$ sont des vecteurs ("vector") pour le langage R. I
 nomdelafonction(arg1= a, arg2= b,...)
 
 # Ci-dessus arg1 et arg2 (...) correspondent au noms des arguments
-# a et b correspondent aux objets que l’on souhaite passer à la fonction
+# a et b correspondent aux objets/valeurs que l’on souhaite passer à la fonction
 # pour qu'elle effectue une tâche en utilisant ceux-ci.
 
 ```
 
-On peut par exemple utiliser la fonction **sum()** pour additionner des vecteurs. Cependant on peut lui substituer l'opérateur '+' (qui, en fait, s'apparente à un fonction cachée).
+On peut par exemple utiliser la fonction `sum()` pour additionner des vecteurs. Cependant on peut lui substituer l'opérateur '+' (qui, en fait, s'apparente à un fonction cachée).
 
 
 ```{r function0, exercise=TRUE }
@@ -262,20 +272,41 @@ sum(17, 15)
 17 + 15
 ```
 
+<div class="exo">
+
+- Utilisez la fonction `ls()` avec en lui passant l'argument `pattern='a'` pour lister l'ensemble des objets en mémoire possédant un 'a' dans leur noms. Stockez le résultat dans une variable nommée 'z'.
+
+```{r lsexo, exercise=TRUE}
+abc <- 3 
+bla <- 1 
+foo <- 2
+bar <- 43
+toto <- 56
+tutu <- 23
+var <- 7
+```
+
+```{r lsexo-solution}
+z <- ls(pattern='a')
+```
+
+</div>
 
 ### Exemples d'utilisation de fonctions
 
-La fonction **c()** (**combine**) permet de combiner des valeurs (e.g numériques) dans un vecteur (*vector*). La fonction **length()** permet de connaître la taille d'un vecteur. 
+La fonction `c()` (**combine**) permet de combiner des valeurs (e.g numériques) dans un vecteur (*vector*). La fonction `length()` permet de connaître la taille d'un vecteur. 
 
+
+**NB:** ci-dessous 1:8 produit un vecteur contenant tous les entiers de 1 à 8. 
 
 ```{r fonction1, exercise=TRUE}
-# NB: ci-dessous 1:8 produit un vecteur contenant tous les entiers de 1 à 8.
-y <- c(-50, 1:8, 70)
+x <- 1:8
+y <- c(-50, x, 70)
 print(y)
 print(length(y))
 ```
 
-Les fonctions **is()** et **class()** sont des fonctions permettant de connaître le type d'un objet. Connaître le type d'un objet est important pour savoir quelles fonctions peuvent lui être appliquées. 
+Les fonctions `is()` et `class()` sont des fonctions permettant de connaître le type d'un objet. Connaître le type d'un objet est important pour savoir quelles fonctions peuvent lui être appliquées. 
 
 ```{r fonction2, exercise=TRUE}
 y <- c(2.567, 3.987, 4, 10.34566)
@@ -283,7 +314,7 @@ is(y)
 class(y)
 ```
 
-Ci dessous un exemple d'utilisation de la fonction **round** arrondir des valeurs numériques. 
+Ci dessous un exemple d'utilisation de la fonction `round()` arrondir des valeurs numériques. 
 
 ```{r fonction3, exercise=TRUE, exercise.setup = "fonction1"}
 round(y)
@@ -321,7 +352,7 @@ round(2, y)
 
 ### La fonction help()
 
-L'aide sur une fonction donnée peut être obtenu grâce à la fonction **help()**. L'aide peut aussi être appelée à l’aide du caractère "?". Cette fiche d'aide permet d'obtenir de l'information sur les arguments d'entrée, les valeurs retournées ainsi que l’utilisation à travers des exemples d'utilisation.
+L'aide sur une fonction donnée peut être obtenu grâce à la fonction `help()`. L'aide peut aussi être appelée à l’aide du caractère "?". Cette fiche d'aide permet d'obtenir de l'information sur les arguments d'entrée, les valeurs retournées ainsi que l’utilisation à travers des exemples d'utilisation.
 
 Les différents champs de l'aide sont notamment:
 
@@ -367,6 +398,26 @@ my_question <- c(
     animation = 150
   ))
 ```
+</div>
+
+<div class="exo">
+
+- Cherchez de l'aide sur les fonctions de calculs suivantes: `min()`, `max()`, `sort()`, `log()`, `log2()`, `log10()`. 
+
+```{r findhelp, exercise=TRUE}
+
+```
+
+```{r findhelp-solution}
+?min
+?max
+?sort
+?log
+?log2
+?log10
+
+```
+
 </div>
 
 ### La fonction example()

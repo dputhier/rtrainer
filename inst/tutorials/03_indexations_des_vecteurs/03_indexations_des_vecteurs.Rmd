@@ -286,7 +286,17 @@ gradethis::grade_result(
 ```
 </div>
 
-
+<div class="exo">
+```{r helpexo2, echo=FALSE}
+learnr::question("Soit un vecteur v dont on ne connaît pas la taille. Comment récupérer le dernier élément ?",
+  answer("v[-1]"),
+  answer("v[size(v)]"),
+  answer("v[length(v)]", correct = TRUE),
+  answer("v[len(v)]"),
+  allow_retry = TRUE 
+)
+```
+</div>
 ## Indexation logique des vecteurs
 
 ### Principe

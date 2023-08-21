@@ -159,6 +159,46 @@ integers <- 1:10
 print(integers)
 ```
 
+<div class="exo">
+
+- Créez un vecteur `z` contenant les entiers suivants dans cet ordre: 3, 12, 17, 20 à 41 et 50.
+
+```{r integerexo, exercise=TRUE}
+
+```
+
+```{r integerexo-solution}
+z <- c(3, 12, 17, 20:41, 50)
+```
+
+```{r integerexo-check }
+gradethis::grade_result(
+  pass_if(~ sum(z) == 753)
+)
+```
+</div>
+
+<div class="exo">
+
+- Utilisez  `sum()` pour calculer la somme des éléments de z. Stockez le résultat dans la variable `sum_z`. 
+
+```{r integerexo2, exercise=TRUE }
+z <- c(3, 12, 17, 20:41, 50)
+```
+
+```{r integerexo2-solution}
+z <- c(3, 12, 17, 20:41, 50)
+sum_z <- sum(z)
+```
+
+```{r integerexo2-check }
+gradethis::grade_result(
+  pass_if(~ sum_z == 753)
+)
+```
+</div>
+
+
 ### Mode caractère
 
 On fournit ci-dessous un exemple de vecteurs contenant des chaînes de caractères (*character strings*).
@@ -223,7 +263,7 @@ Les vecteurs logiques supportent des opérations logiques avec, notamment, l'op�
 
 ```{r vector1b, exercise=TRUE}
 x <- c(TRUE, FALSE, TRUE, FALSE)
-y <- c(TRUE, FALSE, FALSE, FALSE)
+y <- c(TRUE, FALSE, FALSE, TRUE)
 print(x & y)
 print(x | y)
 ```
@@ -306,11 +346,6 @@ x <- c(1, 7, 10, 11, 3, -2, -4, 10)
 y <- c(2, 3, 10, 11, 4, -5, -4, 12)
 ```
 
-<!--```{r vector1c3-solution}
-x <- c(1, 7, 10, 11, 3, -2, -4, 10)
-y <- c(2, 3, 10, 11, 4, -5, -4, 12)
-z <- y >= 2 * x
-```-->
 
 ```{r vector1c3-check}
 gradethis::grade_result(
@@ -407,9 +442,11 @@ R permet de générer des nombres aléatoires (*i.e.* **r**andom) issus de distr
 - **rnbinom()**: Loi binomiale négative (trois paramètres: nombre cible de succès et probabilité de succès).   
 - ...
 
-Le code ci-dessous permet de tirer aléatoirement 1000 valeurs issues d'une loi normale de moyenne 0 et écart-type 1. La fonction **head()** permet de voir les premiers éléments du vecteur.
+Le code ci-dessous permet de tirer aléatoirement 1000 valeurs issues d'une loi normale de moyenne 0 et écart-type 1. La fonction `head()` permet de voir les premiers éléments du vecteur.
 
-**NB:** la fonction **set.seed()** permet de forcer le hasard (*i.e.* de reproduire le hasard). La fonction **length()** permet de connaître la taille/longueur d'un vecteur.
+**NB:** Dans le contexte dde l'ordinateur, les valeurs semblent aléatoires, mais sont en réalité calculés à partir d'algorithmes qui tentent de reproduire des processus aléatoires. La "graine" (*seed* en anglais) de la fonction `set.seed()` (`123` dans l'exemple ci-dessous) permet de forcer l'algorithme à renvoyer les même valeurs 'aléatoires' (comme si l'on pouvait en quelque sorte forcer le hasard...). 
+
+**NB:** La fonction `length()` permet de connaître la taille/longueur d'un vecteur.
 
 ```{r vector4, exercise=TRUE}
 set.seed(123)
@@ -420,10 +457,10 @@ head(x)
 
 ### Visualiser les distributions des valeurs générées 
 
-On peut dresser l'histogramme de cette distribution avec la fonction **hist()**. L'argument **breaks** contrôle le nombre d'intervalles dans l'histogram.
+On peut dresser l'histogramme de cette distribution avec la fonction **hist()**. L'argument **breaks** contrôle le nombre d'intervalles dans l'histogramme.
 
 ```{r vector5, exercise=TRUE, exercise.setup = "vector4"}
-hist(x, breaks = 20, color="blue")
+hist(x, breaks = 20, col="blue", border="white")
 ```
 
 <div class="exo">
@@ -646,6 +683,28 @@ x / 4
 ```
 
 <div class="exo">
+
+- Stockez la somme de `x` et `y` dans `z`.
+
+```{r exovectorisation, exercise=TRUE }
+x <- 1:5
+y <- 5:1
+```
+
+```{r exovectorisation-solution}
+x <- 1:5
+y <- 5:1
+z <- sum(x + y)
+```
+
+```{r exovectorisation-check }
+gradethis::grade_result(
+  pass_if(~ z==30)
+)
+```
+</div>
+
+<div class="exo">
 - Etant donné les vecteur x et y calculez pour chaque position la somme des carrés et stockez le résultat dans z. 
 
 ```{r vector23b, exercise=TRUE}
@@ -663,6 +722,46 @@ gradethis::grade_result(
 )
 
 ```
+</div>
+
+<div class="exo">
+
+- Soit l'exemple suivant:
+
+```{r notworking, exercise=TRUE }
+x <- 1:3
+y <- 1:8
+x + y
+```
+
+```{r qnw1, echo=FALSE }
+learnr::question("Que se passe-t-il dans l'exemple précédent ?",
+  answer("R refuse d'additionner deux vecteurs de taille différentes car la tailles de l'un n'est pas un multiple de l'autre."),
+  answer("R accepte (en emettant un avertissement) d'additionner deux vecteurs de tailles différentes quand la taille de l'un n'est pas un multiple de l'autre.", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+
+</div>
+
+<div class="exo">
+
+- Soit l'exemple suivant:
+
+```{r notworking_2, exercise=TRUE }
+x <- 1:4
+y <- 1:8
+x + y
+```
+
+```{r qnw2, echo=FALSE }
+learnr::question("Que se passe-t-il dans l'exemple précédent ?",
+  answer("R accepte l'opérations d'addition sans avertissement car la taille de l'un est un multiple de la taille de l'autre.", correct = TRUE),
+    answer("R refuse d'additionner deux vecteurs de taille différentes car leurs tailles diffèrent."),
+  allow_retry = TRUE 
+)
+```
+
 </div>
 
 ## Les valeurs manquantes
