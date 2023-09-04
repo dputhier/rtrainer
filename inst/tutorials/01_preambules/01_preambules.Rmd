@@ -389,7 +389,7 @@ my_question <- c(
 
 # Initialize the question
   sortable::question_rank(
-  "Quel est l'ordre des différentes section dans la fiche d'aide ?",
+  "Quel est l'ordre des différentes sections dans la fiche d'aide ?",
   answer(my_question, correct = TRUE),
   answer(sample(my_question, replace=FALSE), 
          correct = FALSE, message = "Other direction!"),
