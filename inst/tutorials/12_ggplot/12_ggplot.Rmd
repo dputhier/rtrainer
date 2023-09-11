@@ -146,10 +146,10 @@ gradethis::gradethis_setup()
 
 R propose de **très nombreuses fonctions graphiques**. Nous en avons rencontrées quelques unes: `hist()`, `plot()` ou encore `barplot()`. Cependant **ces fonctions graphiques basiques** souffrent de nombreux points faibles: 
 
-- Leurs syntaxes/arguments ne sont pas standardisés
-- La modification de certains paramètres graphiques est parfois complexe et peu intuitive
+- Leurs syntaxes/arguments ne sont pas standardisés.
+- La modification de certains paramètres graphiques est parfois complexe et peu intuitive.
 - Bien qu'on puisse superposer des graphiques (e.g. `points()`, `abline()` sur un diagramme crée avec `plot()` par exemple) le nombre de combinaisons est limité. 
-- Par ailleurs, lorsqu'on fait des statistiques descriptives on souhaite souvent **partitionner la fenêtre graphique** (*i.e* créer des **facettes**) en fonction des différents niveaux pris par une variable catégorielle (*i.e* qualitative) ou ordinale. Réaliser de tels graphiques se révèle vite extrêmement compliqué avec les outils de base. 
+- Par ailleurs, lorsqu'on fait des statistiques descriptives on souhaite souvent **partitioner la fenêtre graphique** (*i.e* créer des **facettes**) en fonction des différents niveaux pris par une variable catégorielle (*i.e* qualitative) ou ordinale. Réaliser de tels graphiques se révèle vite extrêmement compliqué avec les outils de base. 
 
 ### La librairie ggplot
 
@@ -208,7 +208,7 @@ Les type des colonnes sont:
 lapply(diamonds, class)
 ```
 
-Notez que l'objet `diamonds` pourrait être un `data.frame`. En fait il s'agit d'un objet de type `tibble`qui est un data.frame dans lequel les colonnes sont un peu plus typées. On fait par exemple la distinction entre les réels (`<dbl>`) et les entiers (`<int>`). Cependant on peut tout à fait convertir ce `tibble` en `data.frame` pour retrouver un objet que l'on connait bien maintenant.
+Notez que l'objet `diamonds` pourrait être un `data.frame`. En fait il s'agit d'un objet de type `tibble` qui est un `data.frame` dans lequel les colonnes sont un peu plus typées. On fait par exemple la distinction entre les réels (`<dbl>`) et les entiers (`<int>`). Cependant on peut tout à fait convertir ce `tibble` en `data.frame` pour retrouver un objet que l'on connait bien maintenant.
 
 ```{r convert, exercise=TRUE, exercise.setup="dataset" }
 diamonds <- as.data.frame(diamonds)
@@ -225,9 +225,9 @@ On va commencer avec un simple nuage de points. Pour créer notre nuage de point
 
 - *(i)* **Des données**  obligatoirement au format `data.frame` ou `tibble`.
 - *(ii)* **associer ces données** à un object *ggplot* (`ggplot(data=diamonds)`). .
-- *(ii)* définir **les variables/colonnes du data.frame que l'on souhaite analyser** et les passer à la fonction **`aes()`**s. 
+- *(ii)* définir **les variables/colonnes du data.frame que l'on souhaite analyser** et les passer à la fonction `aes()`. 
 
-Pour un nuage de points il y a deux esthétiques obligatoire: $x$ (axe des x) et $y$ (axe des y). Les variable $x$ et $y$ sont généralement numériques. Ici on représentera les colonne `carat` et `price`. Toutes deux sont des colonnes de numériques. 
+Pour un nuage de points il y a deux esthétiques obligatoire: $x$ (axe des x) et $y$ (axe des y). Les variables $x$ et $y$ sont généralement numériques. Ici on représentera les colonnes `carat` et `price`. Toutes deux sont des colonnes de numériques. 
 
 ```{r firstgg, exercise=TRUE , exercise.setup="convert" }
 # On crée le diagramme en passant 
@@ -244,7 +244,7 @@ print(p.sc)
 
 ### Les esthétiques 
 
-on peut modifier l'esthétiques de la forme géométrique (ici des points) en passant des arguments à la fonction de géométrie (ici `geom_points()`).
+on peut modifier l’esthétique de la forme géométrique (ici des points) en passant des arguments à la fonction de géométrie (ici `geom_points()`).
 
 Pour la géométrie **geom_points**, les **esthétiques** suivantes sont notamment acceptées :
 
@@ -468,7 +468,7 @@ ggplot(data = diamonds, aes(x = price)) +
 
 ### Histogrammes superposés
 
-Dadre le cadre de **geom_point()** la **géométrie est un point** et on peut associer une variable à la coloration des points. Ici, pour un **histogramme**, c'est la même chose sauf que la **géométrie est un histogramme**. Si on utilise `cut` pour la couleur on obtiendra des histogrammes de couleurs différente.
+Dadre le cadre de `geom_point()` la **géométrie est un point** et on peut associer une variable à la coloration des points. Ici, pour un **histogramme**, c'est la même chose sauf que la **géométrie est un histogramme**. Si on utilise `cut` pour la couleur on obtiendra des histogrammes de couleurs différente.
 
 <div class="exo">
 
@@ -603,7 +603,7 @@ Comme toujours, pour créer notre diagramme on va tout d'abord :
 - *(i)* associer des données (data.frame ou tibble) à un object (`data=diamonds`). 
 - *(ii)* définir **les variables/colonnes du data.frame que l'on souhaite analyser** et les passer à la fonction **aes()**. 
 
-Pour un **boxplot** ou un **violin plots**, les **variable esthétiques** acceptées sont globalement les mêmes que pour **geom_points**. Cependant, une différence majeure est que la variable $x$ est obligatoirement un facteur (qui indique les noms des boîtes sur l'axe des $x$) et la variable $y$ est obligatoirement un numérique (les valeurs prises par chacune des modalités). 
+Pour un **boxplot** ou un **violin plots**, les **variable esthétiques** acceptées sont globalement les mêmes que pour **geom_points**. Cependant, une différence majeure est que la variable *x* est obligatoirement un facteur (qui indique les noms des boîtes sur l'axe des *x*) et la variable *y* est obligatoirement un numérique (les valeurs prises par chacune des modalités). 
 
 
 ```{r firstgg2, exercise=TRUE , exercise.setup="dataset" }
@@ -621,7 +621,7 @@ print(p.bp)
 
 <div class="exo">
 
-- Sachant que **geom_boxplot()** et **geom_violin()** partagent les mêmes éléments d'esthétique, complétez le code suivant. Celui-ci permet de créez un diagramme en violon dans lequel les couleurs des violons correspondent au type de taille (`cut`).
+- Sachant que `geom_boxplot()` et `geom_violin()` partagent les mêmes éléments d'esthétique, complétez le code suivant. Celui-ci permet de créez un diagramme en violon dans lequel les couleurs des violons correspondent au type de taille (`cut`).
 
 ```{r violin, exercise=TRUE , exercise.setup="dataset" }
 col_palette <- c("Ideal" = "#A222A0", ___)
@@ -662,7 +662,7 @@ gradethis::grade_result_strict(
 
 Le modèle sous-jacent à ggplot permet de superposer relativement facilement des couches graphiques.
 
-Soit le diagramme précédent, $p$, produit  avec la géométrie **geom_violin()**.
+Soit le diagramme précédent, $p$, produit  avec la géométrie `geom_violin()`.
 
 ```{r violinprepare, exercise=TRUE, exercise.setup="convert" }
 col_palette <- c("Ideal" = "#A22200", 
@@ -690,7 +690,7 @@ p <- p + geom_violin(color="black") +
 print(p)
 ```
 
-On peut y remedier en utilisant plutôt `geom_jitter()` (plutôt que `geom_point()`) qui va ajouter **un peu de bruit sur l'axe des $x$** afin de déplacer les points des lignes verticales.
+On peut y remedier en utilisant plutôt `geom_jitter()` (plutôt que `geom_point()`) qui va ajouter **un peu de bruit sur l'axe des x** afin de déplacer les points des lignes verticales.
 
 ```{r violinvsjitter, exercise=TRUE, exercise.setup="violinprepare"}
 col_palette <- c("Ideal" = "#A22200", 
@@ -768,7 +768,7 @@ gradethis::grade_result_strict(
 
 ## Diagrammes à barres
 
-La fonction **geom_bar()** est utilisée dans ggplot2 pour créer des **diagrammes à barres**, qui sont particulièrement adaptés pour représenter des données catégorielles. Cette fonction permet de construire des **barres verticales ou horizontales** en fonction des **variables spécifiées dans l'esthétique $x$ et $y$** de la fonction `aes()`.
+La fonction **geom_bar()** est utilisée dans ggplot2 pour créer des **diagrammes à barres**, qui sont particulièrement adaptés pour représenter des données catégorielles. Cette fonction permet de construire des **barres verticales ou horizontales** en fonction des **variables spécifiées dans l'esthétique x et y** de la fonction `aes()`.
 
 ### Un diagramme simple
 
@@ -853,7 +853,7 @@ if(!require('RColorBrewer')){install.packages('RColorBrewer')}
 RColorBrewer::display.brewer.all()
 ```
 
-Il existe trois types de palettes dans `RColorBrewer`: séquentielle, divergente et qualitative.
+Il existe **trois types de palettes dans `RColorBrewer`: séquentielle, divergente et qualitative**.
 
 - Les **palettes séquentielles** conviennent aux données ordonnées qui progressent de la valeur la plus faible à la plus élevée. 
 - Les **palettes divergentes** mettent l'accent sur les valeurs critiques moyennes et les extrêmes aux deux extrémités de la plage de données. 
@@ -939,7 +939,7 @@ ggplot(data = diamonds, aes(x = cut, fill=clarity)) +
 
 <div class="exo">
 
-- Créez un graphique comme celui donné ci-dessous qui compare les longueurs de sépale (`Sepal.Length`) pour chaque espèce de fleurs (`Species`) dans le jeu de données iris (`data(iris)`). Le graphique doit montrer les distributions sous forme de boîtes (`geom_boxplot()`) avec des points jittered (`geom_jitter()`) pour visualiser chaque observation individuelle. Les axes doivent être renommés "Espèces" et "Longueurs des sépales". Chaque espèce est associée à une couleur de boîte ('fill'). 
+- Créez un graphique comme celui donné ci-dessous qui compare les longueurs de sépale (`Sepal.Length`) pour chaque espèce de fleurs (`Species`) dans le jeu de données iris (`data(iris)`). Le graphique doit montrer les distributions sous forme de boîtes (`geom_boxplot()`) avec des points *jittered* (`geom_jitter()`) pour visualiser chaque observation individuelle. Les axes doivent être renommés "Espèces" et "Longueurs des sépales". Chaque espèce est associée à une couleur de boîte ('fill'). 
 
 ```{r, echo=FALSE, fig.height=4}
 library(ggplot2)
@@ -992,7 +992,7 @@ gradethis::grade_result_strict(
 
 <div class="exo">
 
-- Créez un graphique à violon comme celui donné ci-dessous   pour comparer la distribution de la longueur des dents (`len`) en fonction de la méthode d'administration de la vitamine C (`supp`) dans le jeu de données `ToothGrowth`. L
+- Créez un graphique à violon comme celui donné ci-dessous   pour comparer la distribution de la longueur des dents (`len`) en fonction de la méthode d'administration de la vitamine C (`supp`) dans le jeu de données `ToothGrowth`. 
 
 - Les modalités 'OJ' et 'VC' devront être remplacés par 'Orange juice' et 'Ascorbic acid'. 
 - Ajoutez des "rugs" (petites barres) sur le graphique (`geom_rug()`) pour visualiser la distribution des données le long de l'axe y. 
@@ -1054,7 +1054,7 @@ Pour cet exemple, nous allons utiliser le jeu de données `penguins` du package 
 
 <div class="exo">
 
-- Sur la base du jeux de données penguins, générez un diagramme $p$ identique au diagramme ci-dessous. Dans cet exemple, nous utilisons `flipper_length_mm` (longueur de la nageoire) sur l'axe des $x$, `bill_length_mm` (longueur du bec) sur l'axe des $y$ et `body_mass_g` (masse corporelle) comme taille des points, et `species` (espèce) pour la couleur des points. Vous devrez par ailleurs respecter les noms des axes en $x$ et en $y$.
+- Sur la base du jeux de données penguins, générez un diagramme p identique au diagramme ci-dessous. Dans cet exemple, nous utilisons `flipper_length_mm` (longueur de la nageoire) sur l'axe des $x$, `bill_length_mm` (longueur du bec) sur l'axe des $y$ et `body_mass_g` (masse corporelle) comme taille des points, et `species` (espèce) pour la couleur des points. Vous devrez par ailleurs respecter les noms des axes en $x$ et en $y$.
 
 ```{r, echo=FALSE, fig.height=4, }
 library(palmerpenguins)
@@ -1137,7 +1137,7 @@ table(elisa$user, elisa$day)
 
 ### La fonction facet_wrap()
 
-Il devient très facile avec la syntaxe de ggplot2 de produire des histogrammes correspondant aux intensité de coloration obtenues dans chacun des puits (`value`) pour un expérimentateur donné (`user`). Dans l'exemple ci-dessous, vous noterez l'utilisation de la fonction `facet_wrap()`:
+Il devient très facile avec la syntaxe de `ggplot2` de produire des histogrammes correspondant aux intensité de colorations obtenues dans chacun des puits (`value`) pour un expérimentateur donné (`user`). Dans l'exemple ci-dessous, vous noterez l'utilisation de la fonction `facet_wrap()`:
 
 - Cette fonction permet de créer **un arrangement de facettes unidimensionnel** que l'on peut éventuellement représenter sur plusieurs lignes à l'aide des arguments `nrow` et `ncol`.
 - L'argument `facets` passé à `facet_wrap()` doit être une formule (`formula`). Dans notre exemple, `facets = ~ user` peut se traduire par 'crée des panneaux graphiques en fonction de la valeur de la variable `user`. 
@@ -1441,7 +1441,7 @@ print(p)
 
 ### Les fonctions theme() et element_*()
 
-Au delà de l'application de thèmes prédéfinis (comme theme_minimal() ou theme_bw()) on pourra personnaliser chaque aspect du graphique selon les besoins. 
+Au delà de l'application de thèmes prédéfinis (comme `theme_minimal()` ou `theme_bw()`) on pourra personnaliser chaque aspect du graphique selon les besoins. 
 
 - La fonction `theme()` offre une **flexibilité maximale pour personnaliser l'apparence de vos graphiques**. Par exemple, vous pouvez **spécifier la police, la taille de la police et la couleur du texte des titres d'axe et des légendes, changer le fond du graphique** pour s'adapter à un thème sombre ou clair... 
 
@@ -1611,7 +1611,7 @@ Dans la diagramme suivant :
 - Modifiez l'angle du texte de l'axe des x (angle=45°).
 - Modifiez la couleur de l'arrière plan (*fill*).
 - Eliminer les lignes secondaires de la grille (avec *element_blank()*).
-- Ajouter une ligne de contour au boîtes contenant les légendes. 
+- Ajouter une ligne de contour aux boîtes contenant les légendes. 
 
 ```{r themingexo1, exercise=TRUE, exercise.setup="preppenguins" }
 p <- p + ggtitle("Longeurs des nageoires vs becs") +
@@ -1851,9 +1851,9 @@ gradethis::grade_result_strict(
 
 <div class="exo">
 
-- Produisez un diagramme à barres (`geom_bar`) montrant le nombre de transcrits de chaque classe gene_biotype sur chaque chromosome. Utilisez `geom_bar()` avec l'argument `position` fixé à `stack`, `dodge` ou `fill`. En fonction de cet argument, avez-vous le même sentiment sur la façon dont la distribution du biotype de gène à travers les chromosomes. Quels sont les avantages et les inconvénients de chaque représentation ? Que peut-on dire des types de gènes présents sur le chromosome Y ?
+- Produisez un diagramme à barres (`geom_bar`) montrant le nombre de transcrits de chaque classe gene_biotype sur chaque chromosome. Utilisez `geom_bar()` avec l'argument `position` fixé à `stack`, `dodge` ou `fill`. En fonction de cet argument, avez-vous le même sentiment sur la façon dont la distribution du biotype de gène à travers les chromosomes. Quels sont les avantages et les inconvénients de chaque représentation ? Que peut-on du nombre et des types de gènes présents sur le chromosome Y ?
 
-```{r distchrombiotypes, exercise=TRUE , exercise.setup="exosetup"}
+```{r distchrombiotypes, exercise=TRUE , exercise.setup="txgenomicsizeprep" }
 
 ```
 

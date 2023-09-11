@@ -184,7 +184,7 @@ if(x) {
 }
 ```
 
-On encore **if/elseif/else**.
+On encore **if/else if/else**.
 
 ```
 x <- 3
@@ -205,7 +205,7 @@ if(x == 1) {
 
 ## La fonction ifelse()
 
-En plus de la construction des constructions classiques que nous venons de voir et qui sont retrouvées dans de nombreux langages, R propose une version vectorisée. Cette fonction, **ifelse()** permet d'itérer sur un vecteur. La forme est la suivante :
+En plus de la construction des constructions classiques que nous venons de voir et qui sont retrouvées dans de nombreux langages, R propose une version vectorisée. Cette fonction, `ifelse()` permet d'itérer sur un vecteur. La forme est la suivante :
 
 ```
 ifelse(vecteur booléen,  valeur_renvoyée_si_la_position_est_vrai,
@@ -248,7 +248,7 @@ x <- as.character(factor(x, levels = c('chat', 'hamster')))
 
 - Téléchargez le fichier suivant au format tabulé et contenant des informations sur 10 000 transcrits humains. Ces informations ont été obtenues à partir de la base de données [ensembl](https://www.ensembl.org/index.html). 
 - Affichez les noms de colonnes.
-- En utilisant la fonction **ifelse()** Créez une nouvelle colonne nommée *mono_exonic* dont la valeur sera 'mono' si le transcrit contient un exon (colonne nb_exons) ou 'multi' sinon.
+- En utilisant la fonction `ifelse()` Créez une nouvelle colonne nommée *mono_exonic* dont la valeur sera 'mono' si le transcrit contient un exon (colonne `nb_exons`) ou 'multi' sinon.
 - Utilisez `table()` pour compter les occurrences de *mono* et *multi* dans la colonne *mono_exonic*. Stockez le résultat dans `count_mono_exonic`.
 - Représentez `count_mono_exonic` avec la fonction `barplot()`.
 

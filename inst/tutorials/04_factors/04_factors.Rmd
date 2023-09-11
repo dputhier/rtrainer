@@ -150,7 +150,7 @@ gradethis::gradethis_setup()
 
 ### la fonction factor()
 
-La fonction **factor()** permet de créer des variables catégorielles (des **facteurs**) à partir de vecteurs de mode caractère ou numérique. On pourra en effet, choisir d'analyser les individus ou les variables selon leur appartenance à une catégorie donnée. Par exemple, ci dessous, on crée un vecteur, contenant les traitements reçus par 500 patients. 
+La fonction `factor()` permet de créer des variables catégorielles (des **facteurs**) à partir de vecteurs de modes caractère ou numérique. On pourra en effet, choisir d'analyser les individus ou les variables selon leur appartenance à une catégorie donnée. Par exemple, ci dessous, on crée un vecteur, contenant les traitements reçus par 500 patients. 
 
 ```{r exo1, exercise=TRUE}
 # ttmt est, pour l'instant, un simple vecteur de chaînes de caractères.
@@ -159,7 +159,7 @@ class(ttmt)
 print(head(ttmt))
 ```
 
-Par défaut, ce vecteur ne contient pas de notion de catégories.
+Par défaut, ce vecteur ne contient pas de notions de catégories.
 
 ```{r exo1b, exercise=TRUE,  exercise.setup = "exo1" }
 # Un vecteur de chaînes de caractères n'a pas de catégories/niveaux.
@@ -168,7 +168,7 @@ levels(ttmt)
 
 ### la fonction as.factor()
 
-La fonction **as.factor()** permet de convertir le vecteur en facteur (i.e variable catégorielle).
+La fonction `as.factor()` permet de convertir le vecteur en facteur (*i.e* variable catégorielle).
 
 ```{r exo2, exercise=TRUE, exercise.setup = "exo1" }
 # ttmt est transformé en un facteur.
@@ -184,7 +184,7 @@ print(ttmt)
 ```
 
 ```{r exo2b2,  echo=FALSE }
-learnr::question("Lorsqu'on imprime l'objet ttmt (**print(ttmt)**), comment R indique-t-il qu'il s'agit d'un facteur ?",
+learnr::question("Lorsqu'on imprime l'objet ttmt (`print(ttmt)`), comment R indique-t-il qu'il s'agit d'un facteur ?",
   answer("Il indique 'Levels: dexamethasone hydroxychloroquine Placebo' sur la première ligne"),
   answer("Il indique 'Levels: dexamethasone hydroxychloroquine Placebo' sur la dernière ligne", correct = TRUE),
   allow_retry = TRUE 
@@ -194,7 +194,7 @@ learnr::question("Lorsqu'on imprime l'objet ttmt (**print(ttmt)**), comment R in
 
 ### La fonction levels()
 
-La fonction **levels()** permet de connaitre le nom des catégories (les **niveaux/modalités** de ces catégories).
+La fonction `levels()` permet de connaitre le nom des catégories (les **niveaux/modalités** de ces catégories).
 
 ```{r exo3, exercise=TRUE, exercise.setup="exo2" }
 levels(ttmt)
@@ -213,7 +213,7 @@ levels(ttmt)
 
 ### La fonction table()
 
-La fonction **table()** permet de renvoyer les effectifs de chacune des catégories.
+La fonction `table()` permet de renvoyer les effectifs de chacune des catégories.
 
 ```{r exo4, exercise=TRUE, exercise.setup="exo3b" }
 table(ttmt)
@@ -244,9 +244,9 @@ mosaicplot(table(ttmt, gender), color = c("salmon", "olivedrab"), main="Mosaic p
 
 <div class="exo">
 
-- Etant donné la catégorie $age$ comptez le nombre d'individus dans les différentes modalités à travers les facteurs $ttmt$, $gender$ et $age$.
+- Etant donné la catégorie `age` comptez le nombre d'individus dans les différentes modalités à travers les facteurs `ttmt`, `gender` et `age`.
 
-**NB:** Le premier argument de table (*cf* *help(table)*) est '...' ce qui indique qu'on peut passer autant de facteurs que l'on souhaite en argument.
+**NB:** Le premier argument de table (*cf* `help(table)`) est '...' ce qui indique qu'on peut passer autant de facteurs que l'on souhaite en argument.
 
 ```{r exo5c, exercise=TRUE , exercise.setup="exo6"}
 set.seed(456)
@@ -296,11 +296,11 @@ learnr::question("A quoi correspond le '>' dans  Levels: dex < hcq < cont' ?",
 
 ### La fonction tapply()
 
-On peut utiliser un facteur pour faire des opérations sur un vecteur en fonction de catégories. Par exemple appliquer des fonctions dans chacune des catégories avec **tapply()**. Ici on donne l'exemple du calcul de la moyenne (**mean()**) et de la visualisation des distributions des réponses (*infection*) dans les 3 classes de patients (i.e. ayant reçu les trois traitements). 
+On peut utiliser un facteur pour faire des opérations sur un vecteur en fonction de catégories. Par exemple, on peut appliquer des fonctions dans chacune des catégories avec `tapply()`. Ici on donne l'exemple du calcul de la moyenne (`mean()`) et de la visualisation des distributions des réponses (*infection*) dans les 3 classes de patients (i.e. ayant reçu les trois traitements). 
 
 ```{r exo7, exercise=TRUE, exercise.setup="exo5" } 
 # infection est un vecteur contenant les niveaux
-# dinfection de chaque patient
+# d'infection de chaque patient
 infection <- round(c(rnorm(150, mean = 3, sd=1), 
                       rnorm(150, mean = 10, sd=2), 
                       rnorm(200, mean = 10, sd=1)), 
@@ -308,15 +308,15 @@ infection <- round(c(rnorm(150, mean = 3, sd=1),
 tapply(infection, ttmt, mean)
 ```
 
-On peut avoir plusieurs variables catégorielles pour calculer cette moyenne.
+On peut aussi calculer cette moyenne en fonction de plusieurs variables catégorielles.
 
 ```{r exo8, exercise=TRUE, exercise.setup="exo7" } 
 tapply(infection, list(ttmt, gender), mean)
 ```
 
-Ces facteurs sont extrêmement intéressants aussi pour des opérations graphiques. Par exemple, ci-dessous on réalise des boîtes à moustache en fonction des catégories de patient. 
+Ces facteurs sont extrêmement intéressants aussi pour des opérations graphiques. Par exemple, ci-dessous on réalise des boîtes à moustache en fonction des catégories de patients. 
 
-Tout d'abord, tout simplement l'infection fonction (*~*) du traitement.
+Tout d'abord, tout simplement l'infection en fonction (*~*) du traitement.
 
 ```{r exo9, exercise=TRUE, exercise.setup="exo7" } 
 boxplot(infection ~ ttmt)
@@ -336,7 +336,7 @@ grid()
 
 ## Création de facteurs avec la fonction cut()
 
-la fonction *cut()* permet de diviser le vecteurs d'entrée en intervalles et encode les valeurs du vecteur d'entrée en fonction de leurs intervalles d’appartenance. 
+la fonction *cut()* permet de diviser le vecteurs d'entrée en intervalles et encode les valeurs du vecteur d'entrée en fonction de leurs intervalles d'appartenance. 
 
 ```{r exo10_0, exercise=TRUE, exercise.setup="exo7" }
 infection_class <- cut(infection, breaks = 4)
@@ -344,7 +344,7 @@ is(infection_class)
 print(levels(infection_class))
 ```
 
-Maintenant qu'on a créé des classes de niveau d'infection, on pourra créer le tableau de contingence correspondante. 
+Maintenant qu'on a créé des classes de niveau d'infection, on pourra créer le tableau de contingence correspondant. 
 
 ```{r exo10_1, exercise=TRUE, exercise.setup="exo10_0"}
 cont_table <- table(infection_class, ttmt)
@@ -436,7 +436,6 @@ gradethis::grade_result(
 )
 ```
 </div>
-
 
 <div class="exo">
 

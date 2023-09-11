@@ -336,7 +336,7 @@ On pourra indexer une matrice par une matrice. On utilisera typiquement ce type 
 mat == 1
 ```
 
-On pourra aussi modifier les valeurs avec l'indexation par matrice. Ici, par exemple, on remplace les valeurs 1 par des valeurs aléatoires issues d'une loi uniforme (min=0, max=1). Cette valeur correspondra à un poids sur les arêtes (par exemple la confiance qu'on a quant à ces interactions ou la force, standardisée, de ces interactions). Notez que, pour un graphe non dirigé, la matrice d'adjacence est symétrique. Cela implique que $mat_{i,j} = mat_{j,i}$. Ce n'est pas le cas ici mais nous allons corriger cela juste après.
+On pourra aussi modifier les valeurs avec l'indexation par matrice. Ci-dessous, par exemple, on remplace les valeurs 1 par des valeurs aléatoires issues d'une loi uniforme (min=0, max=1). Cette valeur correspondra à un poids sur les arêtes (par exemple la confiance qu'on a quant à ces interactions ou la force, standardisée, de ces interactions). Notez que, pour un graphe non dirigé, la matrice d'adjacence est symétrique. Cela implique que $mat_{i,j} = mat_{j,i}$. Ce n'est pas le cas ici mais nous allons corriger cela juste après.
 
 ```{r exo4b, exercise=TRUE, exercise.setup="exo3e" }
 # La valeur de poids sera ici entre 1 et 10

@@ -150,8 +150,7 @@ gradethis::gradethis_setup()
 
 ### Listes ?
 
-L'objet **list**, est l'objet **le plus flexible** des objets basiques de R. Il ne possède **pas de contraintes de tailles** et on peut donc y placer **des objets de tailles différentes**. De même, il ne contient **pas de contraintes de
-type** et on pourra donc y **stocker des objets très divers**. Etant donné cette flexibilité, les fonctions peuvent renvoyer les résultats sous cette forme (exemple : une liste contenant des vecteurs, des matrices et autres objets divers et variés issus d'un calcul). Chaque élément de la liste peut posséder un nom. Ces noms sont accessibles via la fonction **names()** comme pour les vecteurs.
+L'objet `list`, est l'objet **le plus flexible** des objets basiques de R. Il ne possède **pas de contraintes de tailles** et on peut donc y placer **des objets de tailles différentes**. De même, il ne contient **pas de contraintes de types** et on pourra donc y **stocker des objets très divers**. Etant donné cette flexibilité, les fonctions peuvent renvoyer les résultats sous cette forme (exemple : une liste contenant des vecteurs, des matrices et autres objets divers et variés issus d'un calcul). Chaque élément de la liste peut posséder un nom. Ces noms sont accessibles via la fonction `names()` comme pour les vecteurs.
 
 ```{r exo1, exercise=TRUE}
 my_list <- list(a_vector = 1:5, 
@@ -163,7 +162,7 @@ my_list
 ```{r exo0_1, exercise=TRUE, exercise.setup="exo1" }
 names(my_list)
 ```
-La taille de la liste (le nombre d'objets stockés) est donnée, comme pour les vecteurs, par la fonction**length()**.
+La taille de la liste (le nombre d'objets stockés) est donnée, comme pour les vecteurs, par la fonction `length()`.
 
 ```{r exo0, exercise=TRUE, exercise.setup="exo1" }
 length(my_list)
@@ -201,7 +200,7 @@ my_list[['a_vector']]
 
 ### La fonction d'indexation $
 
-De même que pour les objets  *data.frame*, on pourra, de plus, utiliser l'opérateur '$' pour indexer la liste.
+De même que pour les objets  `data.frame`, on pourra, de plus, utiliser l'opérateur '$' pour indexer la liste.
 
 ```{r exo_4, exercise=TRUE, exercise.setup="exo1"  }
 # Mêmes résultats

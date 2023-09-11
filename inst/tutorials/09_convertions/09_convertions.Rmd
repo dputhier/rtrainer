@@ -144,16 +144,16 @@ gradethis::gradethis_setup()
 
 ### Principe et fonctions dédiées
 
-Dans certain cas, on pourra convertir un objet en un autre. Ces conversions (opérations nommées aussi coercition ou *cast* en anglais) permettront de **changer le format** d'un objet afin de le passer à une fonction qui ne serait **pas compatible avec son format initial**.   Les fonctions permettant cette action possèdent en gènèrale le préfixe ``as.''. Comme vous pouvez le constater avec l'instruction suivante, elle sont très nombreuses.
+Dans certain cas, on pourra convertir un objet en un autre. Ces conversions (opérations nommées aussi coercition ou *cast* en anglais) permettront de **changer le format** d'un objet afin de le passer à une fonction qui ne serait **pas compatible avec son format initial**.   Les fonctions permettant cette action possèdent en gènèrale le préfixe "as.". Comme vous pouvez le constater avec l'instruction suivante, elle sont très nombreuses.
 
 On peut citer les fonctions:
 
-- **as.factor** : pour convertir  en facteur.
-- **as.data.frame** : pour convertir en data.frame.
-- **as.matrix** : pour convertir en matrice.
-- **as.list** : pour convertir en liste.
-- **as.numeric** : pour convertir en vecteur numérique.
-- **as.character** : pour convertir en vecteur de caractères.
+- `as.factor()` : pour convertir  en facteur.
+- `as.data.frame()` : pour convertir en data.frame.
+- `as.matrix()` : pour convertir en matrice.
+- `as.list()` : pour convertir en liste.
+- `as.numeric()` : pour convertir en vecteur numérique.
+- `as.character()` : pour convertir en vecteur de caractères.
 
 
 
@@ -161,7 +161,7 @@ On peut citer les fonctions:
 apropos("^as\\.")
 ```
 
-Par ailleurs il existe des fonctions de conversion ne commençant pas par le préfixe "as." comme **unlist()** qui permet de transformer un liste en vecteur.
+Par ailleurs il existe des fonctions de conversion ne commençant pas par le préfixe "as." comme `unlist()` qui permet de transformer un liste en vecteur.
 
 ```{r unlist, exercise=TRUE}
 my_list <- list(A=1:5, B=letters[1:5])
@@ -173,11 +173,11 @@ unlist(my_list)
 
 ### Convertir pour modifier un résultat
 
-Cet exercice a pour objectif de montrer un des intérêts forts de la conversion. C'est là  une des forces de R. Certaines ***fonctions sont polymorphes**. Cela signifie que leur comportement **dépend du type de l'argument fourni à la fonction**.
+Cet exercice a pour objectif de montrer un des intérêts forts de la conversion. C'est là  une des forces de R. Certaines **fonctions sont polymorphes**. Cela signifie que leur comportement **dépend du type de l'argument fourni à la fonction**.
 
 <div class="exo">
 
-- Soit la matrice suivante. Utilisez la fonction **boxplot()** sur la matrice et sur la matrice convertie en vecteur (**as.vector()**).
+- Soit la matrice suivante. Utilisez la fonction `boxplot()` sur la matrice et sur la matrice convertie en vecteur (`as.vector()`).
 
 ```{r boxplotas, exercise=TRUE}
 set.seed(456)
@@ -197,10 +197,10 @@ boxplot(as.vector(mat))
 ```{r quizz_1, echo=FALSE }
 learnr::question("Qu'observez vous",
   answer("La fonction se comporte différement en fonction de l'argument qui lui est passé.", correct = TRUE),
-    answer("La fonction **boxplot()** se comporte différement en fonction de l'argument qu'elle renvoie."),
-  answer("Si on passe un vecteur à la fonction **boxplot()** elle produit plusieurs boîtes à moustaches."),
-  answer("Si on passe un vecteur à la fonction **boxplot()** elle produit une seule boîte à moustaches.", correct = TRUE),
-    answer("Si on passe une matrice à la fonction **boxplot()** elle produit plusieurs boîtes à moustaches.", correct = TRUE),
+    answer("La fonction `boxplot()` se comporte différement en fonction de l'argument qu'elle renvoie."),
+  answer("Si on passe un vecteur à la fonction `boxplot()` elle produit plusieurs boîtes à moustaches."),
+  answer("Si on passe un vecteur à la fonction `boxplot()` elle produit une seule boîte à moustaches.", correct = TRUE),
+    answer("Si on passe une matrice à la fonction `boxplot()` elle produit plusieurs boîtes à moustaches.", correct = TRUE),
   allow_retry = TRUE 
 )
 ```
@@ -218,7 +218,7 @@ learnr::question("Quel est l'intérêt de ce comportement ?",
 
 <div class="exo">
 
-- Etant donnée la même matrice, appliquez la fonction **plot()** sur :
+- Etant donnée la même matrice, appliquez la fonction `plot()` sur :
 
   - la matrice $mat$ passé en argument unique.
   - la colonne 1 de $mat$ passée en argument unique (drop=TRUE).
@@ -252,10 +252,9 @@ learnr::question("Quel est le comportement de R quand on utilise la fonction plo
 
 Cette section a pour objectif de montrer que le type d'un objet peut avoir parfois des conséquences importantes sur une opération. Il convient d'être très prudent sur certaines opérations.
 
-
 - On souhaite centrer les colonnes de la matrice $mat$. Centrer permet de fixer la moyenne de chaque colonne à 0 (ou une valeur proche). C'est une transformation de variables assez courante en analyse de donnée puisqu'elle permettra à chaque variable colonne d'adopter un même paramètre de position (moyenne à zéro). On peut effectuer la même transformation sur les lignes selon les besoins. 
 
-Regardez bien le code. Notez bien qu'on va, **au préalable, transformer la matrice en data.frame** et lui soustraire un objet liste. 
+Regardez bien le code. Notez bien qu'on va, **au préalable, transformer la matrice en data.frame** et **lui soustraire un objet liste**. 
 
 ```{r matrix_as_1, exercise=TRUE , exercise.setup="boxplotas"}
 boxplot(mat, main="Avant centrage")
@@ -263,7 +262,7 @@ mat_centered_1 <- as.data.frame(mat) - as.list(apply(mat, 2, mean))
 boxplot(mat_centered_1, main="Après centrage")
 ```
 
-Le résultat est celui que nous attendons. Pour chacune des valeurs d'une colonnes $j$, R a retranché la $j_{ième}$ valeur moyenne calculé *via* **apply()**. La moyenne des colonnes est donc très proche de zéro. Maintenant, utilisons $mat$ sous la forme d'une matrice et retranchons un vecteur... 
+Le résultat est celui que nous attendons. Pour chacune des valeurs d'une colonnes $j$, R a retranché la $j_{ième}$ valeur moyenne calculé *via* `apply()`. La moyenne des colonnes est donc très proche de zéro. Maintenant, utilisons $mat$ sous la forme d'une matrice et retranchons un vecteur... 
 
 ```{r matrix_as_2, exercise=TRUE , exercise.setup="boxplotas"}
 boxplot(mat, main="Avant centrage")
@@ -275,7 +274,7 @@ Ici, on voit que le résultat n'est plus celui que nous attendons... Les colonne
 
 ### La fonction sweep()
 
-Pour une opération comme la précédente, il est conseillé d'utiliser une autre approche plus explicite: la fonction **sweep()**. Les arguments de **sweep()** sont les suivants:
+Pour une opération comme la précédente, il est conseillé d'utiliser une autre approche plus explicite: la fonction `sweep()`. Les arguments de `sweep()` sont les suivants:
 
 - **x**	: un tableau (matrice ou data.frame).
 - **MARGIN** :	1 pour les lignes, 2 pour les colonnes.
@@ -291,7 +290,7 @@ boxplot(mat_centered_3)
 
 <div class="exo">
 
-- Etant donnée la même matrice, utilisez **sweep()** pour effectuer un centrage de chaque colonne et une réduction (division par l'écart-type). Placez le résultat dans la variable $mat_centered_reduct$.
+- Etant donnée la même matrice, utilisez `sweep()` pour effectuer un centrage de chaque colonne et une réduction (division par l'écart-type). Placez le résultat dans la variable $mat_centered_reduct$.
  
 ```{r exosweep, exercise=TRUE, exercise.setup="boxplotas"}
 

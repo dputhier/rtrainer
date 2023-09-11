@@ -152,7 +152,7 @@ Il est important de pouvoir **communiquer avec le système de fichier** afin de 
 
 ## La fonction getwd()
 
-La fonction **getwd()** (*get working directory*) permet d'afficher **le répertoire de travail courant**. Ce répertoire est le répertoire dans lequel R travail à un instant $t$ et à partir duquel il lira ou dans lequel il écrira **par défaut** (*i.e* si aucun autre dossier de travail n'est spécifié).
+La fonction `getwd()` (*get working directory*) permet d'afficher **le répertoire de travail courant**. Ce répertoire est le répertoire dans lequel R travail à un instant $t$ et à partir duquel il lira ou dans lequel il écrira **par défaut** (*i.e* si aucun autre dossier de travail n'est spécifié).
 
 ```{r getwd, exercise=TRUE}
 getwd()
@@ -160,28 +160,28 @@ getwd()
 
 ## Création de répertoires: dir.create()
 
-La fonction **dir.create** permet de créer des répertoires. Ici nous allons créer un répertoire dans un dossier système, temporaire, pour ne pas encombrer votre espace de travail.
+La fonction `dir.create()` permet de créer des répertoires. Ici nous allons créer un répertoire dans un dossier système, temporaire, pour ne pas encombrer votre espace de travail.
 
-la fonction **tempdir()** permet de créer **un chemin vers un répertoire temporaire** (sans créer le dossier correspondant). Cette fonction fonctionne **sur tous les systèmes d'exploitation (Windows, OSX, Linux...)**. Elle définira un chemin **à l'intérieur du répertoire parent dédié aux fichiers/dossiers temporaires** (*e.g* le dossier /tmp sous Linux et quelque chose comme C:\\Users\\nom_utilisateur\\AppData\\Local\\Temp sous windows). 
+la fonction `tempdir()` permet de créer **un chemin vers un répertoire temporaire** (sans créer le dossier correspondant). Cette fonction fonctionne **sur tous les systèmes d'exploitation (Windows, OSX, Linux...)**. Elle définira un chemin **à l'intérieur du répertoire parent dédié aux fichiers/dossiers temporaires** (*e.g* le dossier /tmp sous Linux et quelque chose comme C:\\Users\\nom_utilisateur\\AppData\\Local\\Temp sous windows). 
 
 ```{r tempdir_0, exercise=TRUE}
 tmp_dir_path <- tempdir()
 print(tmp_dir_path)
 ```
 
-Ou peut **créer, ensuite, le répertoire correspondant** avec la fonction **dir.create()**. Cette fonction est la fonction de référence permettant de créer un dossier étant donné un chemin fourni en entrée. 
+Ou peut **créer, ensuite, le répertoire correspondant** avec la fonction `dir.create()`. Cette fonction est la fonction de référence permettant de créer un dossier étant donné un chemin fourni en entrée. 
 
 ```{r tempdir, exercise=TRUE, exercise.setup="tempdir_0" }
 dir.create(tmp_dir_path)
 ```
 
-**NB:** Ci-dessous, le répertoire est temporaire. Sous Linux il sera délété au prochain redémarrage de la machine (à moins que vous ne le déletiez avant). 
+**NB:** Ci-dessous, le répertoire est temporaire. Sous Linux il sera délété au prochain redémarrage de la machine (à moins que vous ne le délétiez avant). 
 
 
 
 ## La fonction dir()
 
-On pourra lister les fichiers dans un répertoire à l'aide de la fonction **dir()** (directory). La valeur renvoyée par **dir()** est un vecteur de chaînes de caractères. **A ce stade notre dossier ne devrait rien contenir**. Cependant ici nous travaillons **dans une application web** et ce pourrait être **un peu différent**, vous pourriez y trouver des fichiers préfixés par *lrn-exa* (ils sont liés aux librairies utilisées pour ce tutoriel). **Ne pas en tenir compte**.
+On pourra lister les fichiers dans un répertoire à l'aide de la fonction `dir()` (directory). La valeur renvoyée par `dir()` est un vecteur de chaînes de caractères. **A ce stade notre dossier ne devrait rien contenir**. Cependant ici nous travaillons **dans une application web** et ce pourrait être **un peu différent**, vous pourriez y trouver des fichiers préfixés par *lrn-exa* (ils sont liés aux librairies utilisées pour ce tutoriel). **Ne pas en tenir compte**.
 
 
 ```{r exodir, exercise=TRUE, exercise.setup="tempdir"}
@@ -192,7 +192,7 @@ dir(tmp_dir_path)
 
 ### Créer des chemins
 
-On peut utiliser la fonction **file.path()** pour créer un chemin vers un objet (dossier ou fichier). Etant donné que le format des chemins diffère d'un système d'exploitation à l'autre (Linux, Windows, OSX...), en utilisant **file.path** le chemin produit sera adapté à la plateforme  sur laquelle R est installé. L'utilisation de file.path() permet donc d'avoir un code compatible entre les différents systèmes d'exploitation.
+On peut utiliser la fonction `file.path()` pour créer un chemin vers un objet (dossier ou fichier). Etant donné que le format des chemins diffère d'un système d'exploitation à l'autre (Linux, Windows, OSX...), en utilisant `file.path` le chemin produit sera adapté à la plateforme  sur laquelle R est installé. L'utilisation de `file.path()` permet donc d'avoir un code compatible entre les différents systèmes d'exploitation.
 
 ```{r filepath, exercise=TRUE, exercise.setup="tempdir" }
 # Ici on crée 2 chemins différents
@@ -202,9 +202,9 @@ fp_2 <- file.path(tmp_dir_path, "all_projects", "project_1")
 fp_2
 ```
 
-Ensuite on peut créer les dossiers correspondants avec **dir.create()**. Par défaut **dir.create()** n'accepte pas de créer un dossier enfant si le dossier parent n'existe pas (ici "all_projects"). On le force à accepter de le faire en indiquant **recursive=TRUE**. On indique aussi **showWarnings=FALSE** au cas ou le fichier existe déjà (si vous refaites l'opération plusieurs fois).
+Ensuite on peut créer les dossiers correspondants avec `dir.create()`. Par défaut `dir.create()` n'accepte pas de créer un dossier enfant si le dossier parent n'existe pas (ici "all_projects"). On le force à accepter de le faire en indiquant `recursive=TRUE`. On indique aussi `showWarnings=FALSE` au cas ou le fichier existe déjà (si vous refaites l'opération plusieurs fois).
 
-**NB:** si le dossier n'existe pas la sapply renverra *TRUE* sinon *FALSE*.
+**NB:** si le dossier n'existe pas la sapply renverra `TRUE` sinon `FALSE`.
 
 ```{r sapply, exercise=TRUE, exercise.setup="filepath" }
 dir.create(fp, recursive=TRUE, showWarnings=FALSE)
@@ -215,7 +215,7 @@ dir.create(fp_2, recursive=TRUE, showWarnings=FALSE)
 
 <div class="exo">
 
-- Dans **chacun des sous-dossiers du dossier all_projects**, créer un dossier **input**.
+- Dans **chacun des sous-dossiers du dossier all_projects**, créer un dossier `input`.
 
 ```{r exomkdir, exercise=TRUE, exercise.setup="sapply"}
 
@@ -236,7 +236,7 @@ dir.create(fp_2, recursive=TRUE, showWarnings=FALSE)
 
 <div class="exo">
 
-- Vérifiez que les dossiers existent en listant le contenu de **all_projects** avec **dir()**.
+- Vérifiez que les dossiers existent en listant le contenu de `all_projects` avec `dir()`.
 
 ```{r dir_test, exercise=TRUE, exercise.setup="exorecap"}
 
@@ -265,14 +265,14 @@ gradethis::grade_result(
 
 ### Visualisation de l'arborescence
 
-Par défaut, R ne propose par de fonction permettant de visualiser l'arborescence sous la forme d'un arbre. Cependant cette fonctionnalité est proposée par la librairie de fonctions **fs** (Cross-Platform **F**ile **S**ystem Operations). Nous allons donc la charger (elle devrait être pré-installée) avec la fonction **library()**.
+Par défaut, R ne propose par de fonctions permettant de visualiser l'arborescence sous la forme d'un arbre. Cependant cette fonctionnalité est proposée par la librairie de fonctions `fs` (Cross-Platform **F**ile **S**ystem Operations). Nous allons donc la charger (elle devrait être pré-installée) avec la fonction `library()`.
 
 
 ```{r fs, exercise=TRUE }
 library(fs)
 ```
 
-Ensuite on peut faire appel à la fonction **dir_tree()**.
+Ensuite on peut faire appel à la fonction `dir_tree()`.
 
 ```{r dir_tree, exercise=TRUE, exercise.setup="exorecap"}
 dir_tree(file.path(tmp_dir_path, "all_projects"))
@@ -280,7 +280,7 @@ dir_tree(file.path(tmp_dir_path, "all_projects"))
 
 ## Changement de répertoire
 
-La fonction **setwd()** (*set working directory*) permet de **se déplacer dans l'arborescence** et d'aller d'un répertoire à un autre (et donc de définir un **nouveau répertoire de travail**). Ce nouveau répertoire deviendra le répertoire dans lequel R cherchera, par défaut, les documents (fichiers et dossiers). On passera simplement le nom du répertoire de destination à **setwd()**. Après avoir utilisé **setwd()** on peut vérifier sa position dans l'arborescence avec **getwd()**. 
+La fonction `setwd()` (*set working directory*) permet de **se déplacer dans l'arborescence** et d'aller d'un répertoire à un autre (et donc de définir un **nouveau répertoire de travail**). Ce nouveau répertoire deviendra le répertoire dans lequel R cherchera, par défaut, les documents (fichiers et dossiers). On passera simplement le nom du répertoire de destination à `setwd()`. Après avoir utilisé `setwd()` on peut vérifier sa position dans l'arborescence avec `getwd()`. 
 
 Déplaçons nous dans le répertoire *project/project_1.
 
@@ -293,11 +293,11 @@ getwd()
 
 R dispose de nombreuses fonctions pour effectuer des tâches sur des fichiers. 
 
-- **file.create** : création de fichiers
-- **file.show** : pour visualiser le contenu d'un fichier
-- **cat** : écriture dans un fichier ou sur la sortie standard (*e.g.* l'écran) si l'argument ("file") n'est pas
+- `file.create()` : création de fichiers
+- `file.show()` : pour visualiser le contenu d'un fichier
+- `cat()` : écriture dans un fichier ou sur la sortie standard (*e.g.* l'écran) si l'argument ("file") n'est pas
 renseignée
-- **file.remove** (ou unlink() : détruire un fichier.
+- `file.remove()` (ou `unlink()`) : détruire un fichier.
 
 Une bonne partie d'entre elles porte un nom qui commence ou finit par *file*.
 
@@ -339,12 +339,13 @@ file.show(fp)
 
 ## La fonction scan()
 
-Bien sûr, généralement on travail pas avec des fichiers dont le contenu est *Hello World*. On **importe des données depuis des logiciels tiers** qui contiendront des **données de nature très variées**. 
-Une première fonction, assez méconnue, pour importer des données est la fonction **scan()**. Elle permet la lecture d'un fichier (argument **file** que je vous laisse découvrir plus tard) mais aussi la lecture via **un copier-coller**. Ce dernier mode de lecture peut-être assez intéressant pour **transférer rapidement** (mais sans guère de traçabilité...) des données dans R. Ce mode d'utilisation **ne fonctionnera pas dans notre interface Web mais fonctionnera dans l'éditeur de référence RStudio** (vous pourrez le tester plus tard). 
+Bien sûr, généralement on ne travaille pas avec des fichiers dont le contenu est *Hello World*. On **importera des fichiers depuis des logiciels tiers** qui contiendront des **données de nature très variées**. 
+Une première fonction, assez méconnue, pour importer des données est la fonction `scan()`. Elle permet la lecture d'un fichier (argument `file` que je vous laisse découvrir plus tard) mais aussi la lecture via **un copier-coller**. Ce dernier mode de lecture peut-être assez intéressant pour **transférer rapidement** (mais sans guère de traçabilité...) des données dans R. Ce mode d'utilisation **ne fonctionnera pas dans notre interface Web mais fonctionnera dans l'éditeur de référence RStudio**. **Vous pourrez le tester plus tard**. 
 
-Par exemple si le presse-papier contient une série de valeurs numérique provenant d'Excel par exemple, on pourra écrire:
+Par exemple si le presse-papier contient une série de valeurs numérique provenant d'Excel par exemple, on pourra écrire dans R :
 
 ```{r eval=FALSE}
+# Ca ne fonctionnera pas dans le navigateur web...
 x <- scan(what=double())
 # Ensuite on colle (e.g. ctrl+V)
 plot(x)
@@ -360,11 +361,11 @@ Cette commande est **incontournable** puisqu'elle permettra la **lecture de tabl
 - Les fichiers dont dont **l'extension est ".tsv" ou ".tab" (*tab separated value*)** et dont les colonnes sont **séparées par des tabulations** (voir prochaine section). 
 - Potentiellement des fichiers dont l'extension est, **imprécisément, définie comme ".txt"** (*texte*) et qu'on aurait du nommer avec l'extension ".csv" ou  ".tsv/.tab" car il contiennent des données en colonnes...
 
-Tous ces fichiers .csv", ".tsv" et ".txt" sont considérés comme des **fichiers plats**. C'est à dire qu'ils ne contiennent que des caractères et aucune information de mise en forme (e.g gras, italique, souligné comme un document word). 
+Tous ces fichiers .csv", ".tsv" et ".txt" sont considérés comme des **fichiers plats**. C'est à dire qu'ils ne contiennent que des caractères et aucune information de mise en forme (e.g gras, italique, souligné (...) comme un document word). 
 
 ### Qu'est ce qu'un fichier tabulé
 
-Etant donné que le fichier tabulé (contenant souvent l'extension ".tsv") très populaire (qu'on peut produire à partir d'Excel par exemple) il est important de s'attarder un peu sur se format. 
+Etant donné que le fichier tabulé (contenant souvent l'extension ".tsv") est très populaire (on peut le produire à partir d'Excel par exemple) il est important de s'attarder un peu sur se format. 
 
 Le séparateur de colonne dans le fichier tabulé est **le caractère '\t'**. Si vous n'avez **pas fait d'informatique vous n'en avez sans doute jamais entendu parlé**. Vous l'avez pourtant sans doute rencontré mais sans savoir que c'était lui... Il s'écrit '\t' mais **l'ordinateur le représente sous la forme d'un grand espace** (mais ce n'en est pas un...).
 
@@ -451,8 +452,8 @@ Les principaux arguments de **read.table** sont:
 <div class="exo">
 
 - A l'aide de la fonction **read.table()**, lisez le contenu du fichier ***file_1.tab***.
-  - Pensez à positionner: file, header, et row.names (les autres arguments peuvent conserver leurs valeurs par défaut).
-  - Stockez le résultat dans l'objet **df** et imprimez le contenu de la variable.
+  - Pensez à positionner: `file`, `header`, et `row.names` (les autres arguments peuvent conserver leurs valeurs par défaut).
+  - Stockez le résultat dans l'objet `df` et imprimez le contenu de la variable.
 
 ```{r readtable_2, exercise=TRUE, exercise.setup="exorecap"}
 
@@ -475,7 +476,7 @@ gradethis::grade_result(
 
 <div class="exo">
 
-Demandez l'aide sur la fonction read.table. Regardez particulièrement les arguments passés à *read.table()* dans le code précédent (*file, sep, row.names, header, quote*)
+Demandez l'aide sur la fonction `read.table()`. Regardez particulièrement les arguments passés à *read.table()* dans le code précédent (*file, sep, row.names, header, quote*)
 
 ```{r readtable2, exercise=TRUE, eval=TRUE}
 
@@ -527,7 +528,7 @@ question("L'argument comment.char peut être: ?",
 
 On peut donner à R un chemin dans l'arborescence mais aussi une **URL (i.e. un lien sur internet)**.
 
-Ici, par exemple, on lit un tableau (jeu de données sultan) de la base de données recount. Ce tableau est accessible [ici](https://bowtie-bio.sourceforge.net/recount/countTables/sultan_count_table.txt)
+Ici, par exemple, on lit un tableau (jeu de données sultan) de la base de données *recount*. Ce tableau est accessible [ici](https://bowtie-bio.sourceforge.net/recount/countTables/sultan_count_table.txt)
 
 ```{r readtabledist, exercise=TRUE}
 url <- "https://bowtie-bio.sourceforge.net/recount/countTables/sultan_count_table.txt"
@@ -544,13 +545,13 @@ sultan <- read.table(file = url,
 
 <div class="exo">
 
-- Récuperez le jeu de données [**modencodefly**](https://bowtie-bio.sourceforge.net/recount/pooled/modencodefly_pooledreps_count_table.txt) depuis la base de données recount. Ce jeux de données représente les valeurs d'expressions des gènes (lignes) dans des échantillons (colonnes). Les mesures ont été effectuées par séquençage d'ARN.
+- Récuperez le jeu de données [**modencodefly**](https://bowtie-bio.sourceforge.net/recount/pooled/modencodefly_pooledreps_count_table.txt) depuis la base de données *recount*. Ce jeux de données représente les valeurs d'expressions des gènes (lignes) dans des échantillons (colonnes). Les mesures ont été effectuées par séquençage d'ARN.
 
 - Ajouter la valeur 1 à toute la matrice (pseudo-comptage pour permettre la transformation en logarithme).
-- Tranformez les valeurs en logarithme base 2 (**log2()**) 
-- Effectuer un graphique en nuage de points (**plot()**) dans lequel de l'échantillon **SRX008027** seront représentées sur l'axe des x et celle de **SRX008015** seront représentées sur l'axe des y.
-- Pour la fonction plot essayer plusieurs valeurs numérique pour l'argument pch (**point character**).
-- Regardez l'aide sur la fonction **densCols()** et représentez la densité en point par un gradient de couleurs.
+- Tranformez les valeurs en logarithme base 2 (`log2()`) 
+- Effectuer un graphique en nuage de points (`plot()`) dans lequel de l'échantillon **SRX008027** seront représentées sur l'axe des x et celle de **SRX008015** seront représentées sur l'axe des y.
+- Pour la fonction plot essayer plusieurs valeurs numérique pour l'argument `pch` (*point character*).
+- Regardez l'aide sur la fonction `densCols()` et représentez la densité en point par un gradient de couleurs.
 
 ```{r modencodefly, exercise=TRUE , exercise.setup="readtabledist"}
 

@@ -152,7 +152,7 @@ Lorsque l'on développe un **code informatique** on a généralement besoin de *
 
 R propose en plus, la **structure classique de la boucle for** retrouvée dans de nombreux langages. La syntaxe de la boucle for est donnée ci-dessous. 
 
-  - `element` est une variable dont le **nommage est libre** mais dont le nom sera choisi pour être explicite. L'objet element sera **instancié (défini en mémoire) lors du démarage de la boucle**. Il n'y a donc pas besoins de le déclarer/créé au préalable. 
+  - `element` est une variable dont le **nommage est libre** mais dont le nom sera choisi pour être explicite. L'objet `element` sera **instancié (défini en mémoire) lors du démarage de la boucle**. Il n'y a donc pas besoins de le déclarer/créé au préalable. 
   - `my_object` est **un objet pré-existant**. Il devra avoir été préalablement déclaré dans le code. 
   - `my_object` doit être **un object itérable**. Il doit être conçu pour être parcouru. C'est le cas des vecteurs, matrices, data.frames, listes... 
 

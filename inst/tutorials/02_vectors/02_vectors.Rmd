@@ -148,7 +148,7 @@ gradethis::gradethis_setup()
 
 ## Les modes
 
-Tous les éléments d'un vecteur sont de même type. Dans le langage R, on parle de 'mode' (ou modalité). Il existe quatre modes: "numérique", "caractère", "logique" et "complexe". 
+Tous les éléments d'un vecteur sont de même types. Dans le langage R, on parle de 'modes' (ou modalités). Il existe quatre modes: "numérique", "caractère", "logique" et "complexe". 
 
 ### Mode numérique
 
@@ -562,7 +562,7 @@ gradethis::grade_result(
 
 ### La fonction sample()
 
-La fonction **sample()** permet d'effectuer un tirage aléatoire de x éléments (argument **size**) dans un vecteur, avec ou sans remise. Notez que, dans l’exemple suivant, quand l’argument **replace** est positionné sur TRUE, le tirage aléatoire est effectué avec remise (sans remise si replace=FALSE).
+La fonction `sample()` permet d'effectuer un tirage aléatoire de x éléments (argument `size`) dans un vecteur, avec ou sans remise. Notez que, dans l’exemple suivant, quand l’argument `replace` est positionné sur TRUE, le tirage aléatoire est effectué avec remise (sans remise si replace=FALSE).
 
 ```{r vector9, exercise=TRUE}
 sample(x=1:10, size = 5, replace = TRUE)
@@ -593,7 +593,7 @@ learnr::question("Est-ce que les valeurs retournées changent d'un appel à l'au
 ```
 
 ```{r vector10a2, echo=FALSE }
-learnr::question("Dans chacun des vecteur produits, observez vous des valeurs identiques ?",
+learnr::question("Dans chacun des vecteur produits, observez vous des valeurs redondantes ?",
   answer("Non"),
   answer("Oui", correct = TRUE),
   allow_retry = TRUE 
@@ -662,14 +662,24 @@ print(sample(x=1:10, size = 5, replace = FALSE))
 
 ### Opérateurs mathématiques
 
-On peut effectuer des opérations mathématiques sur les vecteurs à l'aide d'opérateurs classiques: +, -, \*, \\\ ... Pour élever à la puissance on utilise l'accent circonflexe (^). Ces opérations seront 'vectorisés' (*i.e* appliquées à tous les éléments du/des vecteur(s)). Pour ceux qui connaîtraient d'autres langages, cela se  substitue aux boucles "for" et allège fortement la syntaxe.  
+On peut effectuer des opérations mathématiques sur les vecteurs à l'aide d'opérateurs classiques: +, -, \*, \\\ ... Pour élever à la puissance on utilise l'accent circonflexe (^). Ces opérations seront 'vectorisés' (*i.e* appliquées à tous les éléments du/des vecteur(s)). Pour ceux qui connaîtraient d'autres langages, cela se  substitue aux boucles "for" et allège fortement la syntaxe. 
+
 La structure vectorielle du langage rend implicites les itérations sur les éléments du vecteur. 
 L'avantage de cette vectorisation est d'effectuer des opérations très complexes en quelques lignes de code.
-Pour additionner deux vecteurs on écrira simplement:
+
+Pour ajouter 10 à tous les éléments d'un vecteur numérique, on écrira:
 
 ```{r vector22, exercise=TRUE, eval=TRUE}
 x <- 1:10
 print(x + 2)
+y <- 11:20
+print(x + y)
+```
+
+Pour additionner les chaque position *p* de deux vecteurs, on écrira
+
+```{r vector22b, exercise=TRUE, eval=TRUE}
+x <- 1:10
 y <- 11:20
 print(x + y)
 ```
@@ -766,14 +776,14 @@ learnr::question("Que se passe-t-il dans l'exemple précédent ?",
 
 ## Les valeurs manquantes
 
-Un vecteur peut contenir des valeur manquantes. Dans R elle sont notées **NA** (Not Available). 
+Un vecteur peut contenir des valeurs manquantes. Dans R elle sont notées `NA` (Not Available). 
 
 ```{r vector23c, exercise=TRUE, eval=TRUE}
 x <- c(NA, 40, 2, NA, 7, 8, 30)
 print(x)
 ```
 
-D'autres valeurs non-définies existent comme **Inf (Infinite)**, **-Inf** ou **NaN (NotANumber)**. Elles sont généralement produites par des erreurs de calcul.
+D'autres valeurs non-définies existent comme `Inf` **(Infinite)**, `-Inf` ou `NaN` **(NotANumber)**. Elles sont généralement produites par des erreurs de calcul.
 
 ```{r vector23d, exercise=TRUE, eval=TRUE}
 1/0
@@ -781,7 +791,7 @@ log(0)
 0/0
 ```
 
-Les fonctions **is.na()**, **is.infinite()**, **is.nan** permettent d'itérer sur des vecteurs et de renvoyer pour chaque position une valeur booléenne indiquant si la position est de type **NA**, **Inf/-Inf** ou **NaN**. respectivement.
+Les fonctions `is.na()`, `is.infinite()`, `is.nan()` permettent d'itérer sur des vecteurs et de renvoyer pour chaque position une valeur booléenne indiquant si la position est de type `NA`, `Inf`/`-Inf` ou `NaN`. respectivement.
 
 ```{r vector23db, exercise=TRUE, eval=TRUE}
 is.na(c(1:3, NA, 1:3))
@@ -791,9 +801,9 @@ is.infinite(c(1:3, Inf, 1:3))
 
 
 <div class="exo">
-- Etant donnée le vecteur ci-dessous, recherchez les positions qui sont **NA** avec **is.na()** et stockez leur nombre dans z.
+- Etant donnée le vecteur ci-dessous, recherchez les positions qui sont `NA` avec `is.na()` et stockez leur nombre dans z.
 
-NB: On peut sommer (**sum()** des booléens pour compter les positions **TRUE**).
+NB: On peut sommer (`sum()` des booléens pour compter les positions `TRUE`).
 
 ```{r vector23e, exercise=TRUE}
 set.seed(123)
@@ -814,7 +824,7 @@ gradethis::grade_result(
 </div>
 
 <div class="exo">
-- Etant donnée le vecteur ci-dessous, recherchez les positions qui sont **-Inf/Inf** avec **is.infinite()** et stockez leur nombre dans z.
+- Etant donnée le vecteur ci-dessous, recherchez les positions qui sont `-Inf`/`Inf` avec `is.infinite()` et stockez leur nombre dans z.
 
 ```{r vector23f, exercise=TRUE}
 set.seed(123)
@@ -834,7 +844,7 @@ gradethis::grade_result(
 </div>
 
 <div class="exo">
-- Etant donnée le vecteur ci-dessous, avec la fonction **which**, recherchez toutes les positions (*i.e* indices) contenant une valeur numérique et stockez leur nombre dans z (**length()**).
+- Etant donnée le vecteur ci-dessous, avec la fonction `which()`, recherchez toutes les positions (*i.e* indices) contenant une valeur numérique et stockez leur nombre dans z (`length()`).
 
 ```{r vector23g, exercise=TRUE}
 set.seed(123)
@@ -856,9 +866,9 @@ gradethis::grade_result(
 
 ## Itérer sur un vecteur
 
-On peut parcourir toutes les positions d'un vecteur et appliquer une fonction avec la fonction **sapply()**. La fonction s'utilise en passant un vecteur en premier argument (ou un appel à une fonction qui renvoie un vecteur ) et le nom d'une fonction en deuxième argument.
+On peut parcourir toutes les positions d'un vecteur et appliquer une fonction avec la fonction `sapply()`. La fonction s'utilise en passant un vecteur en premier argument (ou un appel à une fonction qui renvoie un vecteur ) et le nom d'une fonction en deuxième argument.
 
-Par exemple on peut appliquer la fonction **class()** (ou **is()**) pour connaître les types de chaque objet en mémoire. Nous reviendrons par la suite sur les fonctions de la famille **apply**.
+Par exemple on peut appliquer la fonction `class()` (ou `is()`) pour connaître les types de chaque objet en mémoire. Nous reviendrons par la suite sur les fonctions de la famille **apply**.
 
 ```{r}
 sapply(ls(), class)
@@ -917,7 +927,7 @@ learnr::question("Sélectionnez les items qui  sont des opérateurs logiques dan
 ```
 
 ```{r exoq4, echo=FALSE }
-learnr::question("Soient x et y deux vecteurs numériques, quelles sont les instruction acceptables par R.",
+learnr::question("Soient x et y deux vecteurs numériques, quelles sont les instructions acceptables par R.",
   answer("x > y",  correct = TRUE),
   answer("x * y > 0",  correct = TRUE),
   answer("x / y < 10",  correct = TRUE),
@@ -935,15 +945,15 @@ learnr::question("Soient x et y deux vecteurs numériques, quelles sont les inst
 ### Exercice 2
 
 <div class="exo">
-Considérons deux vecteurs $x$ et $y$ (*cf* ci-dessous) dont chaque position $i$ correspondrait au niveau d'Interféron de types I mesuré avant ($x$) et après ($y$) une infection dans différents patients (1, 2, 3...50).
+Considérons deux vecteurs `x` et `y` (*cf* ci-dessous) dont chaque position `i` correspondrait au niveau d'Interféron de types I mesuré avant (`x`) et après (`y`) une infection dans différents patients (1, 2, 3...50).
 
 - Calculez le ratio d'induction (en linéaire) de l'induction de l'interféron. Stockez le dans a.
-- Calculez le logarithme (en base 2) du ratio en utilisant la fonction **log2()**. Stockez le dans b.
-- Avec la fonction **which()**, recherchez les positions pour lesquels la valeur absolue (**abs()**) du log2-ratio est supérieure à 1 (induction ou répression d'un facteur 2). Comptez les. Stockez le résultat dans c.
-- Avec la fonction **which()**, recherchez les positions pour lesquels la valeur absolue (**abs()**) du log2-ratio est supérieure à 2 (induction ou répression d'un facteur 4). Comptez les. Stockez le résultat dans d.
-- Avec la fonction **which()**, recherchez les positions pour lesquels la valeur absolue (**abs()**) du log2-ratio est supérieure à 3 (induction ou répression d'un facteur 8). Comptez les. Stockez le résultat dans e.
+- Calculez le logarithme (en base 2) du ratio en utilisant la fonction `log2()`. Stockez le dans b.
+- Avec la fonction `which()`, recherchez les positions pour lesquels la valeur absolue (`abs()`) du log2-ratio est supérieure à 1 (induction ou répression d'un facteur 2). Comptez les. Stockez le résultat dans c.
+- Avec la fonction `which()`, recherchez les positions pour lesquels la valeur absolue (`abs()`) du log2-ratio est supérieure à 2 (induction ou répression d'un facteur 4). Comptez les. Stockez le résultat dans d.
+- Avec la fonction `which()`, recherchez les positions pour lesquels la valeur absolue (`abs()`) du log2-ratio est supérieure à 3 (induction ou répression d'un facteur 8). Comptez les. Stockez le résultat dans e.
 
-**NB:** On utilise la fonction **abs()** pour calculer les valeurs absolues  d'un vecteur.
+**NB:** On utilise la fonction `abs() pour calculer les valeurs absolues  d'un vecteur.
 
 ```{r vector24, exercise=TRUE}
 set.seed(123)
