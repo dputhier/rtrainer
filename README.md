@@ -8,7 +8,8 @@ The rtrainer package aims at providing a set of tutorials for learning R.
 
 Currently use the following command:
 
-	  make install
+	  install.packages("devtools")
+   	  devtools::install_github("dputhier/rtrainer")
 
 # Running the tutorials 
 
