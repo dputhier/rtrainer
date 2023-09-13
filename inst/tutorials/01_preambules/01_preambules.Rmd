@@ -166,7 +166,7 @@ x <- 15
 print(x)
 ```
 
-L’opérateur d’assignation flèche '<-' peut être substitué par l’opérateur '=' (on trouve souvent cet syntaxe chez les débutants dans le langage R). Cependant, on préfèrera **toujours utiliser** '<-' qui indique qu'on stocke une valeur ($15$) dans une variable nommée $(x)$. C'est d'ailleurs la recommandation d'Hadley Wickham, développeur de très nombreuses librairies de fonctions, dans son [*tidyverse style guide*](https://style.tidyverse.org/) (*cf* section 2.7).
+L’opérateur d’assignation flèche '<-' peut être substitué par l’opérateur '=' (on trouve souvent cet syntaxe chez les débutants dans le langage R). Cependant, on préfèrera **toujours utiliser** '<-' qui indique qu'on stocke une valeur (*15*) dans une variable nommée *(x)*. C'est d'ailleurs la recommandation d'Hadley Wickham, développeur de très nombreuses librairies de fonctions, dans son [*tidyverse style guide*](https://style.tidyverse.org/) (*cf* section 2.7).
 
 ```{r assign1, exercise=TRUE, exercise.setup = "assign0"}
 x = 15
@@ -181,7 +181,7 @@ print(x)
 ```
 
 <div class="exo">
-Ecrire un code permettant de stocker 3 dans une variable x, 5 dans y puis la somme (opérateur $+$) de x et y dans z. Imprimez le contenu des 3 variables.
+Ecrire un code permettant de stocker 3 dans une variable x, 5 dans y puis la somme (opérateur *+*) de x et y dans z. Imprimez le contenu des 3 variables.
 
 ```{r assign2, exercise=TRUE, exercise.setup = "assign1"}
 
@@ -226,7 +226,7 @@ cat(y) # <=> print(y)
 
 Les objets créés sont stockés dans la mémoire vive de l’ordinateur. Ils ne sont pas, à ce stade, stockés sur le disque. Si on quitte le programme sans sauvegarder, ils seront détruits. 
 
-Pour savoir quels objets sont disponibles (*i.e* ont été créés à un instant $t$), on peut **lister** les objets en mémoire avec la fonction **ls()**. On peut détruire des objets en utilisant la fonction **rm()** (**remove**).
+Pour savoir quels objets sont disponibles (*i.e* ont été créés à un instant *t*), on peut **lister** les objets en mémoire avec la fonction **ls()**. On peut détruire des objets en utilisant la fonction **rm()** (**remove**).
 
 ```{r assign5, exercise=TRUE}
 # On crée des objets
@@ -253,7 +253,7 @@ pi
 
 ### Fonctions ? 
 
-Les **objets** $x$, $y$ et $z$ sont des vecteurs ("vector") pour le langage R. Ici, ils contiennent chacun une valeur numérique. Nous avons, par ailleurs utilisé les **fonctions** **ls()** et **rm()**. Dans R, on peut appeler des fonctions pour interroger des objets et réaliser des actions à partir de ceux-ci. Les fonctions se présentent sous la forme suivante:
+Les **objets** *x*, *y* et *z* sont des vecteurs ("vector") pour le langage R. Ici, ils contiennent chacun une valeur numérique. Nous avons, par ailleurs utilisé les **fonctions** **ls()** et **rm()**. Dans R, on peut appeler des fonctions pour interroger des objets et réaliser des actions à partir de ceux-ci. Les fonctions se présentent sous la forme suivante:
 
 ```
 nomdelafonction(arg1= a, arg2= b,...)
@@ -320,7 +320,7 @@ Ci dessous un exemple d'utilisation de la fonction `round()` arrondir des valeur
 round(y)
 ```
 
-La fonction round possède plusieurs arguments: $x$ et $digits$ (qui contrôle le nombre de chiffres derrière la virgule).
+La fonction round possède plusieurs arguments: *x* et *digits* (qui contrôle le nombre de chiffres derrière la virgule).
 
 ```{r}
 args(round)
