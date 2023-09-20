@@ -173,6 +173,7 @@ set.seed(123)
 ```
 
 ```{r mat1-solution}
+set.seed(123)
 mat <- matrix(data=round(runif(100), 0), 
             ncol = 10, 
             byrow = TRUE)
@@ -239,6 +240,12 @@ mat <- matrix(data=round(runif(200, 0, 100), 0),
 ```
 
 ```{r exo3a-solution}
+set.seed(123)
+mat <- matrix(data=round(runif(200, 0, 100), 0), 
+            ncol = 10, 
+            byrow = TRUE)
+
+
 rown <- paste0("gene_", 1:nrow(mat))
 rownames(mat) <- rown
 coln <- paste0("sample_", 1:ncol(mat))
@@ -390,6 +397,13 @@ rownames(mat) <- letters[1:10]
 ```
 
 ```{r matrix4-solution}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+colnames(mat) <- LETTERS[1:4]
+rownames(mat) <- letters[1:10]
+
 a <- mat[1, 1]
 b <- mat[1, c(1, 2)]
 c <- mat[1, ]
@@ -431,6 +445,13 @@ rownames(mat) <- letters[1:10]
 ```
 
 ```{r matrix4a-solution}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+colnames(mat) <- LETTERS[1:4]
+rownames(mat) <- letters[1:10]
+
 g <- mat[c(1, 3) ,c(1, 3)]
 h <- mat[mat[, 1] > 11, ]
 i <- mat["a", "B"]
@@ -503,6 +524,13 @@ rownames(mat) <- letters[1:10]
 ```
 
 ```{r matrix5-solution}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+colnames(mat) <- LETTERS[1:4]
+rownames(mat) <- letters[1:10]
+
 a <- apply(mat, 1, mean)
 b <- apply(mat, 1, var)
 c <- apply(mat, 1, sd)
@@ -550,6 +578,10 @@ mat[mat < 5] <- NA
 ```
 
 ```{r matrix6b-solution}
+set.seed(123)
+nb_cells <- ncol(mat) * nrow(mat)
+mat[mat < 5] <- NA
+
 a <- apply(mat, MARGIN = 2, mean, trim = 0.2, na.rm=TRUE)
 ```
 
@@ -572,6 +604,11 @@ mat <- matrix(data=sample(1:20, size=40, replace = TRUE),
 ```
 
 ```{r matrix6c-solution}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+
 q_25 <- apply(mat, MARGIN = 2, quantile, 0.25)
 q_75 <- apply(mat, MARGIN = 2, quantile, 0.75)
 ```
@@ -596,6 +633,11 @@ mat <- matrix(data=sample(1:20, size=40, replace = TRUE),
 ```
 
 ```{r matrix6d-solution}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+
 q_25 <- apply(mat, MARGIN = 1, quantile, 0.25)
 q_75 <- apply(mat, MARGIN = 1, quantile, 0.75)
 ```
@@ -621,6 +663,12 @@ mat[mat < 5] <- NA
 ```
 
 ```{r matrix6e-solution}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+mat[mat < 5] <- NA
+
 q_25 <- apply(mat, MARGIN = 1, quantile, 0.25, na.rm=TRUE)
 q_75 <- apply(mat, MARGIN = 1, quantile, 0.75, na.rm=TRUE)
 ```
@@ -717,6 +765,19 @@ plot(my_graph)
 ```
 
 ```{r exo16-solution}
+mat <- matrix(c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 
+                1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 
+                1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 
+                0, 0),
+            ncol = 8, 
+            byrow = TRUE)
+cr_names <- LETTERS[1:8]
+colnames(mat) <- rownames(mat) <- cr_names
+diag(mat) <- 0
+library(igraph)
+my_graph <- graph_from_adjacency_matrix(mat, mode="undirected")
+plot(my_graph)
+
 mat_3 <- mat %*% mat %*% mat
 ```
 

@@ -254,7 +254,13 @@ age <- sample(c("<10", "10-30", "30-50", ">50"), size = 500, replace = T)
 ```
 
 ```{r exo5c-solution}
+set.seed(456)
+age <- sample(c("<10", "10-30", "30-50", ">50"), size = 500, replace = T)
 table(ttmt,  gender, age)
+```
+
+```{r exo5c-code-check}
+grade_code()
 ```
 
 </div>
@@ -270,10 +276,6 @@ Il est possible de créer des variables catégorielles ordinales dans lesquels i
 ttmt <- factor(ttmt, ordered = TRUE)
 ttmt
 ```
-
-
-
-
 
 ```{r exo6b1,  echo=FALSE }
 learnr::question("Lorsqu'on imprime l'objet ttmt, comment R indique-t-il qu'il s'agit d'une variable catégorielle ordinale  ?",
@@ -425,6 +427,8 @@ codons <- sample(c("ATT", "GTT", "GGG", "CTT"), size=1000, replace = TRUE)
 
 
 ```{r exo16-solution }
+set.seed(123)
+codons <- sample(c("ATT", "GTT", "GGG", "CTT"), size=1000, replace = TRUE)
 codons <- as.factor(codons)
 tb_codon <- table(codons)
 att_nb <- tb_codon['ATT']
@@ -447,6 +451,7 @@ codons <- as.factor(codons)
 
 
 ```{r exo17-solution }
+codons <- as.factor(codons)
 levels(codons) <- c("att", "ctt", "ggg", "gtt")
 # Ou
 levels(codons) <- tolower(levels(codons))

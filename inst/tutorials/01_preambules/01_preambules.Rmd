@@ -287,6 +287,13 @@ var <- 7
 ```
 
 ```{r lsexo-solution}
+abc <- 3 
+bla <- 1 
+foo <- 2
+bar <- 43
+toto <- 56
+tutu <- 23
+var <- 7
 z <- ls(pattern='a')
 ```
 
