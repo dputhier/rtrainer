@@ -197,13 +197,39 @@ print(y)
 print(z)
 ```
 
+```{r assign2-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result_strict(
+  pass_if(~ x == 3),
+  pass_if(~ y == 5),
+  pass_if(~ z == 8)
+)
+```
+
+### Comment nommer les objets
+
+Il existe plusieurs recommandations pour nommer les objets.
+
+- Il est généralement recommandé d'utiliser des noms de variables explicites, en minuscules. 
+- Les noms des variables seront en anglais. En effet, les autres éléments du langage sont en anglais.  Par ailleurs, dans le milieux scientifique, vous risquez de travailler avec des non-francophones...
+- Nous suivrons les recommandations d'[Hadley Wickman](http://adv-r.had.co.nz/Style.html) et nous utiliserons un caractère "souligné" (_) pour séparer les mots d'un nom de variable. 
+- Efforcez-vous d'utiliser des noms concis et significatifs. Quelques exemples ci-dessous.
+
+```{r assign3, exercise=TRUE}
+age <- 20
+average_size <- 130
+nb_iteration <- 100
+nb_genes <- 20e3
+```
+
+**NB:** Nous prenons quelques libertés dans ce tutoriel en nommant les variables x, y ou z. Cela vous permet de rédiger rapidement et d'aller à l'essentiel. Ce n'est pas conseillé pour votre code en production.
+
 ## Elements de code
 
 ### Les commentaires
 
 Le code pourra être commenté à l’aide du caractère "#". Toute commande à la suite de ce caractère ne sera pas interprétée. Cela permet d'annoter son code (donner des explications sur son fonctionnement pour soi et pour les autres).
 
-```{r assign3, exercise=TRUE}
+```{r assign3b, exercise=TRUE}
 z <- 10
 # Le code ci-dessous n'est pas interprété. La variable z est donc inchangée.
 # z <- 56
@@ -253,7 +279,7 @@ pi
 
 ### Fonctions ? 
 
-Les **objets** *x*, *y* et *z* sont des vecteurs ("vector") pour le langage R. Ici, ils contiennent chacun une valeur numérique. Nous avons, par ailleurs utilisé les **fonctions** **ls()** et **rm()**. Dans R, on peut appeler des fonctions pour interroger des objets et réaliser des actions à partir de ceux-ci. Les fonctions se présentent sous la forme suivante:
+Les **objets** *x*, *y* et *z* crées précédemment sont des vecteurs ("vector") pour le langage R. Ici, ils contiennent chacun une valeur numérique. Nous avons, par ailleurs utilisé les **fonctions** **ls()** et **rm()**. Dans R, on peut appeler des fonctions pour interroger des objets et réaliser des actions à partir de ceux-ci. Les fonctions se présentent sous la forme suivante:
 
 ```
 nomdelafonction(arg1= a, arg2= b,...)
@@ -295,6 +321,13 @@ toto <- 56
 tutu <- 23
 var <- 7
 z <- ls(pattern='a')
+```
+
+
+```{r lsexo-check}
+gradethis::grade_result_strict(
+  pass_if(~ all(c("abc", "bar", "bla", "var") %in% z))
+)
 ```
 
 </div>
