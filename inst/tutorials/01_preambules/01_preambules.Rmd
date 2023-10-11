@@ -181,12 +181,12 @@ print(x)
 ```
 
 <div class="exo">
-Ecrire un code permettant de stocker 3 dans une variable x, 5 dans y puis la somme (opérateur *+*) de x et y dans z. Imprimez le contenu des 3 variables.
+- Ecrire un code permettant de stocker 3 dans une variable x, 5 dans y puis la somme (opérateur *+*) de x et y dans z. Imprimez le contenu des 3 variables.
 
 ```{r assign2, exercise=TRUE, exercise.setup = "assign1"}
 
 ```
-</div>
+
 
 ```{r assign2-solution, eval=TRUE, echo=FALSE}
 x <- 3
@@ -204,6 +204,7 @@ gradethis::grade_result_strict(
   pass_if(~ z == 8)
 )
 ```
+</div>
 
 ### Comment nommer les objets
 
@@ -236,6 +237,25 @@ z <- 10
 print(z)
 ```
 
+<div class="exo">
+- Ajouter le commentaire suivant au code ci-dessous: "La valeur 10 est assignée à z".
+
+```{r comment, exercise=TRUE, exercise.setup = "assign1"}
+z <- 10
+```
+
+
+```{r comment-solution, eval=TRUE, echo=FALSE}
+# La valeur 10 est assignée à z
+z <-  10
+```
+
+```{r comment-check, eval=TRUE, echo=FALSE}
+grade_code()
+```
+
+</div>
+
 ### Séparation des instructions
 
 Les instructions peuvent être séparées par un retour à la ligne ou par le caractère **';'**.
@@ -246,19 +266,42 @@ cat(x) # <=> print(x)
 cat(y) # <=> print(y)
 ```
 
+<div class="exo">
+- Ajoutez, sur la même ligne de code : y <- 5
+
+```{r semicolumn, exercise=TRUE, exercise.setup = "assign1"}
+z <- 10
+```
+
+
+```{r semicolumn-solution, eval=TRUE, echo=FALSE}
+z <-  10 ;  y <- 5
+```
+
+```{r semicolumn-check, eval=TRUE, echo=FALSE}
+grade_code(allow_partial_matching=FALSE)
+```
+
+</div>
+
 ## Gestion des objets en mémoire
 
 ### Lister et détruire les objets
 
 Les objets créés sont stockés dans la mémoire vive de l’ordinateur. Ils ne sont pas, à ce stade, stockés sur le disque. Si on quitte le programme sans sauvegarder, ils seront détruits. 
 
-Pour savoir quels objets sont disponibles (*i.e* ont été créés à un instant *t*), on peut **lister** les objets en mémoire avec la fonction **ls()**. On peut détruire des objets en utilisant la fonction **rm()** (**remove**).
+Pour savoir quels objets sont disponibles (*i.e* ont été créés à un instant *t*), on peut **lister** les objets en mémoire avec la fonction **ls()**. 
 
 ```{r assign5, exercise=TRUE}
 # On crée des objets
 x <- 1; y <- 2; z <- 3
 # On liste les objets en mémoire
 ls()
+```
+
+On peut détruire des objets en utilisant la fonction **rm()** (**remove**).
+
+```{r assign5b, exercise=TRUE, exercise.setup="assign5"}
 # On détruit x 
 rm(x)
 ls()
@@ -354,9 +397,32 @@ is(y)
 class(y)
 ```
 
+<div class="exo">
+
+- Utilisez stockez le type de x (`class()`) dans z.
+
+```{r is, exercise=TRUE}
+x <- matrix()
+```
+
+```{r is-solution}
+x <- matrix()
+z <- class(x)
+```
+
+
+```{r is-check}
+gradethis::grade_result_strict(
+  pass_if(~ z[1] == "matrix")
+)
+```
+
+</div>
+
 Ci dessous un exemple d'utilisation de la fonction `round()` arrondir des valeurs numériques. 
 
-```{r fonction3, exercise=TRUE, exercise.setup = "fonction1"}
+```{r fonction3, exercise=TRUE}
+y <- c(2.567, 3.987, 4, 10.34566)
 round(y)
 ```
 
@@ -366,25 +432,29 @@ La fonction round possède plusieurs arguments: *x* et *digits* (qui contrôle l
 args(round)
 ```
 
-```{r fonction3b, exercise=TRUE, exercise.setup = "fonction1"}
+```{r fonction3b, exercise=TRUE}
+y <- c(2.567, 3.987, 4, 10.34566)
 round(x=y, digits = 2)
 ```
 
-Notez que les noms des arguments peuvent être abrégés (attention l'abréviation peut être ambiguë quand il y a de nombreux arguments ayant le même préfixe).
+Notez que **les noms des arguments peuvent être abrégés** (attention l'abréviation peut être ambiguë quand il y a de nombreux arguments ayant le même préfixe).
 
-```{r fonction4, exercise=TRUE, exercise.setup = "fonction1"}
+```{r fonction4, exercise=TRUE}
+y <- c(2.567, 3.987, 4, 10.34566)
 round(x=y, d = 2)
 ```
 
-les noms des arguments peuvent aussi être omis. Cependant il devront être dans l'ordre attendu.
+les **noms des arguments peuvent aussi être omis**. Cependant il devront être dans l'ordre attendu.
 
-```{r fonction4b, exercise=TRUE, exercise.setup = "fonction1"}
+```{r fonction4b, exercise=TRUE}
+y <- c(2.567, 3.987, 4, 10.34566)
 round(y, 2)
 ```
 
 Cela peut conduire à des erreurs (l'ordinateur refuse d'effectuer l'opération et renvoie une erreur) ou des comportements inattendus comme ci-dessous.
 
-```{r fonction5, exercise=TRUE, exercise.setup = "fonction1"}
+```{r fonction5, exercise=TRUE}
+y <- c(2.567, 3.987, 4, 10.34566)
 round(2, y)
 ```
 
@@ -462,19 +532,16 @@ my_question <- c(
 
 ### La fonction example()
 
-Cette fonction permet de lancer les exemples associés à une fonction donnée. 
+Cette fonction permet de lancer les exemples de l'aide associée à une fonction donnée. 
 
 
 ```{r example, exercise=TRUE }
-example(mean)
+example(round)
 ```
 
 ### La fonction apropos()
 
-Une fonction terriblement pratique qui renvoie l'ensemble des fonctions dont le nom contient
-la chaîne de caractères recherchée. Souvent, les fonctions de base dans les langages de
-programmation ont des noms assez similaires, cela aide beaucoup. Attention cette fonction
-est sensible à la casse (*i.e* minuscule/majuscule).
+la fonction `apropos()` est terriblement pratique car elle renvoie l'ensemble des fonctions dont les noms contiennent une chaîne de caractères recherchée (e.g. `apropos('Sys')` pour chercher toutes les fonctions dont les noms contiennent 'Sys'). Souvent, les fonctions de base dans les langages de programmation ont des noms assez similaires, cela aide beaucoup. Attention cette fonction est sensible à la casse (*i.e* minuscule/majuscule).
 
 <div class="exo">
 Recherchez toutes les fonctions dont le nom contient 'file' (*i.e* fichier). Attention 'file' doit être entre guillemets.
@@ -490,6 +557,11 @@ Recherchez toutes les fonctions dont le nom contient 'file' (*i.e* fichier). Att
 ```{r apropos-solution}
 apropos("file")
 ```
+```{r apropos-check}
+grade_code()
+```
+
+
 </div>
 
 <div class="exo">

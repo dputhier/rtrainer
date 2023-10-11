@@ -273,20 +273,20 @@ grade_code()
 Il est possible de créer des variables catégorielles ordinales dans lesquels il existe une relation d'ordre entre les catégories possibles. Par exemple le traitement 2 est plus puissant que le traitement 1 (e.g. doses différentes). 
 
 ```{r exo6, exercise=TRUE, exercise.setup="exo5" }
-ttmt <- factor(ttmt, ordered = TRUE)
+ttmt <- factor(ttmt, levels = c("cont", "hcq", "dex"), ordered = TRUE)
 ttmt
 ```
 
 ```{r exo6b1,  echo=FALSE }
 learnr::question("Lorsqu'on imprime l'objet ttmt, comment R indique-t-il qu'il s'agit d'une variable catégorielle ordinale  ?",
-  answer("Il indique 'Levels: dex < hcq < cont' sur la première ligne"),
-  answer("Il indique 'Levels: dex < hcq < cont' sur la dernière ligne", correct = TRUE),
+  answer("Il indique 'Levels: cont < hcq < dex' sur la première ligne"),
+  answer("Il indique 'Levels: cont < hcq < dex' sur la dernière ligne", correct = TRUE),
   allow_retry = TRUE 
 )
 ```
 
 ```{r exo6b0,  echo=FALSE }
-learnr::question("A quoi correspond le '>' dans  Levels: dex < hcq < cont' ?",
+learnr::question("A quoi correspond le '<' dans  Levels: cont < hcq < dex' ?",
   answer("Il indique que les modalités peuvent être classées dans un certain ordre naturel permettant une comparaison.", correct = TRUE),
   answer("Il permet de séparer n'a pas de sens."),
   answer("Il indique que les modalités ne peuvent pas être classées."),
