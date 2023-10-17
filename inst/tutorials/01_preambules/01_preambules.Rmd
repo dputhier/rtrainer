@@ -123,7 +123,6 @@ https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
             background-color: #EEEEFF;
             color: #0000BB;
             font-size: 11px;
-            hidden=true;
 }
 </style>
 
