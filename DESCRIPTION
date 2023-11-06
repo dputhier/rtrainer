@@ -12,7 +12,9 @@ Imports:
     bioseq,
     data.table,
     palmerpenguins,
-    ggthemes
+    ggthemes,
+    png,
+    sortable
 Collate: utils.R datasets_doc.R extract_text.R
 License: MIT + file LICENSE
 Encoding: UTF-8
