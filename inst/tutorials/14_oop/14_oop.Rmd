@@ -1,0 +1,496 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "Programmation orientée objet dans R"
+output:
+  learnr::tutorial:
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+
+## Introduction aux Systèmes de Classes dans R
+
+Les **systèmes de classes** sont un élément fondamental de la **programmation orientée objet en R**. Ils permettent de **créer des structures de données complexes** appelées objets, qui combinent **des attributs (variables)** et **des méthodes (fonctions)** pour **représenter des entités du monde réel de manière modulaire**. En R, les deux principaux systèmes de classes sont **S3 et S4**, chacun ayant ses propres caractéristiques et conventions. Dans ce cours nous allons nous intéresser aux classes S4 dont l'utilisation est fréquente dans le cadre du projet **Bioconductor**, un ensemble de librairies de fonctions pour l'analyse de données biologiques.
+
+## Classes S4
+
+### Création d'une classe 'single_cell'
+
+Ci-dessous on donne l'exemple pour implémenter une classe single_cell permettant de stocker une matrice d'expression génique, des métadonnées sur les cellules (un `data.frame`), des informations sur les gènes (un `data.frame`) et une liste contenant des informations libres sur l'expérience:
+
+```{r single_cell, exercise=TRUE}
+# Définir la classe S4 "single_cell"
+setClass(
+  Class = "single_cell",
+  representation(
+    expression_matrix = "matrix",
+    cell_metadata = "data.frame",
+    gene_information = "data.frame",
+    exp_info="list"
+  )
+)
+```
+
+### Définition de la méthode constructeur.
+
+En programmation orientée objet (POO), **une méthode** est une **fonction associée à une classe**. Elle définit le **comportement ou les actions que les objets de cette classe peuvent effectuer**. Les méthodes sont appelées sur des objets pour réaliser des opérations spécifiques.
+
+La méthode "initialize" est une méthode spéciale dans R, souvent appelée **méthode constructeur**. Elle est utilisée pour **initialiser un objet de la classe lors de sa création**. Plus précisément, son but est de **configurer ou d'attribuer des valeurs initiales aux attributs de l'objet**, de manière à ce que l'objet soit prêt à être utilisé dans votre application. Dans le cas de la classe "single_cell" que vous avez définie, la méthode `initialize()` est responsable de l'initialisation des attributs de la classe.
+
+**NB**: la méthode `initialize()` attend un argument nommé `.Object` (*cf* section *Usage* `?summary`).
+
+```{r initialize, exercise=TRUE, exercise.setup="single_cell", exercise.lines=20}
+  # Créer un constructeur pour la classe "single_cell"
+setMethod("initialize", 
+          signature(.Object = "single_cell"),
+  function(.Object, 
+           expression_matrix=matrix(), 
+           cell_metadata=data.frame(), 
+           gene_information=data.frame(),
+           exp_info=list(author=NULL, date=NULL, laboratory=NULL)) {
+    
+    .Object@expression_matrix <- expression_matrix
+     colnames(.Object@expression_matrix) <- cell_data$cell_id
+     rownames(.Object@expression_matrix) <- gene_information$cell_id
+    .Object@cell_metadata <- cell_metadata
+    .Object@gene_information <- gene_information
+    .Object@exp_info <- exp_info
+    
+    return(.Object)
+  }
+)
+```
+
+## Création d'une instance
+
+### Création d'une instance de la classe 'single_cell'
+
+Soit les données suivantes (matrice `m`, data.frame `cell_data`, data.frame `g_info`):
+
+```{r scdata, exercise=TRUE, exercise.setup="initialize", exercise.lines=16}
+set.seed(123)
+m <- matrix(rnorm(200), 
+            nrow = 20, 
+            ncol = 10)
+
+cell_data <- data.frame(cell_id = 1:10, 
+                        cell_pop = 1:10, 
+                        sample_type = sample(c("A", "B"), 10, replace=TRUE))
+
+g_info <- data.frame(gene_id = 1:20, 
+                     gene_name = letters[1:20])
+
+exp_info <- list(author="D. Puthier", 
+                 date="Tue Nov  7 09:29:10 2023", 
+                 laboratory="TAGC")
+```
+
+Nous allons avec le code suivant les stocker dans un objet de la classe 'single_cell'. On dit que l'objet sc_data est **une instance de la classe 'single_cell'**. 
+
+```{r new, exercise=TRUE, exercise.setup="scdata"}
+sc_data <- new("single_cell",
+  expression_matrix = m,
+  cell_metadata = cell_data,
+  gene_information = g_info,
+  exp_info=exp_info
+)
+```
+
+Pour l'instant quand on appelle l'objet, il nous montre tout ce qu'il contient. Si les données sont volumineuses, ce n'est pas pratique. Nous redéfinirons donc la méthode `show()`.
+
+```{r showme, exercise=TRUE, exercise.setup="new"}
+sc_data
+```
+
+## Définition de méthodes génériques
+
+### Définition de la méthode 'show()'
+
+Un certain nombre de méthodes sont dites génériques. Ces méthodes existent par défaut dans le langage R (e.g. `ncol()`, `nrow()`, `dim()`, `summary()`, `summary()`, `show()`, `[`...) et sont définis pour de très nombreux objets. De la même manière, nous pouvons les redéfinir pour notre objet 'single_cell'.
+La méthode `show()` est la méthode dite de "représentation". Elle permet de définir un message de présentation lorsqu'un objet de classe 'single_cell' est appelé (*i.e* on tape son nom dans le terminal et on tape entrée). Cette fonction existe pour tous les objets mais nous la redéfinissons ici pour notre objet 'single_cell'. 
+
+**NB**: par défaut, cette fonction attend un argument nommé `objet` (*cf* `?show`).
+
+```{r show, exercise=TRUE, exercise.setup="new"}
+
+# Définissons la méthode générique `show()`
+setMethod("show", 
+          signature(object = "single_cell"),
+  function(object) {
+    
+    nr <- nrow(object@expression_matrix)
+    nc <- ncol(object@expression_matrix)
+    
+    cat("A single cell object with:\n")
+    cat(paste0("\t- ", nr, " genes\n"))
+     cat(paste0("\t- ", nc, " samples"))  
+  }
+)
+
+```
+
+Lorsque cet objet est appelé, il se présente via sa méthode 'show':
+
+```{r showcall, exercise=TRUE, exercise.setup="show"}
+sc_data
+```
+
+### Définition de ncol() et nrow()
+
+<div class="exo">
+
+Définissez les deux méthodes `ncol()` et `nrow()` qui renvoie respectivement le nombre de lignes et le nombre de colonnes de la matrice `expression_matrix`d'un objet 'single_cell'. Vous pourrez vous appuyer sur le code proposé ci-dessous:
+
+**NB**: `ncol()` sont des fonctions génériques dont le seul argument est `x` (*cf* `?ncol`)
+
+```{r ncolnrow, exercise=TRUE, exercise.setup="show", exercise.lines=15}
+setMethod("ncol", 
+          signature(x = "single_cell"),
+  function(x) {
+
+  }
+)
+```
+
+```{r ncolnrow-solution}
+setMethod("ncol", 
+          signature(x = "single_cell"),
+  function(x) {
+    return(ncol(x@expression_matrix))
+  }
+)
+
+setMethod("nrow", 
+          signature(x = "single_cell"),
+  function(x) {
+    return(nrow(x@expression_matrix))
+  }
+)
+```
+
+```{r ncolnrow-check}
+
+gradethis::grade_result_strict(
+  pass_if(~ nrow(sc_data) == 20),
+  pass_if(~ ncol(sc_data) == 10)
+)
+```
+</div>
+
+### Définition de summary()
+
+<div class="exo">
+
+Définissez la méthode générique `summary()` qui permet d'afficher un résumé numérique d'un objet. La méthode `summary()` attend 'objet' comme argument (`?summary`). Ici la méthode devra renvoyer la moyenne des colonnes de l'attribut 'expression_matrix'.
+
+```{r summary, exercise=TRUE, exercise.setup="show", exercise.lines=15}
+
+```
+
+```{r summary-solution }
+setMethod("summary", 
+          signature(object = "single_cell"),
+  function(object) {
+    col_means <- colMeans(object@expression_matrix)
+    names(col_means) <- colnames(object@expression_matrix)
+    return(col_means)
+  }
+)
+```
+
+```{r summary-check}
+gradethis::grade_result_strict(
+  pass_if(~ nrow(sc_data) == 20),
+  pass_if(~ ncol(sc_data) == 10)
+)
+```
+</div>
+
+
+## Créer de nouvelles méthodes génériques
+
+### Méthode générique 'author()'
+
+Il est possible de créer de nouvelles méthodes non prédéfinies. Dans ce cas il faut tout d'abord créer une méthode générique puis la définir pour l'objet ciblé (ici 'single_cell'). Par exemple, ici on crée la fonction `author()`qui renvoit le nom de l'expérimentateur (si il est défini).
+
+```{r newgeneric, exercise=TRUE, exercise.setup="show", exercise.lines=15}
+setGeneric("author", function(object) {
+  standardGeneric("author")
+})
+
+setMethod("author", 
+          signature(object = "single_cell"),
+  function(object) {
+    if("author" %in% names(object@exp_info)){
+      return(object@exp_info$author)
+    }else{
+      return(NULL)
+    }
+  }
+)
+```
+
+### Méthode générique 'gene_name()'
+
+<div class="exo">
+
+Définissez une nouvelle fonction `gene_name()` qui renvoie la liste des noms de gènes (gene_name) de l'attribut  'gene_information'.
+
+
+```{r gene_name, exercise=TRUE, exercise.setup="show", exercise.lines=15}
+
+```
+
+```{r gene_name-solution}
+setGeneric("gene_name", function(object) {
+  standardGeneric("gene_name")
+})
+
+setMethod("gene_name", 
+          signature(object = "single_cell"),
+  function(object) {
+    return(object@gene_information$gene_name)
+  }
+)
+```
+
+```{r gene_name-check}
+gradethis::grade_result_strict(
+  pass_if(~ all(gene_name(sc_data) == letters[1:20]) == TRUE)
+)
+```
+</div>
+
+## On résume
+
+### Code complet pour la classe
+
+Pour résumer, le code suivant nous permet de créer un classe single_cell et des méthodes associées. 
+
+```{r summarize_all, exercise=TRUE, exercise.lines=90}
+# Définir la classe S4 "single_cell"
+setClass(
+  Class = "single_cell",
+  representation(
+    expression_matrix = "matrix",
+    cell_metadata = "data.frame",
+    gene_information = "data.frame",
+    exp_info="list"
+  )
+)
+
+  # Créer un constructeur pour la classe "single_cell"
+setMethod("initialize", 
+          signature(.Object = "single_cell"),
+  function(.Object, 
+           expression_matrix=matrix(), 
+           cell_metadata=data.frame(), 
+           gene_information=data.frame(),
+           exp_info=list(author=NULL, date=NULL, laboratory=NULL)) {
+    
+    .Object@expression_matrix <- expression_matrix
+     colnames(.Object@expression_matrix) <- cell_data$cell_id
+     rownames(.Object@expression_matrix) <- gene_information$cell_id
+    .Object@cell_metadata <- cell_metadata
+    .Object@gene_information <- gene_information
+    .Object@exp_info <- exp_info
+    
+    return(.Object)
+  }
+)
+
+# Définissons la méthode générique `show()`
+setMethod("show", 
+          signature(object = "single_cell"),
+  function(object) {
+    
+    nr <- nrow(object@expression_matrix)
+    nc <- ncol(object@expression_matrix)
+    
+    cat("A single cell object with:\n")
+    cat(paste0("\t- ", nr, " genes\n"))
+     cat(paste0("\t- ", nc, " samples"))  
+  }
+)
+
+setMethod("ncol", 
+          signature(x = "single_cell"),
+  function(x) {
+    return(ncol(x@expression_matrix))
+  }
+)
+
+setMethod("nrow", 
+          signature(x = "single_cell"),
+  function(x) {
+    return(nrow(x@expression_matrix))
+  }
+)
+
+setGeneric("author", function(object) {
+  standardGeneric("author")
+})
+
+setMethod("author", 
+          signature(object = "single_cell"),
+  function(object) {
+    if("author" %in% names(object@exp_info)){
+      return(object@exp_info$author)
+    }else{
+      return(NULL)
+    }
+  }
+)
+
+
+setGeneric("gene_name", function(object) {
+  standardGeneric("gene_name")
+})
+
+setMethod("gene_name", 
+          signature(object = "single_cell"),
+  function(object) {
+    return(object@gene_information$gene_name)
+  }
+)
+
+
+```
+
+### C'est fini
+
+Merci d'avoir suivi ce tutoriel.
+
+
