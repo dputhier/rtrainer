@@ -15,7 +15,7 @@ Imports:
     ggthemes,
     png,
     sortable
-Collate: utils.R datasets_doc.R extract_text.R
+Collate: utils.R datasets_doc.R extract_text.R check_tuto.R
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
