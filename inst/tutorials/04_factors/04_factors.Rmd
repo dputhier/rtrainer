@@ -472,10 +472,10 @@ Merci d'avoir suivi ce tutoriel.
 
 
 <!--
-```{r end, eval=TRUE, echo=FALSE } 
+  $$```{r end, eval=TRUE, echo=FALSE } 
  htmltools::tags$button("Retour au Menu", 
                         class="btn btn-primary",
                         onclick = "window.location.href='https://w3docs.com';"
                          )
- ```
+ $$```
  -->

@@ -1,0 +1,941 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "La librairie ggplot2 (session 4)"
+output:
+  learnr::tutorial:
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(ggplot2)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+## Facettes
+
+### Principe
+
+La librairie `ggplot2`propose un outils extrêmement puissant permettant de  diviser un graphique en panneaux (facettes) en fonction des niveaux de variables catégorielles spécifiées. L'utilisation **des facettes permet ainsi d'explorer les données en fonction d'un facteur** ou d'un groupe de facteurs donnés. Pour l'exemple suivant nous allons créer une matrice contenant les résultats d'un **test ELISA fictif** dans lequel on mesure à 2 temps différents (jours) les expériences réalisées par quatre opérateurs différents.
+
+
+```{r read_table, exercise=TRUE }
+
+url <- "https://zenodo.org/record/8210893/files/elisa_artificial.txt"
+elisa <- read.table(url, sep="\t", header=TRUE, row.names=1)
+head(elisa)
+
+```
+
+Il s'agit d'un jeu de données fictif d'un test ELISA utilisant des plaques de 96 puits. Huit plaques ELISA (12 colonnes / 8 lignes) ont été réalisée comme on peut le vérifier ici. 
+
+```{r table, exercise=TRUE, exercise.setup="read_table" }
+table(elisa$rows, elisa$columns)
+```
+
+Ces huit plaques ont été produites par 4 expérimentateurs à deux jours différents
+
+```{r table2, exercise=TRUE, exercise.setup="read_table" }
+table(elisa$user, elisa$day)
+```
+
+### La fonction facet_wrap()
+
+Il devient très facile avec la syntaxe de `ggplot2` de produire des histogrammes correspondant aux intensité de colorations obtenues dans chacun des puits (`value`) pour un expérimentateur donné (`user`). Dans l'exemple ci-dessous, vous noterez l'utilisation de la fonction `facet_wrap()`:
+
+- Cette fonction permet de créer **un arrangement de facettes unidimensionnel** que l'on peut éventuellement représenter sur plusieurs lignes à l'aide des arguments `nrow` et `ncol`.
+- L'argument `facets` passé à `facet_wrap()` doit être une formule (`formula`). Dans notre exemple, `facets = ~ user` peut se traduire par 'crée des panneaux graphiques en fonction de la valeur de la variable `user`. 
+
+```{r facet_wrap, exercise=TRUE, exercise.setup="read_table", fig.height=6, fig.width=6}
+p <- ggplot(data = elisa, 
+            mapping = aes(x=value))
+p + geom_histogram() + 
+    facet_wrap(facets = ~ user, ncol=2)
+```
+
+Dans un but exploratoire, on peut, de même, analyser les distributions des valeurs obtenues en fonction de l'opérateur (`user`) et du jour (`day`).
+
+```{r facet_wrap2, exercise=TRUE, exercise.setup="read_table", fig.height=8, fig.width=6}
+p <- ggplot(data = elisa, 
+            mapping = aes(x=value))
+p + geom_histogram() + 
+    facet_wrap(facets = ~ user + day, ncol=2)
+```
+
+<div class="exo">
+
+- Affichez les densité des distributions de `value` en facettes en fonction de l'expérimentateur et du jour.
+
+```{r userday_dens, exercise=TRUE, echo=FALSE, fig.height=8, fig.width=6, exercise.setup="read_table"}
+
+```
+
+```{r userday_dens-solution}
+p <- ggplot(data = elisa, 
+            mapping = aes(x=value, fill=user))
+p + geom_density(color=NA) + 
+    facet_wrap(facets = ~ user + day, ncol=2)
+```
+</div>
+
+### La fonction facet_grid()
+
+Etant donné que chaque utilisateur à réalisé une expérience ELISA le lundi et le vendredi ou peut choisir une **représentation bidimensionnelle en facettes** avec `facet_grid()` (une grille/matrice de facettes). Notez que l'argument `facets` est ici positionné sur `user ~ day` ce qui indique que `user` sera en lignes et `day` en colonnes.
+
+```{r facet_grid, exercise=TRUE, exercise.setup="read_table" }
+p <- ggplot(data = elisa, 
+            mapping = aes(x=value, fill=user))
+p + geom_histogram() + 
+    facet_grid(facets = user ~ day) +
+    scale_fill_manual(values=c("#1B9E77", "#D95F02", "#7570B3", "#E7298A"))
+```
+
+<div class="exo">
+
+- Affichez les boites à moustaches (horizontaux avec `coord_flip()`) correspondant aux distributions  de la variable `value` pour chaque utilisateur en créant un facettage en fonction du jour.
+
+```{r boxplotfacet_show, echo=FALSE, fig.height=6, fig.width=6}
+url <- "https://zenodo.org/record/8210893/files/elisa_artificial.txt"
+elisa <- read.table(url, sep="\t", header=TRUE, row.names=1)
+p <- ggplot(data = elisa, 
+            mapping = aes(x=user, y=value, fill=user))
+p + geom_boxplot() + coord_flip() +
+    facet_wrap(facets = ~ day, ncol=2)
+```
+
+```{r boxplotfacet, exercise=TRUE, echo=FALSE, fig.height=6, fig.width=6, exercise.setup="read_table"}
+
+```
+
+```{r boxplotfacet-solution}
+p <- ggplot(data = elisa, 
+            mapping = aes(x=user, y=value, fill=user))
+p + geom_boxplot() + coord_flip() +
+    facet_wrap(facets = ~ day, ncol=2)
+```
+</div>
+
+## Exemple d'application: **heatmap**
+
+A partir des données numériques chargées dans R, on peut être intéressé à reproduire une image code-couleur (**heatmap**) des plaques ELISA produites par les différents utilisateurs. 
+
+- On dispose des coordonnées `x` (`elisa$rows`) et `y` (`elisa$columns`) des puits dans la plaque.  
+- On associera à `fill`, qui est données par `value`.
+
+On peut donc utiliser *geom_raster()*  pour représenter une plaque ELISA et partitionner le graphique en fonction de `user`et `day`.
+
+```{r geom_raster, exercise=TRUE, exercise.setup="read_table", fig.height=8, fig.width=6 }
+p <- ggplot(data = elisa, 
+            mapping = aes(x=columns, y=rows, fill=value))
+p + geom_raster() + 
+  facet_grid(facets = user ~ day) 
+```
+
+Pour `geom_raster()`qui représente ici **la variable numérique continue `value`** on utilisera pour le contrôle des couleurs l'une des fonctions suivantes:
+
+- `scale_fill_gradient()` : Cette fonction est utilisée pour spécifier les couleurs d'un remplissage (fill) de manière graduelle dans un graphique, en utilisant une seule couleur de début et une seule couleur de fin. 
+
+- scale_fill_gradient2() : Cette fonction est similaire à scale_fill_gradient(), mais elle permet de spécifier une couleur supplémentaire en plus de la couleur de début et de fin. Cette couleur supplémentaires sert à définir un point médian ou une valeur centrale dans l'échelle de couleurs, créant ainsi un gradient bicolore.
+
+- scale_fill_gradientn() : Cette fonction est utilisée pour spécifier un gradient de remplissage avec plusieurs couleurs personnalisées. Vous pouvez spécifier les couleurs que vous souhaitez utiliser dans l'échelle de couleurs en fonction de vos données et de vos préférences. 
+
+```{r scale_fill_gradientn, exercise=TRUE, exercise.setup="read_table" }
+p <- ggplot(data = elisa, 
+            mapping = aes(x=columns, y=rows, fill=value))
+p + geom_raster() + 
+  facet_grid(facets = user ~ day) +
+  scale_fill_gradientn(colours = c("#0000BF", "#0000FF", 
+                                   "#0080FF", "#00FFFF", 
+                                   "#40FFBF", "#80FF80", 
+                                   "#BFFF40", "#FFFF00", 
+                                   "#FF8000", "#FF0000", 
+                                   "#BF0000"))
+```
+
+### Ordonner les lignes/colonnes
+
+Vous aurez peut être noter que les lignes ne sont pas idéalement ordonnées. On souhaiterait plutôt que l'ordre suivant apparaîsse: 'cont', 'a', 'b', 'c'...
+
+Dans `ggplot2` pour ordonner les facteurs il faut créer des variables ordinales. Cela peut se faire comme nous l'avons vu précédemment avec l'argument `ordered=TRUE`de la fonction factor.
+
+<div class="exo">
+
+- Modifier le code suivant pour que les colonnes soient ordonnées
+
+```{r, echo=FALSE, fig.height=8, fig.width=6}
+url <- "https://zenodo.org/record/8210893/files/elisa_artificial.txt"
+elisa <- read.table(url, sep="\t", header=TRUE, row.names=1)
+
+elisa$rows <- factor(x = elisa$rows, ordered = T, levels=c('cont', letters[1:7]))
+p <- ggplot(data = elisa, 
+            mapping = aes(x=columns, 
+                          y=rows, 
+                          fill=value))
+p <- p + geom_raster() + 
+          facet_grid(facets = user ~ day) +
+          scale_fill_gradientn(colours = c("#0000BF", "#0000FF", 
+                                           "#0080FF", "#00FFFF", 
+                                           "#40FFBF", "#80FF80", 
+                                           "#BFFF40", "#FFFF00", 
+                                           "#FF8000", "#FF0000", 
+                                           "#BF0000"))
+print(p)
+```
+
+```{r orderedfactor, exercise=TRUE, exercise.setup="read_table", fig.height=8, fig.width=6}
+___
+p <- ggplot(data = elisa, 
+            mapping = aes(x=columns, y=rows, fill=value))
+p + geom_raster() + 
+  facet_grid(facets = user ~ day) +
+  scale_fill_gradientn(colours = c("#0000BF", "#0000FF", 
+                                   "#0080FF", "#00FFFF", 
+                                   "#40FFBF", "#80FF80", 
+                                   "#BFFF40", "#FFFF00", 
+                                   "#FF8000", "#FF0000", 
+                                   "#BF0000"))
+```
+
+```{r orderedfactor-solution}
+elisa$rows <- factor(x = elisa$rows, ordered = T, levels=c('cont', letters[1:7]))
+p <- ggplot(data = elisa, 
+            mapping = aes(x=columns, 
+                          y=rows, 
+                          fill=value))
+p <- p + geom_raster() + 
+          facet_grid(facets = user ~ day) +
+          scale_fill_gradientn(colours = c("#0000BF", "#0000FF", 
+                                           "#0080FF", "#00FFFF", 
+                                           "#40FFBF", "#80FF80", 
+                                           "#BFFF40", "#FFFF00", 
+                                           "#FF8000", "#FF0000", 
+                                           "#BF0000"))
+print(p)
+```
+
+```{r orderedfactor-check}
+
+gradethis::grade_result_strict(
+  pass_if(~ levels(p$data$rows)[1] == "cont"),
+  pass_if(~ max(ggplot2::ggplot_build(p)$data[[1]]$group) == 96)
+)
+```
+</div>
+
+## Thèmes graphiques prédéfinis
+
+### Présentation des thèmes
+
+Il existe de nombreuses manière de paramétrer l'aspect visuel général du graphique. En première intension on peut appliquer un **thème prédéfini** qui agit sur différents paramètres du graphique (polices, tailles des charactères, style des axes, couleur de fond, contraste...). Il existe une dizaine de thèmes préintégrés à ggplot2. Les noms de ces fonctions de paramétrages globaux commencent généralement par 'theme_'. 
+
+```{r}
+apropos("^theme_")
+```
+
+Par exemple:
+
+- `theme_gray()`: Le thème signature de ggplot2 avec un fond gris et des lignes de grille blanches, conçu pour mettre les données en avant tout en facilitant les comparaisons.
+
+```{r, echo=FALSE, fig.width=3, fig.height=3}
+set.seed(123)
+x <- rnorm(40)
+y <- x + rnorm(40, sd=0.25)
+df <- data.frame(x = x, y = y)
+base <- ggplot(df, aes(x, y)) + geom_point()
+base + theme_gray() + ggtitle("theme_gray()")
+```
+
+- `theme_bw()`: Le thème classique de ggplot2 avec un arrière-plan gris et des lignes de grille blanches, conçu pour mettre les données en avant tout en facilitant les comparaisons. Peut être mieux adapté aux présentations affichées à l'aide d'un projecteur.
+
+```{r, echo=FALSE, fig.width=3, fig.height=3}
+set.seed(123)
+x <- rnorm(40)
+y <- x + rnorm(40, sd=0.25)
+df <- data.frame(x = x, y = y)
+base <- ggplot(df, aes(x, y)) + geom_point()
+base + theme_bw() + ggtitle("theme_bw()")
+```
+
+- `theme_linedraw()`: Un thème avec uniquement des lignes noires de différentes largeurs sur fond blanc, rappelant un dessin au trait. L'objectif est similaire à celui de `theme_bw()`. 
+
+```{r, echo=FALSE, fig.width=3, fig.height=3}
+set.seed(123)
+x <- rnorm(40)
+y <- x + rnorm(40, sd=0.25)
+df <- data.frame(x = x, y = y)
+base <- ggplot(df, aes(x, y)) + geom_point()
+base + theme_linedraw() + ggtitle("theme_linedraw()")
+```
+
+- `theme_void()`: Un thème totalement vide.
+
+```{r, echo=FALSE, fig.width=3, fig.height=3}
+set.seed(123)
+x <- rnorm(40)
+y <- x + rnorm(40, sd=0.25)
+df <- data.frame(x = x, y = y)
+base <- ggplot(df, aes(x, y)) + geom_point()
+base + theme_void() + ggtitle("theme_void()")
+```
+
+- `theme_minimal()`: un thème totalement épuré.
+
+```{r, echo=FALSE, fig.width=3, fig.height=3}
+set.seed(123)
+x <- rnorm(40)
+y <- x + rnorm(40, sd=0.25)
+df <- data.frame(x = x, y = y)
+base <- ggplot(df, aes(x, y)) + geom_point()
+base + theme_minimal() + ggtitle("theme_minimal()")
+```
+
+- `theme_dark()` dont le nom est très parlant...
+
+```{r, echo=FALSE, fig.width=3, fig.height=3}
+set.seed(123)
+x <- rnorm(40)
+y <- x + rnorm(40, sd=0.25)
+df <- data.frame(x = x, y = y)
+base <- ggplot(df, aes(x, y)) + geom_point()
+base + theme_dark() + ggtitle("theme_dark()")
+```
+
+- `theme_classic()`, `theme_test()`, `theme_dark()`, `theme_light()`...
+
+D'autres thèmes prédéfinis sont disponibles dans la librairie [ggthemes](https://rpubs.com/Mentors_Ubiqum/ggthemes_1).
+
+- Par exemple `theme_excel()` pour les nostalgiques du tableur Microsoft... L'aide indique: "Thème permettant de reproduire l'affreuse monstruosité qu'était l'ancien graphique Excel à fond gris. Ne l'utilisez jamais." :). A noter que vous pouvez aussi bénéficier de l'hideuse palette excel (`scale_colour_excel()`). Un must... :)
+
+```{r, echo=FALSE, fig.width=3, fig.height=3}
+library(ggthemes)
+set.seed(123)
+x <- rnorm(40)
+y <- x + rnorm(40, sd=0.25)
+df <- data.frame(x = x, y = y)
+base <- ggplot(df, aes(x, y)) + geom_point()
+base + ggthemes::theme_excel() + ggtitle("theme_excel()")
+```
+
+- Ou encore `theme_wsj()` pour simuler un diagramme du Wall Street Journal...
+
+```{r, echo=FALSE, fig.width=3, fig.height=3}
+library(ggthemes)
+set.seed(123)
+x <- rnorm(40)
+y <- x + rnorm(40, sd=0.25)
+df <- data.frame(x = x, y = y)
+base <- ggplot(df, aes(x, y)) + geom_point()
+base + ggthemes::theme_wsj() + ggtitle("theme_wsj()")
+```
+
+### Exercice
+
+<div class="exo">
+
+- Essayez successivement d'ajouter l'un des thèmes suivant au diagramme $p$:  `theme_bw()`, `theme_classic()`, `theme_dark()`, `theme_gray()`, `theme_grey()`, `theme_light()`, `theme_minimal()`, `theme_void()`, `ggthemes::theme_wsj()`, `ggthemes::theme_excel()`, `ggthemes::theme_excel_new()`, `ggthemes::theme_economist()`...
+
+
+```{r preppenguins, echo=FALSE}
+library(palmerpenguins)
+data("penguins")
+penguins <- na.omit(penguins)
+
+# Créer une palette de couleurs personnalisée
+palette_couleurs <- c("dodgerblue", "darkorange", "forestgreen")
+
+# Créer le bubble plot coloré
+p <- ggplot(penguins, aes(x = flipper_length_mm, y = bill_length_mm, size = body_mass_g, color = species)) +
+    geom_point(alpha = 0.7) +
+    scale_color_manual(values = palette_couleurs) +
+    labs(x = "Longueur de la nageoire (mm)", 
+         y = "Longueur du bec (mm)", 
+         color = "Espèce", 
+         size = "Masse corporelle (g)") 
+```
+
+```{r theme2, exercise=TRUE, exercise.setup="preppenguins" }
+p <- p + theme_bw()
+print(p)
+```
+
+```{r theme2-solution}
+p <- p + theme_bw()
+print(p)
+p <- p + theme_classic()
+print(p)
+p <- p + theme_dark()
+print(p)
+p <- p + theme_light()
+print(p)
+p <- p + theme_minimal()
+print(p)
+p <- p + ggthemes::theme_wsj()
+print(p)
+p <- p + ggthemes::theme_excel()
+print(p)
+p <- p + ggthemes::theme_excel_new()
+print(p)
+p <- p + ggthemes::theme_economist()
+print(p)
+#...
+```
+
+</div>
+
+## Paramétrage fin des graphiques
+
+### Les fonctions theme() et element_*()
+
+Au delà de l'application de thèmes prédéfinis (comme `theme_minimal()` ou `theme_bw()`) on pourra personnaliser chaque aspect du graphique selon les besoins. 
+
+- La fonction `theme()` offre une **flexibilité maximale pour personnaliser l'apparence de vos graphiques**. Par exemple, vous pouvez **spécifier la police, la taille de la police et la couleur du texte des titres d'axe et des légendes, changer le fond du graphique** pour s'adapter à un thème sombre ou clair... 
+
+- **Les fonctions `element_*()` (notamment `element_text()`, `element_line()`, `element_rect()`, `element_blank()`...)** sont utilisées **en combinaison avec `theme()`** pour contrôler des éléments spécifiques du graphique.
+
+- La fonction **`element_text()` est utilisée pour définir la police, la taille de la police et la couleur d'un élément textuel**
+
+- La fonction **`element_line()` permet de personnaliser les lignes du graphique, comme l'épaisseur de lignes ou le type de traits**. 
+
+- La fonction **`element_rect()` permet de personnaliser des éléments de type boîtes/rectangles**. 
+
+- Vous pouvez utiliser **`element_blank()` pour supprimer complètement certains éléments** du graphique si nécessaire.
+
+<div class="exo">
+
+- Placez votre curseur entre les deux parenthèses et appuyez sur la toucher <TAB> de votre clavier pour demander l'ensemble des arguments de `theme()`. Cela permet de révéler l'ensemble des éléments du graphique qui sont modifiables (ils sont nombreux...).
+
+```{r theme, exercise=TRUE }
+theme()
+```
+
+```{r theme-solution}
+# rect
+# text
+# title
+# aspect.ratio
+# axis.title
+# axis.title.x
+# axis.title.x.top
+# axis.title.x.bottom
+# axis.title.y
+# axis.title.y.left
+# axis.title.y.right
+# axis.text
+# axis.text.x
+# axis.text.x.top
+# axis.text.x.bottom
+# axis.text.y
+# axis.text.y.left
+# axis.text.y.right
+# axis.ticks
+# axis.ticks.x
+# axis.ticks.x.top
+# axis.ticks.x.bottom
+# axis.ticks.y
+# axis.ticks.y.left
+# axis.ticks.y.right
+# axis.ticks.length
+# axis.ticks.length.x
+# axis.ticks.length.x.top
+# axis.ticks.length.x.bottom
+# axis.ticks.length.y
+# axis.ticks.length.y.left
+# axis.ticks.length.y.right
+# axis.line
+# axis.line.x
+# axis.line.x.top
+# axis.line.x.bottom
+# axis.line.y
+# axis.line.y.left
+# axis.line.y.right
+# legend.background
+# legend.margin
+# legend.spacing
+# legend.spacing.x
+# legend.spacing.y
+# legend.key
+# legend.key.size
+# legend.key.height
+# legend.key.width
+# legend.text
+# legend.text.align
+# legend.title
+# legend.title.align
+# legend.position
+# legend.direction
+# legend.justification
+# legend.box
+# legend.box.just
+# legend.box.margin
+# legend.box.background
+# legend.box.spacing
+# panel.background
+# panel.border
+# panel.spacing
+# panel.spacing.x
+# panel.spacing.y
+# panel.grid
+# panel.grid.major
+# panel.grid.minor
+# panel.grid.major.x
+# panel.grid.major.y
+# panel.grid.minor.x
+# panel.grid.minor.y
+# panel.ontop
+# plot.background
+# plot.title
+# plot.title.position
+# plot.subtitle
+# plot.caption
+# plot.caption.position
+# plot.tag
+# plot.tag.position
+# plot.margin
+# strip.background
+# strip.background.x
+# strip.background.y
+# strip.clip
+# strip.placement
+# strip.text
+# strip.text.x
+# strip.text.x.bottom
+# strip.text.x.top
+# strip.text.y
+# strip.text.y.left
+# strip.text.y.right
+# strip.switch.pad.grid
+# strip.switch.pad.wrap
+```
+
+</div>
+
+### Exemples
+
+Ci-dessous on paramètre différents éléments d'un graphique (avec plus ou moins de bon goût...). Vous pourrez constater qu'il est assez évident de savoir selon le contexte si l'on doit paramètrer avec `element_text()`, `element_line()` ou `element_rect()`. Vous noterez que les noms des arguments sont redondants entre ces trois fonctions (color, size...) ce qui les rend facile d'utilisation.
+
+```{r prepelisaraster}
+url <- "https://zenodo.org/record/8210893/files/elisa_artificial.txt"
+elisa <- read.table(url, sep="\t", header=TRUE, row.names=1)
+
+elisa$rows <- factor(x = elisa$rows, ordered = T, levels=c('cont', letters[1:7]))
+p <- ggplot(data = elisa, 
+            mapping = aes(x=columns, 
+                          y=rows, 
+                          fill=value))
+p <- p + geom_raster() + 
+          facet_grid(facets = user ~ day) +
+          scale_fill_gradientn(colours = c("#0000BF", "#0000FF", 
+                                           "#0080FF", "#00FFFF", 
+                                           "#40FFBF", "#80FF80", 
+                                           "#BFFF40", "#FFFF00", 
+                                           "#FF8000", "#FF0000", 
+                                           "#BF0000"))
+print(p)
+```
+
+```{r themeexample, exercise=TRUE, exercise.setup="prepelisaraster" }
+p <- p + theme_minimal()
+p <- p + theme(strip.background = element_rect(color="red", fill="orange"),  
+               strip.text       = element_text(color="white", face="bold"),
+               axis.text.x      = element_text(color="blue", size=7, angle=45, family = "Helvetica", face="bold"),
+               axis.text.y      = element_text(color="darkviolet", size=10, family = "Times", face="bold"),
+               axis.ticks.x     = element_line(color="brown", linewidth=1),
+               axis.ticks.y     = element_line(color="darkturquoise", linewidth=1),
+               plot.background  = element_rect(fill="paleturquoise"),  
+              )
+#...
+```
+
+### Exercices
+
+<div class="exo">
+
+Dans la diagramme suivant :
+
+- Modifiez la police de caractère ('family="Times"') du titre du graphique.
+- Modifiez l'angle du texte de l'axe des x (angle=45°).
+- Modifiez la couleur de l'arrière plan (*fill*).
+- Eliminer les lignes secondaires de la grille (avec *element_blank()*).
+- Ajouter une ligne de contour aux boîtes contenant les légendes. 
+
+```{r themingexo1, exercise=TRUE, exercise.setup="preppenguins" }
+p <- p + ggtitle("Longeurs des nageoires vs becs") +
+         theme(plot.title = ___, 
+               axis.text.x = ___,
+               plot.background = ___, 
+               panel.grid.minor = ___,  
+               legend.background = element_blank(),
+               legend.box.background = ___
+           )
+print(p)
+```
+
+```{r themingexo1-solution}
+p <- p + ggtitle("Longeurs des nageoires vs becs") +
+               theme(plot.title  = element_text(family="Times"), 
+               axis.text.x = element_text(angle=45),
+               plot.background = element_rect(fill="#EEDDAA"), 
+               panel.grid.minor = element_blank(),  
+               legend.background = element_blank(),
+               legend.box.background = element_rect(color = "black", size=1)
+           )
+print(p)
+```
+
+</div>
+
+## Exercices
+
+### Le jeu de données
+
+- Ici, notre jeu de données contient plusieurs informations relatives à la quasi totalité des transcrits connus dans le génome humain (un par ligne). Elles ont été produites au format *tsv* en utilisant le logiciel *pygtftk* (v1.6.3) à partir d'un fichier GTF téléchargé depuis ensembl (*genome version GRCh38, release 92*). 
+
+Le fichier étant un peu volumineux, nous allons le téléchargez et le placer dans votre dossier utilisateur afin de ne pas avoir à le re-télécharger par la suite.
+
+```{r prepare_tx_human, exercise=TRUE}
+options(timeout=10000)
+dir_path <- file.path(fs::path_home(), ".rtrainer")
+dir.create(dir_path, showWarnings = FALSE)
+## L'url pointant sur le jeu de données.
+url <- "https://zenodo.org/record/8211383/files/Homo_sapiens.GRCh38.110.subset_2.tsv.gz"
+# Téléchargement 
+file_path <- file.path(dir_path, "Homo_sapiens.GRCh38.110.subset_2.tsv.gz")
+if(!file.exists(file_path)) download.file(url=url, destfile = file_path, quiet = TRUE)
+```
+
+Nous allons charger le  fichier dans R avec la fonction `read.table()`. On en profite pour associer la colonne `transcript_id` aux noms des lignes (`row.names=6`).
+
+```{r load_tx_info, exercise=TRUE, exercise.setup="prepare_tx_human" }
+tx_info <- read.table(file=file_path, header=TRUE, sep="\t", row.names=6)
+dim(tx_info)
+```
+
+Voilà notre jeu de données.
+
+```{r head_tx_info, exercise=TRUE, exercise.setup="load_tx_info" }
+head(tx_info)
+```
+
+### Nombre de transcripts par chromosome
+
+<div class="exo">
+
+Réalisez un diagramme avec `geom_bar()` montrant le nombre de transcrits différents par chromosome (`seqid`). 
+- Utilisez ` + coord_flip()` pour forcer la rotation du diagramme.
+- Ordonnez les chromosomes de la manière suivante: 1, 2, 3 .. 22, X, Y, MT. 
+
+```{r nbgenes, exercise=TRUE , exercise.setup="load_tx_info"}
+___
+p <- ggplot(data=tx_info, ___) +
+  ___
+```
+
+```{r nbgenes-solution}
+tx_info$seqid <- factor(tx_info$seqid, 
+                        levels = c(as.character(1:22), "X", "Y", "MT"), 
+                        ordered = TRUE)
+p <- ggplot(data=tx_info, 
+            mapping=aes(x=seqid)) + 
+  geom_bar() + coord_flip() +
+  theme_bw()
+print(p)
+```
+
+```{r nbgenes-check }
+
+gradethis::grade_result_strict(
+  pass_if(~ as.character(p$mapping$x)[2] == "seqid"),
+  pass_if(~ p$labels$y == "seqid"),
+  pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBar")
+)
+```
+</div>
+
+### Taille des transcrits
+
+<div class="exo">
+
+- Dans le `data.frame` `tx_info`, créez un nouvelle colonne `tx_genomic_size_log10` contenant la variable  `tx_genomic_size` convertie en logarithme base 10 (`log10()`). A l'aide d'histogrammes et de facettes, explorez la variable `tx_genomic_size_log10` (taille du transcript intron compris en logarithme base 10).  
+
+- Utilisez `geom_histogram()` et `facet_grid(gene_biotype~., scale="free_y")`.L'argument `scale="free_y"` permet d'avoir, pour chaque facette une échelle spécifique.
+- Paramétrez (`theme()`) convenablement la taille des éléments textuels et leurs orientation.
+ 
+```{r txgenomicsizeprep, echo=FALSE}
+options(timeout=10000)
+dir_path <- file.path(fs::path_home(), ".rtrainer")
+dir.create(dir_path, showWarnings = FALSE)
+## L'url pointant sur le jeu de données.
+url <- "https://zenodo.org/record/8211383/files/Homo_sapiens.GRCh38.110.subset_2.tsv.gz"
+# Téléchargement 
+file_path <- file.path(dir_path, "Homo_sapiens.GRCh38.110.subset_2.tsv.gz")
+if(!file.exists(file_path)) download.file(url=url, destfile = file_path, quiet = TRUE)
+tx_info <- read.table(file=file_path, header=TRUE, sep="\t", row.names=6)
+tx_info$tx_genomic_size_log10 <- log10(tx_info$tx_genomic_size)
+
+```
+
+```{r displaytxgenomicsize, echo=FALSE, fig.height=6, fig.width=4 }
+options(timeout=10000)
+dir_path <- file.path(fs::path_home(), ".rtrainer")
+dir.create(dir_path, showWarnings = FALSE)
+## L'url pointant sur le jeu de données.
+url <- "https://zenodo.org/record/8211383/files/Homo_sapiens.GRCh38.110.subset_2.tsv.gz"
+# Téléchargement 
+file_path <- file.path(dir_path, "Homo_sapiens.GRCh38.110.subset_2.tsv.gz")
+if(!file.exists(file_path)) download.file(url=url, destfile = file_path, quiet = TRUE)
+tx_info <- read.table(file=file_path, header=TRUE, sep="\t", row.names=6)
+tx_info$tx_genomic_size_log10 <- log10(tx_info$tx_genomic_size)
+p <- ggplot(data=tx_info, 
+            mapping=aes(x=tx_genomic_size_log10)) + 
+     geom_histogram(bins=100) +
+     facet_grid(gene_biotype~., scale="free_y") + 
+     labs(x="Taille génomique des transcrits (log10)") +
+     theme_bw() +
+     theme(panel.grid.minor = element_blank(), 
+           strip.text.y = element_text(angle=0, size=5), 
+           axis.text.y = element_text(size=5))
+print(p)
+```
+
+
+```{r txgenomicsize, exercise=TRUE , exercise.setup="txgenomicsizeprep"}
+
+```
+
+```{r txgenomicsize-solution}
+p <- ggplot(data=tx_info, 
+            mapping=aes(x=tx_genomic_size_log10)) + 
+     geom_histogram(bins=50) +
+     facet_grid(gene_biotype~., scale="free_y") + 
+     labs(x="Taille génomique des transcrits (log10)") +
+     theme_minimal() +
+     theme(panel.grid.minor = element_blank(), 
+           strip.text.y = element_text(angle=0, size=5), 
+           axis.text.y = element_text(size=5))
+     
+```
+
+```{r txgenomicsize-check }
+
+gradethis::grade_result_strict(
+  pass_if(~ length(levels(ggplot2::ggplot_build(p)$data[[1]]$PANEL)) == 12),
+  pass_if(~ p$labels$y == "count"),
+  pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBar")
+)
+```
+
+
+```{r q1, echo=FALSE }
+learnr::question("D'après la source disponible à [cette adresse](http://www.ensembl.org/info/genome/genebuild/biotypes.html), comment peut-on expliquer que la taille de la classe *processed pseudogene* soit inférieure à la classe *protein coding* ?",
+  answer("On pense que ces gènes ne possèdent pas d'UTR."),
+  answer("On pense que ces gènes on des exons plus courts."),
+  answer("On pense qu'ils résultent d'un ARN mature (donc sans introns) s'étant réinséré, après transcription inverse, dans le génome.", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+
+</div> 
+
+### Nombre d'exons
+
+Si les *processed pseudogene* n'ont plus d'introns, on ne devrait trouver qu'un seul exon...
+
+<div class="exo">
+
+Transformez la colonne `nb_exons` en logarithme et placez le résultat dans la colonne `nb_exons_log10`. Que pouvez-vous dire du nombre d'exons (`nb_exons_log10`) pour les transcrits en fonction du "gene_biotype" ? Utilisez un graphique de type *boxplot* ou *violin* pour présenter cette information.
+
+```{r nbexons, exercise=TRUE , exercise.setup="txgenomicsizeprep"}
+
+```
+
+```{r nbexons-solution}
+biotypes <- unique(tx_info$gene_biotype)
+palette <- setNames(rainbow(length(biotypes)), biotypes)
+tx_info$nb_exons_log10 <- log10(tx_info$nb_exons)
+p <- ggplot(data=tx_info, 
+            mapping=aes(x=gene_biotype, 
+                        y=nb_exons_log10,
+                        fill=gene_biotype)) + 
+     geom_boxplot() +
+     theme_minimal() + 
+     labs(y="Nombre d'exons (log10)") +
+     coord_flip() +
+     scale_fill_manual(values=palette) +
+     theme(legend.position = "none")
+     
+print(p)
+```
+
+```{r nbexons-check }
+gradethis::grade_result_strict(
+  pass_if(~ as.character(p$mapping$y)[2] == "nb_exons_log10"),
+  pass_if(~ as.character(p$mapping$x)[2] == "gene_biotype"),
+  pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBoxplot")
+  
+)
+```
+</div>
+
+### Distribution chromosomique des types de genes
+
+<div class="exo">
+
+- Produisez un diagramme à barres (`geom_bar`) montrant le nombre de transcrits de chaque classe gene_biotype sur chaque chromosome. Utilisez `geom_bar()` avec l'argument `position` fixé à `stack`, `dodge` ou `fill`. En fonction de cet argument, avez-vous le même sentiment sur la façon dont la distribution du biotype de gène à travers les chromosomes. Quels sont les avantages et les inconvénients de chaque représentation ? Que peut-on du nombre et des types de gènes présents sur le chromosome Y ?
+
+```{r distchrombiotypes, exercise=TRUE , exercise.setup="txgenomicsizeprep" }
+
+```
+
+```{r distchrombiotypes-solution}
+
+tx_info$nb_exons_log10 <- log10(tx_info$nb_exons)
+p <- ggplot(data=tx_info, 
+            mapping=aes(x=seqid, 
+                        fill=gene_biotype)) + 
+     geom_bar(position="fill") +
+     theme_minimal() + 
+     labs(y="Nombre", 
+          x="Chromosome") +
+     coord_flip() +
+     theme(legend.position = "bottom")
+     
+print(p)
+```
+
+```{r distchrombiotypes-check }
+gradethis::grade_result_strict(
+  pass_if(~ as.character(p$mapping$x)[2] == "seqid"),
+  pass_if(~ as.character(p$mapping$fill)[2] == "gene_biotype"),
+  pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBar")
+  
+)
+```
+</div>

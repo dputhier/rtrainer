@@ -238,6 +238,7 @@ get_aa_liste(aa=c("K", "R", "S"))
 Si cette fonction est appelé avec aa="43" (qui n'existe pas), alors elle s'arrête en renvoyant une erreur:
 
 ```{r get_aa_liste_test2, exercise=TRUE, exercise.setup="get_aa_liste"}
+## Uncomment to test
 get_aa_liste(aa="43")
 ```
 

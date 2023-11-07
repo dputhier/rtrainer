@@ -172,12 +172,10 @@ print(tmp_dir_path)
 Ou peut **créer, ensuite, le répertoire correspondant** avec la fonction `dir.create()`. Cette fonction est la fonction de référence permettant de créer un dossier étant donné un chemin fourni en entrée. 
 
 ```{r tempdir, exercise=TRUE, exercise.setup="tempdir_0" }
-dir.create(tmp_dir_path)
+if(!dir.exists(tmp_dir_path)){dir.create(tmp_dir_path)}
 ```
 
 **NB:** Ci-dessous, le répertoire est temporaire. Sous Linux il sera délété au prochain redémarrage de la machine (à moins que vous ne le délétiez avant). 
-
-
 
 ## La fonction dir()
 
@@ -334,7 +332,8 @@ dir_name <- file.path(tmp_dir_path, "all_projects", "project_1")
 fp <- file.path(dir_name, "file_1.txt")
 cat("Hello World", file=fp)
 dir(dir_name)
-file.show(fp)
+# Uncomment to show file content
+#file.show(fp)
 ```
 
 ## La fonction scan()

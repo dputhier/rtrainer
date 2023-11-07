@@ -236,7 +236,6 @@ x <- sample(c(1,2), size=10, replace=TRUE)
 x <- factor(x)
 levels(x) <- c('chat', 'hamster')
 x <- as.character(x)
-·
 # ou sur une seule...
 x <- as.character(factor(x, levels = c('chat', 'hamster')))
 ```

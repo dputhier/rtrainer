@@ -175,19 +175,24 @@ df_1
 
 - Créer un `data.frame` nommé `my_df` contenant les vecteurs et facteurs ci-dessous (les colonnes se nommeront "col_A", "col_B", "col_C" et "col_D" respectivement).
 
-```{r dataframe01, exercise=TRUE }
+```{r df1, exercise=TRUE}
 set.seed(123)
-a <- round(rnorm(10), 2)
-b <- 1:10
-c <- letters[1:10]
-d <- factor(sort(rep(c("M", "F"), 5)), ordered=TRUE)
+c_a <- round(rnorm(10), 2)
+c_b <- 1:10
+c_c <- letters[1:10]
+c_d <- factor(sort(rep(c("M", "F"), 5)), ordered=TRUE)
 ```
 
-```{r dataframe01-solution}
-my_df <- data.frame(col_A=a, col_B=b, col_C=c, col_D=d)
+```{r df1-solution}
+set.seed(123)
+c_a <- round(rnorm(10), 2)
+c_b <- 1:10
+c_c <- letters[1:10]
+c_d <- factor(sort(rep(c("M", "F"), 5)), ordered=TRUE)
+my_df <- data.frame(col_A=c_a, col_B=c_b, col_C=c_c, col_D=c_d)
 ```
 
-```{r dataframe01-check }
+```{r df1-check}
 gradethis::grade_result(
   pass_if(~ round(sum(my_df$col_A), 0) == 2),
   pass_if(~ round(sum(my_df$col_B), 55) == 2),
@@ -314,13 +319,13 @@ ChickWeight
 En utilisant l'indexation logique que nous avons vu sur les vecteurs et les matrices, on pourra donc écrire les choses suivantes pour sélectionner des lignes dans le `data.frame`:
 
 ```{r idx1, exercise=TRUE, setup.exercice="dataframe1"}
-ChickWeight[ChickWeight$weight > 400, ]
+ChickWeight[ChickWeight$weight > 300, ]
 ```
 
 On encore:
 
 ```{r idx2, exercise=TRUE, setup.exercice="dataframe1"}
-ChickWeight[ChickWeight$weight > 400 & chickwts$feed == "casein",  ]
+ChickWeight[ChickWeight$weight > 300 & ChickWeight$Diet == 2,  ]
 ```
 
 ## Ajouter des colonnes
