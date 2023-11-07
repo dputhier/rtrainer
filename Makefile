@@ -21,6 +21,8 @@ clean:
 	@rm -rf /tmp/dbfmcl; rm -rf *dbf_out.txt; rm -rf *mcl_out.txt  rm -rf ./rtrainer.Rcheck
 	@rm -f tests/testthat/Rplot*; rm -rf tests/testthat/_snaps
 	@rm -f *~
+	@rm -rf `ls -d inst/tutorials/*/*_files`
+	@rm -f inst/tutorials/*/*html
 
 check: clean
 	@rm -rf /tmp/rtrainer; mkdir -p /tmp/rtrainer; cp -r ./* /tmp/rtrainer; cd /tmp/rtrainer; \

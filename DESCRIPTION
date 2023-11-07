@@ -1,6 +1,6 @@
 Package: rtrainer
 Title: An interactive R tutorial.
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: person("Denis", "Puthier", , "denis.puthier@univ-amu.fr", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7240-5280"))
 Description: An interactive R tutorial.
 Imports: 
@@ -15,7 +15,7 @@ Imports:
     ggthemes,
     png,
     sortable
-Collate: utils.R datasets_doc.R extract_text.R
+Collate: utils.R datasets_doc.R extract_text.R check_tuto.R
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
