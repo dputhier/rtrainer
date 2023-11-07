@@ -466,10 +466,10 @@ gradethis::grade_result(
 </div>
 
 
+### C'est fini
 
+Merci d'avoir suivi ce tutoriel.
 
-
-<h1> Fin de la section  </h1>
 
 <!--
 ```{r end, eval=TRUE, echo=FALSE } 

@@ -579,5 +579,6 @@ plot(modencodefly$SRX008027,
 
 </div>
 
+### C'est fini
 
-<h1>Fin de la session.</h1>
+Merci d'avoir suivi ce tutoriel.

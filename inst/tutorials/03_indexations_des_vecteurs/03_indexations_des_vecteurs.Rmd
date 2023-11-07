@@ -539,4 +539,6 @@ gene_expression[pos]
 ```
 </div>
 
-<h1> Fin de la section  </h1>
+### C'est fini
+
+Merci d'avoir suivi ce tutoriel.

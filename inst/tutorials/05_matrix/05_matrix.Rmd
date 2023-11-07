@@ -793,7 +793,9 @@ Ce grand principe permet de simuler une marche aléatoire dans un graphe (*rando
 
 
 
-<h1> Fin de la section. </h1>
+### C'est fini
+
+Merci d'avoir suivi ce tutoriel.
 
 <!--```{r end, eval=TRUE, echo=FALSE } 
 htmltools::tags$button("Retour au Menu", 

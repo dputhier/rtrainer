@@ -381,4 +381,6 @@ lapply(df_melted, length)
 apply(df_melted, 2, length)
 ```
 
-<h1> Fin de la section </h1>
+### C'est fini
+
+Merci d'avoir suivi ce tutoriel.

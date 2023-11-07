@@ -1,10 +1,4 @@
 ---
-# theme
-# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
-# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
-# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
-# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
-
 title: "Ecrire des fonctions"
 output:
   learnr::tutorial:
@@ -520,6 +514,7 @@ gradethis::grade_result(
 
 
 
+### C'est fini
 
-<h1> Fin de la section  </h1>
+Merci d'avoir suivi ce tutoriel.
 
