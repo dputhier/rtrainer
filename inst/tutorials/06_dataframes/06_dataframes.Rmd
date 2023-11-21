@@ -155,15 +155,15 @@ L'objet `data.frame` est véritablement central dans R. C'est notamment l'objet 
 
 Le data.frame est une matrice dont **chacune des colonnes accepte un mode différent et unique (*character, numeric, boolean*,...)**.
 
-On pourra, notamment, créer un dataframe avec la fonction `data.frame()`. Dans l'exemple ci-dessous, la colonne `elisa_level` est numérique, la colonne `category` est un facteur, la colonne `age` est un numérique et la colonne `name` est une chaîne de caractère.
+On pourra, notamment, créer un dataframe avec la fonction `data.frame()`. Dans l'exemple ci-dessous, la colonne `note` est numérique, la colonne `promo` est un facteur, la colonne `age` est un numérique et la colonne `name` est une chaîne de caractère.
 
 ```{r dataframe0, exercise=TRUE}
 set.seed(123)
 df_1 <- data.frame(
-  elisa_level = round(runif(n = 6, min = 0, max = 10), 2),
-  category = as.factor(sample(c("A", "B", "C"), size = 6, replace = TRUE )),
-  age = sample(1:90, size=6, replace=TRUE),
-  name = c("Miescher", "Watson", "Crick", "Kossel", "Levene", "Kossel")
+  note = round(runif(n = 6, min = 0, max = 20), 2),
+  promo = as.factor(sample(c("3A", "4A", "5A"), size = 6, replace = TRUE )),
+  age = sample(18:25, size=6, replace=TRUE),
+  name = c("Miescher", "Watson", "Crick", "Chargaff", "Levene", "Kossel")
 )
 df_1
 ```
@@ -234,6 +234,12 @@ df <- data.frame(A=rnorm(10000, mean=0, sd=1),
 ```
 
 ```{r dataframe03-solution}
+set.seed(123)
+df <- data.frame(A=rnorm(10000, mean=0, sd=1),
+                 B=rnorm(10000, mean=5, sd=2),
+                 C=rnorm(10000, mean=10, sd=1)
+                 )
+
 mat <- as.matrix(df)
 hist(mat, breaks=100)
 ```
@@ -280,7 +286,7 @@ head(ChickWeight)
 
 Comme pour les matrices, **les noms des colonnes d'un data.frame peuvent être obtenus avec `colnames()` **(et les lignes avec `rownames()`).
 
-```{r dataframe2, exercise=TRUE, setup.exercice="dataframe1"}
+```{r dataframe2, exercise=TRUE, setup.exercise="dataframe1"}
 colnames(ChickWeight)
 head(rownames(ChickWeight))
 ```
@@ -313,7 +319,7 @@ On peut indexer un data.frame en interrogeant les lignes et colonnes, comme une 
 
 Tapez `ChickWeight$` et pressez la touche <TAB> (tabulation) pour afficher le contenu de la colonne `feed`. Faites de même pour la colonne `weight`.
 
-```{r dataframe3, exercise=TRUE, setup.exercice="dataframe1"}
+```{r dataframe3, exercise=TRUE, setup.exercise="dataframe1"}
 # Mettez votre curseur après chickwts, tapez '$' et 
 # appuyez sur la touche tabulation (<TAB>)
 ChickWeight
@@ -321,32 +327,87 @@ ChickWeight
 
 En utilisant l'indexation logique que nous avons vu sur les vecteurs et les matrices, on pourra donc écrire les choses suivantes pour sélectionner des lignes dans le `data.frame`:
 
-```{r idx1, exercise=TRUE, setup.exercice="dataframe1"}
+```{r idx1, exercise=TRUE, setup.exercise="dataframe1"}
 ChickWeight[ChickWeight$weight > 300, ]
 ```
 
 On encore:
 
-```{r idx2, exercise=TRUE, setup.exercice="dataframe1"}
+```{r idx2, exercise=TRUE, setup.exercise="dataframe1"}
 ChickWeight[ChickWeight$weight > 300 & ChickWeight$Diet == 2,  ]
 ```
+
+<div class="exo">
+
+En utilisant l'opérateur **$** et l'indexation, extraire les lignes de `ChickWeight` pour lesquelles:
+
+- Le type de nourriture (`Diet`) est 1 ou 2. Le résultat est stocké dans `a`.
+- Le poids du poulet est compris entre 300 et 350 (inclus). Le résultat est stocké dans `b`.
+- Le type de nourriture (`Diet`) est 1 ou 2 pour un age (colonne `Time`) de 16 jours. Le résultat est stocké dans `c`.
+
+```{r chickindex, exercise=TRUE, setup.exercise="dataframe1"}
+ChickWeight
+```
+
+```{r chickindex-solution}
+a <- ChickWeight[ChickWeight$Diet == 1 | ChickWeight$Diet == 2, ]
+b <- ChickWeight[ChickWeight$weight >= 300 & ChickWeight$weight <= 350, ]
+c <- ChickWeight[(ChickWeight$Diet == 1 | ChickWeight$Diet == 2) & ChickWeight$Time == 16, ]
+```
+
+```{r chickindex-check }
+gradethis::grade_result_strict(
+  pass_if(~ nrow(a) == 340),
+  pass_if(~ nrow(b) == 12),
+  pass_if(~ nrow(c) == 27)
+)
+```
+</div>
 
 ## Ajouter des colonnes
 
 On peut facilement ajouter une colonne à un **data.frame** en utilisant notamment l'opérateur *$*.
 
-```{r addcol, exercise=TRUE, setup.exercice="dataframe1"}
+```{r addcol, exercise=TRUE, setup.exercise="dataframe1"}
 ChickWeight$genotype <- sample(c("wild_type", "transgenic"), size=nrow(ChickWeight), replace=TRUE)
 head(ChickWeight)                        
 ```
 
+
+<div class="exo">
+
+Ajouter au tableau `ChickWeight` une colonne nommée:
+
+- 'genotype' contenant des NA.
+- 'source' contenant "anonymous".
+- 'location' contenant des valeurs tirées au hasard parmi 'box_1' ou 'box_2'.
+
+```{r chickaddcol, exercise=TRUE, setup.exercise="dataframe1"}
+ChickWeight
+```
+
+```{r chickaddcol-solution}
+ChickWeight$genotype <- NA
+ChickWeight$source <- "anonymous"
+ChickWeight$location <- sample(c('box_1', 'box_2'), nrow(ChickWeight), replace = TRUE)
+```
+
+```{r chickaddcol-check }
+gradethis::grade_result_strict(
+  pass_if(~ all(is.na(ChickWeight$genotype)) == TRUE),
+  pass_if(~ all(ChickWeight$source == "anonymous") == TRUE),
+  pass_if(~ all(ChickWeight$location %in% c('box_1', 'box_2')) == TRUE)
+)
+```
+</div>
+
 ## 'wide' vs 'long'
 
-**Pour plusieurs application, notamment les graphiques avec la librairie `ggplot2`** (qui est incontournable, nous en reparlerons par la suite), il est nécessaire de changer le format du `data.frame` ou de la matrice.
+**Pour plusieurs application, notamment les graphiques avec la librairie `ggplot2`** (qui est incontournable, nous en reparlerons par la suite), il est nécessaire de changer la representation des données d'`data.frame` ou d'une matrice.
 
-Prenons le cas du `data.frame` suivant. Il est initialement au format **large (wide)**. Rien ne permet de le savoir à ce stade.
+Prenons la matrice suivante. Elle est initialement au format dit **"large (wide)"**. Rien ne permet de le savoir formellement à ce stade (vous verrez la différence avec le format **long** juste après). 
 
-```{r longlarge0, exercice=TRUE}
+```{r longlarge0, exercise=TRUE, eval=TRUE}
 # On remplit une matrice avec des données
 # issues d'une loi normale (n=20). La matrices
 # contiendra 5 colonnes 
@@ -355,24 +416,23 @@ m <- matrix(data=round(rnorm(20), 2),
             ncol = 5)
 colnames(m) <- LETTERS[1:5]
 rownames(m) <- letters[1:4]
-df <- as.data.frame(m)
-print(df)
+print(m)
 ```
 
-La fonction `melt()` de la librairie `reshape2` permet de le transformer (de le faire 'fondre') au format **long**. Le nombre de ligne est maintenant le produit du nombre de lignes et de colonnes de l'objet d'entrée.
+La fonction `melt()` de la librairie `reshape2` permet de la transformer (de le faire 'fondre') au format **long**. Le nombre de ligne est maintenant le produit du nombre de lignes et de colonnes de l'objet d'entrée.
 
 ```{r largelong1, exercise=TRUE, eval=TRUE, exercise.setup="longlarge0"}
 library(reshape2)
-df_melted <- melt(df)
-dim(df_melted)
-head(df_melted)
+m_melted <- melt(m)
+dim(m_melted)
+head(m_melted)
 ```
 
-Notez que le **résultat est différent si on transforme, au préalable, le data.frame en matrice** avec `as.matrix()`. Cela peut être avantageux car **toutes les informations contenus dans le data.frame sont conservées** ici. Dans les deux cas (qu'on parte d'une matrice ou d'un `data.frame`), l'objet renvoyé est un `data.frame`.
+Notez que le **résultat est différent si on transforme, au préalable, la `matrice` en `data.frame`** avec `as.data.frame()`. Dans les deux cas (qu'on parte d'une matrice ou d'un `data.frame`), l'objet renvoyé est un `data.frame`.
 
 ```{r largelong2, exercise=TRUE, eval=TRUE, exercise.setup="longlarge0"}
 library(reshape2)
-df_melted <- melt(as.matrix(df))
+df_melted <- melt(as.data.frame(m))
 dim(df_melted)
 head(df_melted)
 ```
