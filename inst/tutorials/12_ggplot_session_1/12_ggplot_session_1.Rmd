@@ -163,13 +163,7 @@ L'une des particularité de la librairie ggplot2 est que son développement est 
 
 C'est la combinaison de ces composants indépendants qui constitue un graphique. Dans ggplot2 ces différentes composantes sont modélisées **sous forme de couches (*layers*)** qu'on peut **ajouter** les unes aux autres simplément avec **l'opérateur d'addition**. Le succès de ggplot2 a conduit de nombreux développeurs à produire **des extensions** qui permettent aujourd'hui d'avoir **une suite de fonctions graphiques** extrêmement riche.
 
-```{r, echo=FALSE, fig.height=6, fig.width=6}
-library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", "12_ggplot", "img", "ggbasics.png")
-pp <- readPNG(path)
-plot.new() 
-rasterImage(pp,0,0,1,1)
-```
+
 
 Vous trouverez en complément de ce cours un aide mémoire sur ggplot2 à [cette adresse](https://thinkr.fr/pdf/ggplot2-french-cheatsheet.pdf).
 
@@ -179,13 +173,7 @@ Nous utiliserons pour débuter le jeu de données "diamonds" de la librairie **g
 
 - Carat, taille, couleur, clarté, profondeur, table, prix, x, y, z
 
-```{r, echo=FALSE, fig.height=5}
-library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", "12_ggplot", "img", "diamonds.png")
-pp <- readPNG(path)
-plot.new() 
-rasterImage(pp,0,0,1,1)
-```
+
 
 Chargeons le jeu de données.
 
@@ -270,24 +258,12 @@ p + geom_point(size=2, colour="red")
 
 Les correspondances entre la forme des points et les variables numériques passées sont disponibles ci-dessous:
 
-```{r, echo=FALSE, fig.height=5}
-library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", "12_ggplot", "img", "point.png")
-pp <- readPNG(path)
-plot.new() 
-rasterImage(pp,0,0,1,1)
-```
+
 
 D'autres formes de points sont possibles par exemple en utilisant la librairies [ggstar](https://cran.r-project.org/web/packages/ggstar/vignettes/ggstar.html):
 
 
-```{r, echo=FALSE, fig.height=5}
-library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", "12_ggplot", "img", "ggstar.png")
-pp <- readPNG(path)
-plot.new() 
-rasterImage(pp,0,0,1,1)
-```
+
 
 Plus généralement, n'importe quelle image peut devenir un point (en utilisant [ggimage](https://yulab-smu.top/pkgdocs/ggimage.html)).
 
