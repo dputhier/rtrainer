@@ -163,13 +163,7 @@ L'une des particularité de la librairie ggplot2 est que son développement est 
 
 C'est la combinaison de ces composants indépendants qui constitue un graphique. Dans ggplot2 ces différentes composantes sont modélisées **sous forme de couches (*layers*)** qu'on peut **ajouter** les unes aux autres simplément avec **l'opérateur d'addition**. Le succès de ggplot2 a conduit de nombreux développeurs à produire **des extensions** qui permettent aujourd'hui d'avoir **une suite de fonctions graphiques** extrêmement riche.
 
-```{r, echo=FALSE, fig.height=6, fig.width=6}
-library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", "12_ggplot", "img", "ggbasics.png")
-pp <- readPNG(path)
-plot.new() 
-rasterImage(pp,0,0,1,1)
-```
+
 
 Vous trouverez en complément de ce cours un aide mémoire sur ggplot2 à [cette adresse](https://thinkr.fr/pdf/ggplot2-french-cheatsheet.pdf).
 
