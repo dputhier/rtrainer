@@ -247,17 +247,7 @@ gradethis::grade_result(
 
 ## Les jeux de données
 
-On pourra aussi utiliser un des nombreux jeux de données fournis par le logiciel R dont beaucoup sont des objets `data.frame*` Ci-dessous on charge le jeu de données `ChickWeight` (*chicken Weights*) qui contient des mesures de poids permettant d'évaluer l'efficacité de divers compléments alimentaires sur le taux de croissance de poulets. Ce jeux de données est fourni par la librairie `datasets`. Il est donc nécessaire de charger cette librairie en mémoire (`library(datasets)`) pour avoir accès à ce jeu de données. On charge explicitement le jeux de données avec `data(ChickWeight)`.
-
-```{r dataframe1, exercise=TRUE}
-# On charge/active la librairie datasets
-library(datasets)
-# On charge le jeu de donnée chickwts
-data(ChickWeight)
-is(ChickWeight)
-# Voilà ses premières lignes
-head(ChickWeight)
-```
+On pourra aussi utiliser un des nombreux jeux de données fournis par le logiciel R dont beaucoup sont des objets `data.frame*`.
 
 <div class="exo">
 
@@ -272,6 +262,19 @@ data()
 ```
 
 </div>
+
+Ci-dessous on charge le jeu de données `ChickWeight` (*chicken Weights*) qui contient des mesures de poids permettant d'évaluer l'efficacité de divers compléments alimentaires sur le taux de croissance de poulets. Ce jeux de données est fourni par la librairie `datasets`. Il est donc nécessaire de charger cette librairie en mémoire (`library(datasets)`) pour avoir accès à ce jeu de données. On charge explicitement le jeux de données avec `data(ChickWeight)`.
+
+```{r dataframe1, exercise=TRUE}
+# On charge/active la librairie datasets
+library(datasets)
+# On charge le jeu de donnée chickwts
+data(ChickWeight)
+# Voilà ses premières lignes
+head(ChickWeight)
+```
+
+
 
 ## Noms de lignes et colonnes
 
