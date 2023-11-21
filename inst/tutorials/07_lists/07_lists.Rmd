@@ -209,8 +209,8 @@ my_list$a_vector
 
 <div class="exo">
 
-- En utilisant les fonctions d'indexation, extraire la *5^{ième}$ position du vecteur 'a_vector' contenu dans my_list. Placez le résultat dans la variable 'a'. 
-- En utilisant les fonctions d'indexation, extraire la cellule ligne 2 / colonne de la matrice 'a_matrix'. Placez le résultat dans la variable 'b'. 
+- En utilisant les fonctions d'indexation, extraire la $5^{ième}$ position du vecteur 'a_vector' contenu dans my_list. Placez le résultat dans la variable 'a'. 
+- En utilisant les fonctions d'indexation, extraire la cellule ligne 2 / colonne 2 de la matrice 'a_matrix'. Placez le résultat dans la variable 'b'. 
 
 ```{r exolist1, exercise=TRUE }
 my_list <- list(a_vector = 1:5, 
@@ -248,8 +248,8 @@ gradethis::grade_result(
 
 <div class="exo">
 
-- En utilisant les fonctions d'indexation, extraire la *5^{ième}$ position du vecteur 'a_vector' contenu dans la liste imbriquée. Placez le résultat dans la variable 'a'. 
-- En utilisant les fonctions d'indexation, extraire la cellule ligne 2 / colonne de la matrice 'a_matrix' contenue dans la liste imbriquée. Placez le résultat dans la variable 'b'. 
+- En utilisant les fonctions d'indexation, extraire la $5^{ième}$ position du vecteur 'a_vector' contenu dans la liste imbriquée. Placez le résultat dans la variable 'a'. 
+- En utilisant les fonctions d'indexation, extraire la cellule ligne 2 / colonne 2 de la matrice 'a_matrix' contenue dans la liste imbriquée. Placez le résultat dans la variable 'b'. 
 
 ```{r exolist2, exercise=TRUE }
 my_list <- list(A=list(a_vector = 1:5, 

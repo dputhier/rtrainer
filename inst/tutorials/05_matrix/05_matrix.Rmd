@@ -174,14 +174,14 @@ set.seed(123)
 
 ```{r mat1-solution}
 set.seed(123)
-mat <- matrix(data=round(runif(100), 0), 
+mat <- matrix(data=round(runif(200, min=0, max=10), 0), 
             ncol = 10, 
             byrow = TRUE)
 ```
 
 ```{r mat1-check }
 gradethis::grade_result(
-  pass_if(~identical( sum(mat), 47))
+  pass_if(~identical( sum(mat), 1011))
 )
 ```
 </div>
