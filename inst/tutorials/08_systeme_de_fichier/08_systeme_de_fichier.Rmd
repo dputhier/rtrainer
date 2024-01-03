@@ -552,6 +552,8 @@ sultan <- read.table(file = url,
 - Pour la fonction plot essayer plusieurs valeurs numérique pour l'argument `pch` (*point character*).
 - Regardez l'aide sur la fonction `densCols()` et représentez la densité en point par un gradient de couleurs.
 
+- Créez un nouveau diagramme dans lequel les points de coordonnées 0,0 sont éliminés...
+
 ```{r modencodefly, exercise=TRUE , exercise.setup="readtabledist"}
 
 ```
@@ -571,6 +573,16 @@ cols <- densCols(modencodefly$SRX008027, modencodefly$SRX008018,
                  colramp = colorRampPalette(rainbow(5)))
 plot(modencodefly$SRX008027, 
      modencodefly$SRX008018, 
+     pch=16, col=cols, 
+     xlab="SRX008027", ylab="SRX008018")
+
+
+# Diagramme 2
+test <- modencodefly$SRX008027 > 0 &  modencodefly$SRX008018 > 0
+cols <- densCols(modencodefly$SRX008027[test], modencodefly$SRX008018[test], 
+                 colramp = colorRampPalette(rainbow(5)))
+plot(modencodefly$SRX008027[test], 
+     modencodefly$SRX008018[test], 
      pch=16, col=cols, 
      xlab="SRX008027", ylab="SRX008018")
 

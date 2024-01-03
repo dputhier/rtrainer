@@ -1,0 +1,519 @@
+---
+title: "Exercices autour des fonctions"
+output:
+  learnr::tutorial:
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+
+##  Ecrire des fonctions
+
+Dans le domaine de l'analyse de données, les fonctions jouent un rôle essentiel. Cette section est dédiée à l'exploration de l'écriture de fonctions en R.
+
+## Objectif de l'écriture de fonctions   
+
+L'objectif principal de l'écriture de fonctions en R est d'améliorer l'efficacité, la maintenabilité et la clarté de votre code. Voici les principaux objectifs :
+
+1. **Modularité** : Les fonctions vous permettent de diviser votre code en parties plus petites et plus gérables. Chaque fonction se concentre sur une tâche spécifique, ce qui facilite la compréhension et la maintenance.
+
+2. **Réutilisation** : Une fois créées, les fonctions peuvent être réutilisées dans différentes parties de votre analyse ou même dans des projets futurs. Cela réduit le code redondant et favorise la cohérence.
+
+3. **Lisibilité** : Les fonctions avec des noms clairs et une documentation précise servent d'unités autonomes qui améliorent la lisibilité globale de votre code.
+
+4. **Efficacité** : En isolant des opérations spécifiques dans des fonctions, vous pouvez optimiser l'exécution du code et éviter les calculs redondants.
+
+## Prototype de l'écriture d'une fonction
+
+Voici le prototype typique de la création d'une fonction en R :
+
+```{r, eval=FALSE}
+nom_de_la_fonction <- function(argument1, argument2, ...) {
+  # Début corps de la fonction
+  
+  instruction 1
+  instruction 2
+  ...
+  
+  return(result)
+  # Fin corps de la fonction
+}
+```
+
+Explications :
+
+- **nom_de_la_fonction** : Remplacez ceci par le nom que vous souhaitez donner à votre fonction.
+
+- **argument1, argument2, ...** : Ce sont les arguments que votre fonction accepte en entrée. Vous pouvez avoir zéro ou plusieurs arguments. Spécifiez-les en les séparant par des virgules. Vous pouvez leur donner des arguments par défaut (e.g argument1=NULL, argument2=10...).
+
+- **Le corps de la fonction** : C'est l'endroit où vous placez le code qui réalise la tâche souhaitée. Ce code utilisera les variables argument1 et argument2 (...). 
+
+- **return(result)** : Utilisez la fonction `return()` pour renvoyer le résultat obtenu à l'utilisateur. Le résultat peut être une valeur unique ou une liste de valeurs. Si c'est un liste, il faudra renvoyer une liste sous la forme: `list(resultat1, resultat1...)`. 
+
+## Que signifie 'renvoyer un résultat'
+
+Quand la fonction "renvoie un résultat" cela signifie que **le résultat peut être assigné à un objet** (ci-dessous `an_object`). 
+
+```{r eval=FALSE}
+an_object <- a_function_returning_a_value(arguments)
+```
+
+Seule les fonctions contenant `return()` dans leur définition (i.e dans le corps de la fonction) permettent de renvoyer un résultat. Une fonction qui ne peut pas renvoyer de résultats renvoie NULL par défaut. C'est le cas par exemple de `cat()` qui imprime un message à l'écran ou dans un fichier. Elle n'est pas prévue pour renvoyer un résultat (`cat()`ne contient pas de fonction `return()`). Donc ci dessous, même si `cat()`a imprimé 'toto' à l'écran, la valeur de `an_object` est `NULL`. 
+
+```{r }
+an_object <- cat("toto\n")
+print(an_object)
+```
+
+## Exemple 1 
+### Ecriture d'une fonction renvoyant la liste des acides aminés
+
+Ecrivons pour commencer une fonction qui renvoie la liste des acides aminés. Nous pourrons par la suite appeler cette fonction pour obtenir un vecteurs contenant les abréviations IUPAC (e.g. "Ala", "Arg", "Lys"...) dont chaque position sera nommé par les abréviations IUBMB correspondantes (A, R, K...). La fonction est conçue pour pouvoir, ou non accepter un argument. Si l'argument `aa` vaut `NULL` (valeur par défaut définie dans `function(aa=NULL)`) alors la fonction renvoie tous les acides aminés. Au contraire si `aa` est non NULL elle teste si tous les acides aminés sont des entrées du tableau (`if(!all(aa %in% names(aa_liste)))`). Si c'est faux elle arrête avec un message d'erreur (`stop("Unknow amino-acid")`). Si c'est vrai, elle renvoie les acides aminés demandés. 
+
+```{r get_aa_liste, exercise=TRUE, exercise.lines=24}
+get_aa_liste <- function(aa=NULL){
+      
+  aa_liste <- c(A = "Ala", R = "Arg", N = "Asn", D = "Asp", 
+                C = "Cys", Q = "Gln", E = "Glu", G = "Gly", 
+                H = "His", I = "Ile", L = "Leu", K = "Lys", 
+                M = "Met", F = "Phe", P = "Pro", S = "Ser", 
+                T = "Thr", W = "Trp", Y = "Tyr", V = "Val", 
+                U = "Sec", O = "Pyl", B = "Asx", J = "Xle", 
+                Z = "Glx", X = "Xaa")
+      
+  if(is.null(aa)){
+    return(aa_liste)
+  }else{
+    
+    if(!all(aa %in% names(aa_liste))){
+      stop("Unknow amino-acid")
+    }else{
+      return(aa_liste[aa])
+    }
+    
+  }
+  
+}
+
+```
+
+Testons cette fonction avec des arguments qui fonctionnent:
+
+```{r get_aa_liste_test_0, exercise=TRUE, exercise.setup="get_aa_liste"}
+head(get_aa_liste())
+```
+Ou encore...
+
+```{r get_aa_liste_test_1, exercise=TRUE, exercise.setup="get_aa_liste"}
+get_aa_liste(aa=c("K", "R", "S"))
+```
+
+Si cette fonction est appelé avec aa="43" (qui n'existe pas), alors elle s'arrête en renvoyant une erreur:
+
+```{r get_aa_liste_test2, exercise=TRUE, exercise.setup="get_aa_liste"}
+## Uncomment to test
+get_aa_liste(aa="43")
+```
+
+## Exemple 2 
+### Ecriture d'une fonction convertissant une chaine de caractères en un vecteur de caractères
+
+Ici on implémente une fonction simple qui **prend une chaîne de caractère et renvoie un vecteur** dont chaque position est un des caractères de la chaîne d'entrée. La fonction prend en argument un chaîne de caractère qui par défaut vaut `NULL` (`function(string=NULL)`). Si l'utilisateur utilise cette fonction sans positionner l'argument sur une chaîne de caractère, la fonction s'arrête avec un message (`stop("Please provide a non null character string.")`). Ceci étant vérifié, elle casse la chaîne.
+
+**NB:** La fonction `strsplit()` permet de casser une chaîne de caractères selon un séparateur (e.g. `strsplit("a:b:c", split=":")`). Si le séparateur utilisé pour casser la chaîne est "", elle casse la chaîne caractère par caractère. Elle renvoie une liste avec les morceaux. Ci-dessous, la fonction `unlist()` permet de convertir la liste en vecteur. 
+
+```{r string2char, exercise=TRUE, exercise.setup="get_aa_liste"}
+string2char <- function(string=NULL){
+  
+  if(is.null(string)){
+    stop("Please provide a non null character string.")
+  }
+  
+  tmp <- strsplit(string, "")
+  return(unlist(tmp))
+  
+}
+```
+
+On peut tester la fonction ainsi:
+
+```{r string2char_test, exercise=TRUE, exercise.setup="string2char"}
+string2char("A sentence")
+```
+
+Et vérifier que si l'argument `string` vaut `NULL`alors elle s'arrête en renvoyant une erreur:
+
+```{r string2char_test2, exercise=TRUE, exercise.setup="string2char"}
+string2char()
+```
+
+<div class="exo">
+
+Créez nouvelle une fonction `string2charplus()` qui réalise le même travail que `string2char()` mais :
+
+- S'arrête si `string` n'est pas un chaîne de caractères (`!is.character(string)`) 
+- possède en plus un argument `to_lower` dont la valeur par défaut est `FALSE` et qui quand il est positionné sur `TRUE` permet de renvoyer la chaîne en minuscule (`tolower()`), sinon, en majuscule (`toupper()`).
+
+```{r string2charplus, exercise=TRUE, exercise.setup="get_aa_liste", exercise.lines=23}
+
+
+```
+
+```{r string2charplus-solution }
+string2charplus <- function(string=NULL, to_lower=FALSE){
+  
+  if(is.null(string)){
+    stop("Please provide a non null character string.")
+  }
+  
+  if(!is.character(string)){
+    stop("Please provide a string.")
+  }
+  
+  if(to_lower){
+      string <- tolower(string)
+  }else{
+      string <- toupper(string)
+  }
+  
+  tmp <- strsplit(string, "")
+  return(unlist(tmp))
+  
+}
+```
+
+```{r string2charplus-check}
+
+gradethis::grade_result_strict(
+  pass_if(~ all(string2charplus("abcr", to_lower=TRUE) == c("a", "b", "c", "r"))),
+  pass_if(~ all(string2charplus("abcr", to_lower=FALSE) == c("A", "B", "C", "R"))),
+  pass_if(~ all(string2charplus("ABCR", to_lower=FALSE) == c("A", "B", "C", "R"))),
+  pass_if(~ all(string2charplus("ABCR", to_lower=TRUE) == c("a", "b", "c", "r"))),
+  pass_if(~ class(try(string2charplus(34),silent = TRUE))=="try-error"),
+  pass_if(~ class(try(string2charplus(NULL),silent = TRUE))=="try-error")
+  
+)
+```
+</div>
+
+```{r string2charplus_hidden, echo=FALSE, results='hide' }
+get_aa_liste <- function(aa=NULL){
+      
+  aa_liste <- c(A = "Ala", R = "Arg", N = "Asn", D = "Asp", 
+                C = "Cys", Q = "Gln", E = "Glu", G = "Gly", 
+                H = "His", I = "Ile", L = "Leu", K = "Lys", 
+                M = "Met", F = "Phe", P = "Pro", S = "Ser", 
+                T = "Thr", W = "Trp", Y = "Tyr", V = "Val", 
+                U = "Sec", O = "Pyl", B = "Asx", J = "Xle", 
+                Z = "Glx", X = "Xaa")
+      
+  if(is.null(aa)){
+    return(aa_liste)
+  }else{
+    
+    if(!all(aa %in% names(aa_liste))){
+      stop("Unknow amino-acid")
+    }else{
+      return(aa_liste[aa])
+    }
+    
+  }
+  
+}
+
+
+string2charplus <- function(string=NULL, to_lower=FALSE){
+  
+  if(is.null(string)){
+    stop("Please provide a non null character string.")
+  }
+  
+  if(!is.character(string)){
+    stop("Please provide a string.")
+  }
+  
+  if(to_lower){
+      string <- tolower(string)
+  }else{
+      string <- toupper(string)
+  }
+  
+  tmp <- strsplit(string, "")
+  return(unlist(tmp))
+  
+}
+```
+
+## Exemple 3 
+### Ecriture d'une fonction vérifiant la liste des acides aminés d'une protéine
+
+Ici on implémente une fonction simple, `check_aa()` qui vérifie  la liste des acides aminés passé sous la forme d'un vecteur. La liste des acides aminés sera obtenu en faisant un appel à la fonction `get_aa_liste()`. Si un des acides aminés de l'argument `aa_vector` (transformé en majuscule avec `toupper()`) ne se trouve pas dans les noms du vecteur renvoyé par `get_aa_liste()` (`!all(toupper(aa_vector) %in% names(get_aa_liste())`), la fonction s'arrête avec `stop("Please check amino acid")`. 
+
+```{r check_aa, exercise=TRUE, exercise.setup="string2charplus_hidden"}
+check_aa <- function(aa_vector=NULL){
+  
+  if(is.null(aa_vector)){
+    stop("Please provide a vector of AA")
+  }
+  
+  if(!all(toupper(aa_vector) %in% names(get_aa_liste()))){
+    stop("Please check amino acid")
+  }
+}
+```
+
+On peut tester cette fonction comme ci-dessous. Notez que cette fonction ne renvoie rien (pas de fonction return() dans le corps de la fonction).
+
+
+```{r check_aa_test, exercise=TRUE, exercise.setup="check_aa"}
+check_aa(c("V", "K", "R"))
+```
+
+Si un des acides aminés n'est pas connu, la fonction s'arrête avec une erreur:
+
+```{r check_aa_test_2, exercise=TRUE, exercise.setup="check_aa"}
+check_aa(c("V", "K", "blabla"))
+```
+
+
+## Exemple 4
+### Ecriture d'un fonction renvoyant la fréquence des acides aminés
+
+On crée enfin une fonction qui effectue un travail un peu plus complexe (renvoyer la fréquence des acides aminés) en utilisant les deux autres fonctions créés auparavant (`get_aa_liste()`, `string2charplus()`, `check_aa()`). 
+
+- La fonction accepte la séquence d'une protéine sous la forme d'une chaîne de caractères. 
+- Elle teste avec `match.arg(sort_by)` que les valeurs de `sort_by` sont bien dans `c("none", "names", "value")`.
+- Elle teste si `protein`est null et s'arrête si cette condition est vérifiée.
+- Cette chaîne est transformée en vecteur avec `string2charplus()`.
+- On test que les acides aminés sont connus avec `check_aa()`.
+- On calcule les fréquences de chacun d'entre eux avec `freq <- table(aa) / length(aa)`.
+
+```{r compute_aa_freq, exercise=TRUE, exercise.setup="check_aa", exercise.lines=24}
+
+compute_aa_freq <- function(protein=NULL, 
+                            sort_by=c("none", "names", "value")) {
+  
+  sort_by <- match.arg(sort_by)
+
+  if(is.null(protein)){
+    stop("Please provide a protein")
+  }
+  
+ amino_acids <- string2charplus(protein, to_lower = FALSE)
+ 
+ check_aa(amino_acids)
+ 
+ freq <- table(amino_acids) / length(amino_acids)
+ 
+ if(sort_by == "value"){
+   freq <- sort(freq)
+ }else if(sort_by == "names"){
+   freq <- freq[order(names(freq))]
+ }
+ 
+ return(freq)
+ 
+}
+
+```
+
+On peut tester cette fonction de la manière suivante:
+
+
+```{r compute_aa_freq_exo, exercise=TRUE, exercise.setup="compute_aa_freq"}
+p53_human <- "MEEPQSDPSVEPPLSQETFSDLWKLLPENNVLSPLPSQAMDDLMLSPDDIEQWFTEDPGPDEAPRMPEAAPPVAPAPAAPTPAAPAPAPSWPLSSSVPSQKTYQGSYGFRLGFLHSGTAKSVTCTYSPALNKMFCQLAKTCPVQLWVDSTPPPGTRVRAMAIYKQSQHMTEVVRRCPHHERCSDSDGLAPPQHLIRVEGNLRVEYLDDRNTFRHSVVVPYEPPEVGSDCTTIHYNYMCNSSCMGGMNRRPILTIITLEDSSGNLLGRNSFEVRVCACPGRDRRTEEENLRKKGEPHHELPPGSTKRALPNNTSSSPQPKKKPLDGEYFTLQIRGRERFEMFRELNEALELKDAQAGKEPGGSRAHSSHLKSKKGQSTSRHKKLMFKTEGPDSD"
+head(compute_aa_freq(p53_human))
+```
+
+## Exercice 
+
+<div class="exo">
+
+Créez une nouvelle fonction `barplot_aa_freq()` qui :
+
+- Prend la séquence d'une protéine en entrée (*e.g.*  p53_human).
+- Calcule les fréquence en appelant  `compute_aa_freq()` et stocke le résultat dans un objet nommé `aa_freq`.
+- Convertie `aa_freq` avec  `as.data.frame(aa_freq)`. Le dataframe (en format long) sera nommé `aa_freq_df`.
+- Renomme les deux colonnes de `aa_freq_df` en `c('aa', 'freq')`.
+- Crée et renvoie un diagramme `ggplot2` représentant le résultat sous la forme d'un diagramme à barre (`geom_col`).
+- Propose un argument `sort_by` (`sort_by=c("value", "names", "none")`), qui sera passé à `compute_aa_freq`.
+
+<div class="tips">
+Vous pourez chercher tout d'abord à réaliser les opérations en dehors d'une fonction puis à les implémenter dans une fonction (en considérant par exemple que `protein=p53_human`).
+</div>
+
+```{r barplot_aa_freq, exercise=TRUE, exercise.setup="compute_aa_freq_exo", exercise.lines=30}
+
+
+```
+
+```{r barplot_aa_freq-solution }
+
+barplot_aa_freq <- function(protein=NULL, 
+                            sort_by=c("value", "names", "none")){
+  
+  sort_by <- match.arg(sort_by)
+
+  if(is.null(protein)){
+    stop("Please provide a protein")
+  }
+  
+  aa_freq <- compute_aa_freq(protein, sort_by=sort_by)
+  
+  aa_freq_df <- as.data.frame(aa_freq)
+  
+  colnames(aa_freq_df) <- c('aa', 'freq')
+  
+  p <- ggplot2::ggplot(data=aa_freq_df, 
+                       ggplot2::aes(x=aa, y=freq)) +
+       ggplot2::geom_col(color='white') +
+       ggplot2::theme_bw()
+  
+  return(p)
+  
+}
+```
+
+```{r barplot_aa_freq-check}
+
+p53_human <- "MEEPQSDPSVEPPLSQETFSDLWKLLPENNVLSPLPSQAMDDLMLSPDDIEQWFTEDPGPDEAPRMPEAAPPVAPAPAAPTPAAPAPAPSWPLSSSVPSQKTYQGSYGFRLGFLHSGTAKSVTCTYSPALNKMFCQLAKTCPVQLWVDSTPPPGTRVRAMAIYKQSQHMTEVVRRCPHHERCSDSDGLAPPQHLIRVEGNLRVEYLDDRNTFRHSVVVPYEPPEVGSDCTTIHYNYMCNSSCMGGMNRRPILTIITLEDSSGNLLGRNSFEVRVCACPGRDRRTEEENLRKKGEPHHELPPGSTKRALPNNTSSSPQPKKKPLDGEYFTLQIRGRERFEMFRELNEALELKDAQAGKEPGGSRAHSSHLKSKKGQSTSRHKKLMFKTEGPDSD"
+
+gradethis::grade_result(
+  pass_if(~ sum(ggplot2::ggplot_build(barplot_aa_freq(p53_human))$data[[1]]$y) == 1),
+  pass_if(~ length(ggplot2::ggplot_build(barplot_aa_freq(p53_human))$data[[1]]$y) == 20)
+)
+
+```
+</div>
+
+
+
+### C'est fini
+
+Merci d'avoir suivi ce tutoriel.
+
