@@ -1,5 +1,5 @@
 ---
-title: "Ecrire des fonctions"
+title: "Exercices autour des fonctions"
 output:
   learnr::tutorial:
     theme: default
@@ -89,8 +89,6 @@ https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
 
 </script>
 
-
-
 <style>
 .exo {
   border-radius: 5px;
@@ -134,11 +132,9 @@ gradethis::gradethis_setup()
 ```
 
 
-##  Ecrire des fonctions
+## Ecriture ses propres fonctions
 
 Dans le domaine de l'analyse de données, les fonctions jouent un rôle essentiel. Cette section est dédiée à l'exploration de l'écriture de fonctions en R.
-
-## Objectif de l'écriture de fonctions   
 
 L'objectif principal de l'écriture de fonctions en R est d'améliorer l'efficacité, la maintenabilité et la clarté de votre code. Voici les principaux objectifs :
 
@@ -158,8 +154,8 @@ Voici le prototype typique de la création d'une fonction en R :
 nom_de_la_fonction <- function(argument1, argument2, ...) {
   # Début corps de la fonction
   
-  instruction 1
-  instruction 2
+  instruction 1 qui utilise (ou pas) argument1 ou argument2 ou...
+  instruction 2 qui utilise (ou pas) argument1 ou argument2 ou...
   ...
   
   return(result)
@@ -171,7 +167,7 @@ Explications :
 
 - **nom_de_la_fonction** : Remplacez ceci par le nom que vous souhaitez donner à votre fonction.
 
-- **argument1, argument2, ...** : Ce sont les arguments que votre fonction accepte en entrée. Vous pouvez avoir zéro ou plusieurs arguments. Spécifiez-les en les séparant par des virgules. Vous pouvez leur donner des arguments par défaut (e.g argument1=NULL, argument2=10...).
+- **argument1, argument2, ...** : Ce sont les arguments que votre fonction accepte en entrée. Vous pouvez avoir zéro ou plusieurs arguments. Spécifiez-les en les séparant par des virgules. Vous pouvez leur donner des valeurs par défaut (e.g argument1=NULL, argument2=10...).
 
 - **Le corps de la fonction** : C'est l'endroit où vous placez le code qui réalise la tâche souhaitée. Ce code utilisera les variables argument1 et argument2 (...). 
 
@@ -192,327 +188,292 @@ an_object <- cat("toto\n")
 print(an_object)
 ```
 
-## Exemple 1 
-### Ecriture d'une fonction renvoyant la liste des acides aminés
+## Exemple: centrer une variable
 
-Ecrivons pour commencer une fonction qui renvoie la liste des acides aminés. Nous pourrons par la suite appeler cette fonction pour obtenir un vecteurs contenant les abréviations IUPAC (e.g. "Ala", "Arg", "Lys"...) dont chaque position sera nommé par les abréviations IUBMB correspondantes (A, R, K...). La fonction est conçue pour pouvoir, ou non accepter un argument. Si l'argument `aa` vaut `NULL` (valeur par défaut définie dans `function(aa=NULL)`) alors la fonction renvoie tous les acides aminés. Au contraire si `aa` est non NULL elle teste si tous les acides aminés sont des entrées du tableau (`if(!all(aa %in% names(aa_liste)))`). Si c'est faux elle arrête avec un message d'erreur (`stop("Unknow amino-acid")`). Si c'est vrai, elle renvoie les acides aminés demandés. 
+**Wikipedia:** "Centrer une variable consiste à soustraire son espérance à chacune de ses valeurs initiales, soit retrancher à chaque donnée la moyenne (c'est ce qui s'appelle un centrage). Cela consiste simplement en un changement d'origine, qui place la moyenne de la distribution au point 0 de l'axe des abscisses. [...] Une variable centrée a une espérance nulle."
 
-```{r get_aa_liste, exercise=TRUE, exercise.lines=24}
-get_aa_liste <- function(aa=NULL){
-      
-  aa_liste <- c(A = "Ala", R = "Arg", N = "Asn", D = "Asp", 
-                C = "Cys", Q = "Gln", E = "Glu", G = "Gly", 
-                H = "His", I = "Ile", L = "Leu", K = "Lys", 
-                M = "Met", F = "Phe", P = "Pro", S = "Ser", 
-                T = "Thr", W = "Trp", Y = "Tyr", V = "Val", 
-                U = "Sec", O = "Pyl", B = "Asx", J = "Xle", 
-                Z = "Glx", X = "Xaa")
-      
-  if(is.null(aa)){
-    return(aa_liste)
-  }else{
-    
-    if(!all(aa %in% names(aa_liste))){
-      stop("Unknow amino-acid")
-    }else{
-      return(aa_liste[aa])
-    }
-    
-  }
-  
-}
+On obtient ainsi des données indépendantes de l’unité ou de l’échelle choisie. Cette opération est très utile en analyse statistique où l'on est amené à intégrer des variables ayant des échelles très différentes.
 
+On souhaiterait pouvoir créer une fonction permettant de centrer un vecteur donnée. On va implémenter la fonction de la manière suivante:
+
+```{r centering, exercise=TRUE}
+centering <- function(x){return(x - mean(x))}
 ```
 
-Testons cette fonction avec des arguments qui fonctionnent:
-
-```{r get_aa_liste_test_0, exercise=TRUE, exercise.setup="get_aa_liste"}
-head(get_aa_liste())
-```
-Ou encore...
-
-```{r get_aa_liste_test_1, exercise=TRUE, exercise.setup="get_aa_liste"}
-get_aa_liste(aa=c("K", "R", "S"))
-```
-
-Si cette fonction est appelé avec aa="43" (qui n'existe pas), alors elle s'arrête en renvoyant une erreur:
-
-```{r get_aa_liste_test2, exercise=TRUE, exercise.setup="get_aa_liste"}
-## Uncomment to test
-get_aa_liste(aa="43")
-```
-
-## Exemple 2 
-### Ecriture d'une fonction convertissant une chaine de caractères en un vecteur de caractères
-
-Ici on implémente une fonction simple qui **prend une chaîne de caractère et renvoie un vecteur** dont chaque position est un des caractères de la chaîne d'entrée. La fonction prend en argument un chaîne de caractère qui par défaut vaut `NULL` (`function(string=NULL)`). Si l'utilisateur utilise cette fonction sans positionner l'argument sur une chaîne de caractère, la fonction s'arrête avec un message (`stop("Please provide a non null character string.")`). Ceci étant vérifié, elle casse la chaîne.
-
-**NB:** La fonction `strsplit()` permet de casser une chaîne de caractères selon un séparateur (e.g. `strsplit("a:b:c", split=":")`). Si le séparateur utilisé pour casser la chaîne est "", elle casse la chaîne caractère par caractère. Elle renvoie une liste avec les morceaux. Ci-dessous, la fonction `unlist()` permet de convertir la liste en vecteur. 
-
-```{r string2char, exercise=TRUE, exercise.setup="get_aa_liste"}
-string2char <- function(string=NULL){
-  
-  if(is.null(string)){
-    stop("Please provide a non null character string.")
-  }
-  
-  tmp <- strsplit(string, "")
-  return(unlist(tmp))
-  
-}
-```
-
-On peut tester la fonction ainsi:
-
-```{r string2char_test, exercise=TRUE, exercise.setup="string2char"}
-string2char("A sentence")
-```
-
-Et vérifier que si l'argument `string` vaut `NULL`alors elle s'arrête en renvoyant une erreur:
-
-```{r string2char_test2, exercise=TRUE, exercise.setup="string2char"}
-string2char()
+```{r q1, echo=FALSE }
+learnr::question("Est-ce que la fonction `centering()` renvoie une valeur ?",
+  answer("Non."),
+  answer("Oui.", correct = TRUE),
+  allow_retry = TRUE 
+)
 ```
 
 <div class="exo">
 
-Créez nouvelle une fonction `string2charplus()` qui réalise le même travail que `string2char()` mais :
+- Calculez la moyenne de x et stockez la dans l'object `mean_x_before`. 
+- Imprimez x.
+- Utilisez la fonction `centering()` pour centrer la variable `x` (écrasez la variable x). 
+- Imprimez x. Les valeurs de x ont-elles changé ?
+- Vérifiez que la variable est centrée en calculant la moyenne et en la stockant dans l'object `mean_x_after`.
 
-- S'arrête si `string` n'est pas un chaîne de caractères (`!is.character(string)`) 
-- possède en plus un argument `to_lower` dont la valeur par défaut est `FALSE` et qui quand il est positionné sur `TRUE` permet de renvoyer la chaîne en minuscule (`tolower()`), sinon, en majuscule (`toupper()`).
-
-```{r string2charplus, exercise=TRUE, exercise.setup="get_aa_liste", exercise.lines=23}
-
-
+```{r exocentering, exercise=TRUE , exercise.setup="centering"}
+set.seed(123)
+x <- rnorm(20, mean=10)
 ```
 
-```{r string2charplus-solution }
-string2charplus <- function(string=NULL, to_lower=FALSE){
-  
-  if(is.null(string)){
-    stop("Please provide a non null character string.")
-  }
-  
-  if(!is.character(string)){
-    stop("Please provide a string.")
-  }
-  
-  if(to_lower){
-      string <- tolower(string)
-  }else{
-      string <- toupper(string)
-  }
-  
-  tmp <- strsplit(string, "")
-  return(unlist(tmp))
-  
-}
+```{r exocentering-solution}
+set.seed(123)
+x <- rnorm(20, mean=10)
+print(x)
+mean_x_before <- mean(x)
+x <- centering(x)
+print(x)
+mean_x_after <- mean(x)
 ```
 
-```{r string2charplus-check}
-
+```{r exocentering-check }
 gradethis::grade_result_strict(
-  pass_if(~ all(string2charplus("abcr", to_lower=TRUE) == c("a", "b", "c", "r"))),
-  pass_if(~ all(string2charplus("abcr", to_lower=FALSE) == c("A", "B", "C", "R"))),
-  pass_if(~ all(string2charplus("ABCR", to_lower=FALSE) == c("A", "B", "C", "R"))),
-  pass_if(~ all(string2charplus("ABCR", to_lower=TRUE) == c("a", "b", "c", "r"))),
-  pass_if(~ class(try(string2charplus(34),silent = TRUE))=="try-error"),
-  pass_if(~ class(try(string2charplus(NULL),silent = TRUE))=="try-error")
-  
+  pass_if(~ round(mean_x_before, 1) == 10.1),
+  pass_if(~ round(mean_x_after, 1) == 0)
 )
 ```
 </div>
 
-```{r string2charplus_hidden, echo=FALSE, results='hide' }
-get_aa_liste <- function(aa=NULL){
-      
-  aa_liste <- c(A = "Ala", R = "Arg", N = "Asn", D = "Asp", 
-                C = "Cys", Q = "Gln", E = "Glu", G = "Gly", 
-                H = "His", I = "Ile", L = "Leu", K = "Lys", 
-                M = "Met", F = "Phe", P = "Pro", S = "Ser", 
-                T = "Thr", W = "Trp", Y = "Tyr", V = "Val", 
-                U = "Sec", O = "Pyl", B = "Asx", J = "Xle", 
-                Z = "Glx", X = "Xaa")
-      
-  if(is.null(aa)){
-    return(aa_liste)
-  }else{
-    
-    if(!all(aa %in% names(aa_liste))){
-      stop("Unknow amino-acid")
-    }else{
-      return(aa_liste[aa])
-    }
-    
-  }
-  
-}
+## Ajouter des arguments.
 
+### Trimmer la moyenne
 
-string2charplus <- function(string=NULL, to_lower=FALSE){
-  
-  if(is.null(string)){
-    stop("Please provide a non null character string.")
-  }
-  
-  if(!is.character(string)){
-    stop("Please provide a string.")
-  }
-  
-  if(to_lower){
-      string <- tolower(string)
-  }else{
-      string <- toupper(string)
-  }
-  
-  tmp <- strsplit(string, "")
-  return(unlist(tmp))
-  
-}
+Un des problèmes de la moyenne est qu'elle est sensible aux valeurs extrêmes. On pourrait donc choisir de faire un centrage en calculant une moyenne tronquée. Ca tombe bien puisque la fonction `mean()` de R contient un argument dédié à cela.
+
+Ci-dessous on déclare que pour notre fonction `centering()` il existe un nouvel argument `mean_trim` et que sa valeur par défault (*i.e* si il n'est pas renseigné) est de 0 (on utilise toutes les valeurs pour le calcul de la moyenne).
+
+```{r trimmedmean, exercise=TRUE}
+centering <- function(x, mean_trim=0){return(x - mean(x, trim=mean_trim))}
 ```
-
-## Exemple 3 
-### Ecriture d'une fonction vérifiant la liste des acides aminés d'une protéine
-
-Ici on implémente une fonction simple, `check_aa()` qui vérifie  la liste des acides aminés passé sous la forme d'un vecteur. La liste des acides aminés sera obtenu en faisant un appel à la fonction `get_aa_liste()`. Si un des acides aminés de l'argument `aa_vector` (transformé en majuscule avec `toupper()`) ne se trouve pas dans les noms du vecteur renvoyé par `get_aa_liste()` (`!all(toupper(aa_vector) %in% names(get_aa_liste())`), la fonction s'arrête avec `stop("Please check amino acid")`. 
-
-```{r check_aa, exercise=TRUE, exercise.setup="string2charplus_hidden"}
-check_aa <- function(aa_vector=NULL){
-  
-  if(is.null(aa_vector)){
-    stop("Please provide a vector of AA")
-  }
-  
-  if(!all(toupper(aa_vector) %in% names(get_aa_liste()))){
-    stop("Please check amino acid")
-  }
-}
-```
-
-On peut tester cette fonction comme ci-dessous. Notez que cette fonction ne renvoie rien (pas de fonction return() dans le corps de la fonction).
-
-
-```{r check_aa_test, exercise=TRUE, exercise.setup="check_aa"}
-check_aa(c("V", "K", "R"))
-```
-
-Si un des acides aminés n'est pas connu, la fonction s'arrête avec une erreur:
-
-```{r check_aa_test_2, exercise=TRUE, exercise.setup="check_aa"}
-check_aa(c("V", "K", "blabla"))
-```
-
-
-## Exemple 4
-### Ecriture d'un fonction renvoyant la fréquence des acides aminés
-
-On crée enfin une fonction qui effectue un travail un peu plus complexe (renvoyer la fréquence des acides aminés) en utilisant les deux autres fonctions créés auparavant (`get_aa_liste()`, `string2charplus()`, `check_aa()`). 
-
-- La fonction accepte la séquence d'une protéine sous la forme d'une chaîne de caractères. 
-- Elle teste avec `match.arg(sort_by)` que les valeurs de `sort_by` sont bien dans `c("none", "names", "value")`.
-- Elle teste si `protein`est null et s'arrête si cette condition est vérifiée.
-- Cette chaîne est transformée en vecteur avec `string2charplus()`.
-- On test que les acides aminés sont connus avec `check_aa()`.
-- On calcule les fréquences de chacun d'entre eux avec `freq <- table(aa) / length(aa)`.
-
-```{r compute_aa_freq, exercise=TRUE, exercise.setup="check_aa", exercise.lines=24}
-
-compute_aa_freq <- function(protein=NULL, 
-                            sort_by=c("none", "names", "value")) {
-  
-  sort_by <- match.arg(sort_by)
-
-  if(is.null(protein)){
-    stop("Please provide a protein")
-  }
-  
- amino_acids <- string2charplus(protein, to_lower = FALSE)
- 
- check_aa(amino_acids)
- 
- freq <- table(amino_acids) / length(amino_acids)
- 
- if(sort_by == "value"){
-   freq <- sort(freq)
- }else if(sort_by == "names"){
-   freq <- freq[order(names(freq))]
- }
- 
- return(freq)
- 
-}
-
-```
-
-On peut tester cette fonction de la manière suivante:
-
-
-```{r compute_aa_freq_exo, exercise=TRUE, exercise.setup="compute_aa_freq"}
-p53_human <- "MEEPQSDPSVEPPLSQETFSDLWKLLPENNVLSPLPSQAMDDLMLSPDDIEQWFTEDPGPDEAPRMPEAAPPVAPAPAAPTPAAPAPAPSWPLSSSVPSQKTYQGSYGFRLGFLHSGTAKSVTCTYSPALNKMFCQLAKTCPVQLWVDSTPPPGTRVRAMAIYKQSQHMTEVVRRCPHHERCSDSDGLAPPQHLIRVEGNLRVEYLDDRNTFRHSVVVPYEPPEVGSDCTTIHYNYMCNSSCMGGMNRRPILTIITLEDSSGNLLGRNSFEVRVCACPGRDRRTEEENLRKKGEPHHELPPGSTKRALPNNTSSSPQPKKKPLDGEYFTLQIRGRERFEMFRELNEALELKDAQAGKEPGGSRAHSSHLKSKKGQSTSRHKKLMFKTEGPDSD"
-head(compute_aa_freq(p53_human))
-```
-
-## Exercice 
 
 <div class="exo">
 
-Créez une nouvelle fonction `barplot_aa_freq()` qui :
+- Calculez la moyenne de x et stockez la dans l'object `mean_x_before`. 
+- Imprimez x.
+- Utilisez la fonction `centering()` avec `mean_trim=0.2` pour centrer la variable `x` (écrasez la variable x). 
+- Imprimez x. Les valeurs de x ont-elles changé ?
+- Vérifiez que la variable est centrée en calculant la moyenne et en la stockant dans l'object `mean_x_after`.
 
-- Prend la séquence d'une protéine en entrée (*e.g.*  p53_human).
-- Calcule les fréquence en appelant  `compute_aa_freq()` et stocke le résultat dans un objet nommé `aa_freq`.
-- Convertie `aa_freq` avec  `as.data.frame(aa_freq)`. Le dataframe (en format long) sera nommé `aa_freq_df`.
-- Renomme les deux colonnes de `aa_freq_df` en `c('aa', 'freq')`.
-- Crée et renvoie un diagramme `ggplot2` représentant le résultat sous la forme d'un diagramme à barre (`geom_col`).
-- Propose un argument `sort_by` (`sort_by=c("value", "names", "none")`), qui sera passé à `compute_aa_freq`.
+```{r exocenteringtrim, exercise=TRUE , exercise.setup="trimmedmean"}
+set.seed(123)
+x <- c(rnorm(20, mean=10), 1000)
+```
 
-<div class="tips">
-Vous pourez chercher tout d'abord à réaliser les opérations en dehors d'une fonction puis à les implémenter dans une fonction (en considérant par exemple que `protein=p53_human`).
+```{r exocenteringtrim-solution}
+set.seed(123)
+x <- c(rnorm(20, mean=10), 1000)
+print(x)
+mean_x_before <- mean(x)
+x <- centering(x, mean_trim=0.2)
+print(x)
+mean_x_after <- mean(x)
+```
+
+```{r exocenteringtrim-check }
+gradethis::grade_result(
+  pass_if(~ round(mean_x_before, 0) == 57),
+  pass_if(~ round(mean_x_after, 0) == 47)
+)
+```
 </div>
 
-```{r barplot_aa_freq, exercise=TRUE, exercise.setup="compute_aa_freq_exo", exercise.lines=30}
 
+```{r q2, echo=FALSE }
+learnr::question("Parmi ces affirmations cocher celles qui sont vraies:",
+  answer("La majorité des valeurs de x sont proches/autour de 0 après centrage.", correct = TRUE),
+  answer("La moyenne de x est de zéro (ou proche de zéro) après centrage.", correct = FALSE),
+  answer("La moyenne de x est plutôt proche de 47 après centrage.", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+
+## Tester les valeurs des arguments
+
+Bien qu'on puisse centrer en utilisant la moyenne ou la moyenne tronquée, il est possible de centrer une variable en retranchant la valeur médiane. En effet, sa valeur est moins sensible aux valeurs extrêmes  et on peut donc la considérer comme un estimateur statistique **robuste** de [**position**](https://fr.wikipedia.org/wiki/Indicateur_de_position).
+
+On pourrait donc ajouter un argument `centering_method` qui prendrait pour valeur "mean" ou "median". Si "mean" est demandé on appel la fonction `mean()` et on soustrait la moyenne, sinon on appel la fonction `median()` et on soustrait la médiane. 
+
+L'un des problème est qu'il faut s'assurer que l'utilisateur choisi bien entre "mean" ou "median". Dans ce cas le principe, dans R, est de proposer directement les valeurs possibles dans la déclaration de la fonction et de récuper la valeur utilisé par l'utilisateur avec `match.arg()`. Au passage `match.arg()` renverra une erreur si la valeur de `centering_method` n'est pas "mean" ou "median". Par ailleurs, si l'utilisateur ne renseigne pas `centering_method` la première valeur du vecteur `c("mean", "median")`sera utilisée. 
+
+
+```{r centeringmediane, exercise=TRUE }
+centering <- function(x, 
+                      centering_method=c("mean", "median"),
+                      mean_trim=0
+                      ){
+  
+  centering_method <- match.arg(centering_method)
+  
+  if(centering_method == "mean"){
+    return(x - mean(x, trim=mean_trim))
+  }else{
+    return(x - median(x))
+  }
+}
+    
+```
+
+
+## Exercices
+
+### Variable centrée réduite
+
+<div class="exo">
+
+**Wikipedia:** En théorie des probabilités et en statistique, une variable **centrée réduite** est la variable transformée d'une variable aléatoire par une application affine, de telle sorte que **sa moyenne soit nulle** et **son écart type égal à un**.  
+
+La méthode générale de calcul pour un vecteur *v* consiste *(i)* à calculer la moyenne de *v*, (ii) soustraire la moyenne à chaque élément de *v*, puis, la moyenne étant soustraite, *(iii)* calculer  l'écart-type et *(iv)* diviser chacune des valeurs centrée par l'écart-type. 
+
+Les anglo-saxon utilisent généralement le terme *standardization* et, dans certains contextes, appellent cette transformation *z-score*.
+
+$$z = \frac{x - \bar{x}}{\sigma}$$
+
+Avec $x$ le vecteur, $\bar{x}=\text{average}(x)$ la moyenne du vecteur et $\sigma$ l'écart-type.
+ 
+Une variable centrée réduite a :
+
+- Une espérance nulle ;
+- Une variance égale à 1 ;
+- Un écart type égal à 1.
+
+Ainsi l’on obtient :
+
+- Des données indépendantes de l’unité ou de l’échelle choisie ;
+- Des variables ayant les mêmes moyenne et dispersion.
+
+On peut alors comparer plus aisément les variations. Centrer-réduire les variables est très utile en analyse de données. Cela équivaut à un changement d’unité, et n’a pas d’incidence sur les profils de variation. Les valeurs des coefficients de corrélation entre variables centrées réduites demeurent identiques à ce qu’elles étaient avant l’opération de centrage et réduction.
+
+**Implémentez une fonction standardization() qui permet de centrer et réduire une variable.**
+
+- La fonction devra posséder un argument `centering_method` (voir exercices précédents).
+- La fonction devra posséder un argument `disp_method`. Cet argument contrôlera comment la dispersion est calculée: "sd" pour l'écart-type (*standard-deviation*, fonction `sd()`) ou "mad" pour  (*median absolute deviation*, fonction `mad()`) ou encore "iqr" pour l'écart interquartile  (*interquartile range*, fonction `IQR()`). 
+
+```{r exoreduction, exercise=TRUE , exercise.setup="centeringmediane", exercise.lines=30}
+# To be modified and completed
+standardization <- function(x, 
+                      centering_method=c("mean", "median"),
+                      mean_trim=0
+                      ){
+  
+  centering_method <- match.arg(centering_method)
+  
+  if(centering_method == "mean"){
+    return(x - mean(x, trim=mean_trim))
+  }else{
+    return(x - median(x))
+  }
+}
 
 ```
 
-```{r barplot_aa_freq-solution }
-
-barplot_aa_freq <- function(protein=NULL, 
-                            sort_by=c("value", "names", "none")){
+```{r exoreduction-solution}
+standardization <- function(x, 
+                      centering_method=c("mean", "median"),
+                      disp_method=c("sd", "mad", "iqr"),
+                      mean_trim=0
+                      ){
   
-  sort_by <- match.arg(sort_by)
-
-  if(is.null(protein)){
-    stop("Please provide a protein")
+  centering_method <- match.arg(centering_method)
+  disp_method <- match.arg(disp_method)
+  
+  if(centering_method == "mean"){
+    x <- x - mean(x, trim=mean_trim)
+  }else{
+    x <- x - median(x)
   }
   
-  aa_freq <- compute_aa_freq(protein, sort_by=sort_by)
-  
-  aa_freq_df <- as.data.frame(aa_freq)
-  
-  colnames(aa_freq_df) <- c('aa', 'freq')
-  
-  p <- ggplot2::ggplot(data=aa_freq_df, 
-                       ggplot2::aes(x=aa, y=freq)) +
-       ggplot2::geom_col(color='white') +
-       ggplot2::theme_bw()
-  
-  return(p)
-  
+  if(disp_method == "sd"){
+    x <- x / sd(x)
+  }else if(disp_method == "mad") {
+    x <- x / mad(x)
+  }else{
+    x <- x / IQR(x)
+  }
+  return(x)
 }
 ```
 
-```{r barplot_aa_freq-check}
-
-p53_human <- "MEEPQSDPSVEPPLSQETFSDLWKLLPENNVLSPLPSQAMDDLMLSPDDIEQWFTEDPGPDEAPRMPEAAPPVAPAPAAPTPAAPAPAPSWPLSSSVPSQKTYQGSYGFRLGFLHSGTAKSVTCTYSPALNKMFCQLAKTCPVQLWVDSTPPPGTRVRAMAIYKQSQHMTEVVRRCPHHERCSDSDGLAPPQHLIRVEGNLRVEYLDDRNTFRHSVVVPYEPPEVGSDCTTIHYNYMCNSSCMGGMNRRPILTIITLEDSSGNLLGRNSFEVRVCACPGRDRRTEEENLRKKGEPHHELPPGSTKRALPNNTSSSPQPKKKPLDGEYFTLQIRGRERFEMFRELNEALELKDAQAGKEPGGSRAHSSHLKSKKGQSTSRHKKLMFKTEGPDSD"
-
-gradethis::grade_result(
-  pass_if(~ sum(ggplot2::ggplot_build(barplot_aa_freq(p53_human))$data[[1]]$y) == 1),
-  pass_if(~ length(ggplot2::ggplot_build(barplot_aa_freq(p53_human))$data[[1]]$y) == 20)
+```{r exoreduction-check }
+gradethis::grade_result_strict(
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="mean")), 0) == 0),
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="median")), 0) == 1),
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="median", disp_method="iqr")), 1) == 0.4),
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="median", disp_method="mad")), 1) == 0.5),  
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="median", disp_method="sd")), 1) == 0.5),
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="mean", disp_method="iqr")), 1) == 0),
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="mean", disp_method="mad")), 1) == 0),  
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="mean", disp_method="sd")), 1) == 0)
 )
-
 ```
 </div>
 
+
+
+<div class="exo">
+
+- Soit la fonction `standardization()` développée auparavant. Evaluez son effet sur les colonnes de la matrice `iris` en utilisant la fonction boxplot. Testez plusieurs paramètres pour la fonction `standardization()`.
+
+```{r standardization, echo=FALSE}
+standardization <- function(x, 
+                      centering_method=c("mean", "median"),
+                      disp_method=c("sd", "mad", "iqr"),
+                      mean_trim=0
+                      ){
+  
+  centering_method <- match.arg(centering_method)
+  disp_method <- match.arg(disp_method)
+  
+  if(centering_method == "mean"){
+    x <- x - mean(x, trim=mean_trim)
+  }else{
+    x <- x - median(x)
+  }
+  
+  if(disp_method == "sd"){
+    x <- x / sd(x)
+  }else if(disp_method == "mad") {
+    x <- x / mad(x)
+  }else{
+    x <- x / IQR(x)
+  }
+  return(x)
+}
+```
+
+
+
+```{r exofinal, exercise=TRUE , exercise.setup="standardization"}
+data(iris)
+iris <- iris[, 1:4]
+boxplot(iris, horizontal=TRUE, las=1)
+iris_std <- apply(iris, 2, standardization, centering_method="mean", disp_method="sd")
+boxplot(iris_std, horizontal=TRUE, las=1)
+```
+
+```{r exofinal-solution}
+par(mfrow=c(2,3))
+data(iris)
+iris <- iris[, 1:4]
+boxplot(iris, horizontal=TRUE, las=1)
+iris_std <- apply(iris, 2, standardization, centering_method="mean", disp_method="sd")
+boxplot(iris_std, horizontal=TRUE, las=1, main="mean(x) / sd(x)")
+iris_std <- apply(iris, 2, standardization, centering_method="mean", disp_method="mad")
+boxplot(iris_std, horizontal=TRUE, las=1,  main="mean(x) / mad(x)")
+iris_std <- apply(iris, 2, standardization, centering_method="mean", disp_method="iqr")
+boxplot(iris_std, horizontal=TRUE, las=1,  main="mean(x) / iqr(x)")
+iris_std <- apply(iris, 2, standardization, centering_method="median", disp_method="mad")
+boxplot(iris_std, horizontal=TRUE, las=1, main="median(x) / mad(x)")
+iris_std <- apply(iris, 2, standardization, centering_method="median", disp_method="iqr")
+boxplot(iris_std, horizontal=TRUE, las=1,  main="median(x) / iqr(x)")
+
+```
+
+</div>
 
 
 ### C'est fini
