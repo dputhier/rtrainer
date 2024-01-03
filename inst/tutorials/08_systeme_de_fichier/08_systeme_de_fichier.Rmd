@@ -265,14 +265,10 @@ gradethis::grade_result(
 
 Par défaut, R ne propose par de fonctions permettant de visualiser l'arborescence sous la forme d'un arbre. Cependant cette fonctionnalité est proposée par la librairie de fonctions `fs` (Cross-Platform **F**ile **S**ystem Operations). Nous allons donc la charger (elle devrait être pré-installée) avec la fonction `library()`.
 
-
-```{r fs, exercise=TRUE }
-library(fs)
-```
-
 Ensuite on peut faire appel à la fonction `dir_tree()`.
 
 ```{r dir_tree, exercise=TRUE, exercise.setup="exorecap"}
+library(fs)
 dir_tree(file.path(tmp_dir_path, "all_projects"))
 ```
 
