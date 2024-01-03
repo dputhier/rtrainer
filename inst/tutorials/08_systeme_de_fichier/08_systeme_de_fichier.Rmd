@@ -265,14 +265,10 @@ gradethis::grade_result(
 
 Par défaut, R ne propose par de fonctions permettant de visualiser l'arborescence sous la forme d'un arbre. Cependant cette fonctionnalité est proposée par la librairie de fonctions `fs` (Cross-Platform **F**ile **S**ystem Operations). Nous allons donc la charger (elle devrait être pré-installée) avec la fonction `library()`.
 
-
-```{r fs, exercise=TRUE }
-library(fs)
-```
-
 Ensuite on peut faire appel à la fonction `dir_tree()`.
 
 ```{r dir_tree, exercise=TRUE, exercise.setup="exorecap"}
+library(fs)
 dir_tree(file.path(tmp_dir_path, "all_projects"))
 ```
 
@@ -552,6 +548,8 @@ sultan <- read.table(file = url,
 - Pour la fonction plot essayer plusieurs valeurs numérique pour l'argument `pch` (*point character*).
 - Regardez l'aide sur la fonction `densCols()` et représentez la densité en point par un gradient de couleurs.
 
+- Créez un nouveau diagramme dans lequel les points de coordonnées 0,0 sont éliminés...
+
 ```{r modencodefly, exercise=TRUE , exercise.setup="readtabledist"}
 
 ```
@@ -571,6 +569,16 @@ cols <- densCols(modencodefly$SRX008027, modencodefly$SRX008018,
                  colramp = colorRampPalette(rainbow(5)))
 plot(modencodefly$SRX008027, 
      modencodefly$SRX008018, 
+     pch=16, col=cols, 
+     xlab="SRX008027", ylab="SRX008018")
+
+
+# Diagramme 2
+test <- modencodefly$SRX008027 > 0 &  modencodefly$SRX008018 > 0
+cols <- densCols(modencodefly$SRX008027[test], modencodefly$SRX008018[test], 
+                 colramp = colorRampPalette(rainbow(5)))
+plot(modencodefly$SRX008027[test], 
+     modencodefly$SRX008018[test], 
      pch=16, col=cols, 
      xlab="SRX008027", ylab="SRX008018")
 

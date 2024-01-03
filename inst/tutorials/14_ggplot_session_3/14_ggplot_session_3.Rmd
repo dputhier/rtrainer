@@ -314,7 +314,7 @@ ggplot(data = diamonds, aes(x = cut, fill=clarity)) +
 
 <div class="exo">
 
-- Créez un graphique comme celui donné ci-dessous qui compare les longueurs de sépale (`Sepal.Length`) pour chaque espèce de fleurs (`Species`) dans le jeu de données iris (`data(iris)`). Le graphique doit montrer les distributions sous forme de boîtes (`geom_boxplot()`) avec des points *jittered* (`geom_jitter()`) pour visualiser chaque observation individuelle. Les axes doivent être renommés "Espèces" et "Longueurs des sépales". Chaque espèce est associée à une couleur de boîte ('fill'). 
+- Créez un graphique comme celui donné ci-dessous qui compare les longueurs de sépale (`Sepal.Length`) pour chaque espèce de fleurs (`Species`) dans le jeu de données iris (`data(iris)`). Le graphique, stocké dans une variable `p`, doit montrer les distributions sous forme de boîtes (`geom_boxplot()`) avec des points *jittered* (`geom_jitter()`) pour visualiser chaque observation individuelle. Les axes doivent être renommés "Espèces" et "Longueurs des sépales". Chaque espèce est associée à une couleur de boîte ('fill'). 
 
 ```{r, echo=FALSE, fig.height=4}
 library(ggplot2)

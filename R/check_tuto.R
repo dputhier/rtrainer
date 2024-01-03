@@ -43,7 +43,7 @@ check_tuto <- function(paths=NULL){
       # Does the chunk have a solution
       has_solution <- sapply(chunk_names, function(x,y) paste0(x, "-solution") %in% y, chunk_names)
       
-      atest <- !is.na(chunk_names) & !has_solution & !grepl("-check$", chunk_names)
+      atest <- !is.na(chunk_names) & !has_solution & !grepl("-check$", chunk_names) & !"get_aa_liste_test2" %in% chunk_names
       print_msg(paste0(">>> Unselected chunks : ", names(chunk_list[!atest])))
       chunk_list <- chunk_list[atest]
       print_msg(paste0(">>> Selected chunks : ", names(chunk_list)))
