@@ -240,9 +240,9 @@ plot(mat[, 1], mat[, 2])
 learnr::question("Quel est le comportement de R quand on utilise la fonction plot ?",
   answer("Si le premier argument est un matrice, R représente au hasard deux colonnes de la matrice ?"),
   answer("Si les entrées sont deux vecteurs a et b, R affiche pour chaque position $i$ $a_{i}$ *versus* $b_{i}$.", correct = TRUE),
-  answer("Si le premier argument est vecteur, R affiche au hasard les valeurs du vecteur."),
+  answer("Si le premier argument est un vecteur, R affiche au hasard les valeurs du vecteur."),
     answer("Si le premier argument est un matrice, R représent la colonne 1 sur l'axe des x *versus* la colonne 2 sur l'axe des y ?", correct = TRUE),
-  answer("Si le premier argument est vecteur, R affiche en x la position dans le vecteur et en y la valeur correspondante.", correct = TRUE),
+  answer("Si le premier argument est vecteur (et que l'argument y n'est pas renseigné), R affiche en x la position dans le vecteur et en y la valeur correspondante.", correct = TRUE),
   answer("Si le premier argument est une matrice, R affiche en x la position dans le vecteur et en y la colonne correspondante."),
   allow_retry = TRUE 
 )
