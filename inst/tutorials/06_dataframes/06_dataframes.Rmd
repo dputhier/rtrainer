@@ -217,7 +217,7 @@ On pourra de la même manière **convertir une matrice en `data.frame` avec `as.
 
 <div class="exo">
 
-- Les objets `data.frame` contenant potentiellement autre chose que des valeurs numériques la fonction `hist()` ne les acceptera pas par défaut. Convertissez le `data.frame*`suivant en matrice (objet $mat$) et passez cette matrice à la fonction `hist()` pour construire l'histogramme correspondant.  
+- Les objets `data.frame` contenant potentiellement autre chose que des valeurs numériques la fonction `hist()` ne les acceptera pas par défaut. Convertissez le `data.frame`suivant en matrice (objet $mat$) et passez cette matrice à la fonction `hist()` pour construire l'histogramme correspondant.  
 
 ```{r dataframe03, exercise=TRUE}
 set.seed(123)
@@ -245,8 +245,9 @@ hist(mat, breaks=100)
 ```
 
 ```{r dataframe03-check }
-gradethis::grade_result(
-  pass_if(~ round(sum(mat), 0) == 149723)
+gradethis::grade_result_strict(
+  pass_if(~ round(sum(mat), 0) == 149723), 
+  pass_if(~ is.matrix(mat) == TRUE)
 )
 ```
 </div>
