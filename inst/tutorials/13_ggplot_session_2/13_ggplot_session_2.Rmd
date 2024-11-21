@@ -139,18 +139,17 @@ knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=
 gradethis::gradethis_setup()
 ```
 
-## Histogrammes
+## Histograms
 
-### Histogrammes simples
+### Simple Histograms
 
-L'analyse des **distributions** est **une étape cruciale dans l'exploration de données** et dans la compréhension des caractéristiques d'un jeu de données. Avec ggplot2, nous pouvons facilement créer des graphiques tels que des **histogrammes, des diagrammes de densité, des boîtes à moustache ou des diagrammes en violon** pour analyser les distributions. 
+Analyzing **distributions** is **a crucial step in data exploration** and understanding the characteristics of a dataset. With ggplot2, we can easily create plots such as **histograms, density plots, boxplots, or violin plots** to analyze distributions.
 
-Pour créer un histogramme pour la variable "price" du jeu de données "diamonds", nous utilisons la fonction geom_histogram(). Dans le cas de l'histogramme, l'axe des x correspond à des intervals (*bins*) et l'axe des y au nombre de fois où les valeurs de comptage sont observées dans ces intervalles. Il n'y aura donc qu'une seule variable à fournir pour la fonction `aes()`.
+To create a histogram for the "price" variable in the "diamonds" dataset, we use the `geom_histogram()` function. For a histogram, the x-axis represents intervals (*bins*), and the y-axis represents the count of observations within these intervals. Therefore, only one variable needs to be provided to the `aes()` function.
 
 ```{r convert, exercise=TRUE}
-## Chargeons la librairie ggplot2
 library(ggplot2)
-## Ensuite chargeons le jeu de données chickwts
+
 data(diamonds, package = "ggplot2")
 
 p <- ggplot(data = diamonds, aes(x = price)) +
@@ -163,11 +162,11 @@ p <- ggplot(data = diamonds, aes(x = price)) +
 print(p)
 ```
 
-Dans cet histogramme, nous avons utilisé un intervalle de classe de 1000\$ pour regrouper les valeurs de la variable `price` (0-1000\$, 1000-2000\$, 2000-3000\$...). Le graphique affiche la fréquence des prix de diamants dans chaque intervalle de classe.
+In this histogram, we used a class interval of \$1000 to group the values of the `price` variable (\$0-\$1000, \$1000-\$2000, \$2000-\$3000, ...). The plot displays the frequency of diamond prices within each class interval.
 
 <div class="exo">
 
-- Le paramètre important d'un histogramme est la taille de l'intervalle. Ici, dans la fonction `geom_histogram` il est contrôlé par l'argument `binwidth` (taille des intervalles) ou `bins` (nombre d'intervalles). Effectuez des histogrammes avec des tailles d'intervalles de 250\$, 500\$, 1000\$ et 10000\$.
+- The key parameter of a histogram is the interval size. Here, in the `geom_histogram` function, it is controlled by the `binwidth` argument (interval size) or `bins` (number of intervals). Create histograms with interval sizes of \$250, \$500, \$1000, and \$10000.
 
 ```{r bins, exercise=TRUE, exercise.setup="convert"}
 ggplot(data = diamonds, aes(x = price)) +
@@ -187,13 +186,14 @@ ggplot(data = diamonds, aes(x = price)) +
 </div>
 
 
-### Histogrammes superposés
+### Overlapping Histograms
 
-Dadre le cadre de `geom_point()` la **géométrie est un point** et on peut associer une variable à la coloration des points. Ici, pour un **histogramme**, c'est la même chose sauf que la **géométrie est un histogramme**. Si on utilise `cut` pour la couleur on obtiendra des histogrammes de couleurs différente.
+In the context of `geom_point()`, the **geometry is a point**, and a variable can be associated with the color of the points. For a **histogram**, it is the same concept, except the **geometry is a histogram**. If we use `cut` for the color, we will obtain histograms with different colors.
 
 <div class="exo">
 
-- Complétez le code suivant afin que la coloration soit associée à la qualité de la coupe (`cut`) des diamants. Affectez les couleur de votre choix avec `scale_fill_manual()`
+- Complete the following code so that the coloring is associated with the quality of the cut (`cut`) of the diamonds. Assign colors of your choice using `scale_fill_manual()`.
+
 
 ```{r histocut, exercise=TRUE , exercise.setup="convert"}
 col_palette <- c("Ideal" = "#A22200", ___)
@@ -222,11 +222,12 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-**On voit ici la limite de l'histogramme pour visualiser les distribution**. Dans le cas présent, une autre solution pour analyser les distribution des prix d'utiliser l'analyse de densité. Nous verrons plus tard qu'il est aussi possible de réaliser des panels d'histogrammes (facettes).
+**Here we see the limitation of the histogram for visualizing distributions**. In this case, another solution to analyze price distributions is to use density analysis. Later, we will also see that it is possible to create histogram panels (facets).
 
-## Profils de densités
+## Density Profiles
 
-Le graphique de densité est un autre moyen de visualiser la distribution des valeurs d'une variable numérique. On peut le réaliser à l'aide de la fonction `geom_density()`. La fonction `geom_density()` affiche un modèle de distribution qui cherche à épouser au mieux les données de l'histogramme. Il s'agit cependant d'un modèle et le paramètre `adjust` de cette fonction peut agir fortement sur la représentation. Suivant la valeur de àdjust` le modèle pourra avoir plus ou moins tendance à être sur- ou sous-ajusté.
+The density plot is another way to visualize the distribution of values in a numeric variable. It can be created using the `geom_density()` function. The `geom_density()` function displays a distribution model that aims to closely fit the histogram data. However, it is a model, and the `adjust` parameter of this function can significantly influence the representation. Depending on the value of `adjust`, the model may tend to be over- or under-fitted.
+
 
 ```{r adjust, exercise=TRUE, exercise.setup="convert"}
 ggplot(data = diamonds, aes(x = price)) +
@@ -235,7 +236,8 @@ ggplot(data = diamonds, aes(x = price)) +
 
 <div class="exo">
 
-- Refaites le diagramme de densité précédent avec les valeurs suivantes pour adjust:  1, 3/4, 1/2, 1/4 et 1/8. 
+- Recreate the previous density plot using the following values for `adjust`: 1, 3/4, 1/2, 1/4, and 1/8.
+
 
 ```{r vardens, exercise=TRUE, exercise.setup="convert"}
 ggplot(data = diamonds, aes(x = price)) + geom_density(adjust = 1)
@@ -253,7 +255,7 @@ ggplot(data = diamonds, aes(x = price)) + geom_density(adjust = 1/8)
 
 <div class="exo">
 
-- Complétez le code pour produire un diagramme dans lequel les densités pour les différentes tailles (`cut`) sont représentées avec une couleur de bordure pour chacune d'entre elles. Appliquez vos propres couleurs.
+- Complete the code to produce a plot where the densities for the different cuts (`cut`) are represented with a unique border color for each. Apply your own colors.
 
 ```{r vardens_2, exercise=TRUE, exercise.setup="convert"}
 p <- ggplot(data = diamonds, aes(x = price, ___ )) + 
@@ -285,7 +287,7 @@ gradethis::grade_result_strict(
 
 <div class="exo">
 
-- Complétez le code pour produire un diagramme dans lequel les densités pour les différentes tailles (`cut`) sont représentées avec une couleur de remplissage pour chacune d'entre elles. Appliquez vos propres couleurs.
+- Complete the code to produce a plot where the densities for the different cuts (`cut`) are represented with a unique fill color for each. Apply your own colors.
 
 ```{r vardens_3, exercise=TRUE, exercise.setup="convert"}
 p <- ggplot(data = diamonds, aes(x = price, ___ )) + 
@@ -315,34 +317,33 @@ gradethis::grade_result_strict(
 
 </div>
 
-## Boîtes à moustaches et diagrammes en violon
+## Boxplots and Violin Plots
 
-Les boîtes à moustaches (**boxplots**) et diagrammes en violon (**violin plots**) peuvent être utilisés pour représenter les distributions associées à un jeu de données. On donne ci-dessous quelques exemples.
+Boxplots (**boxplots**) and violin plots (**violin plots**) can be used to represent distributions associated with a dataset. Below are some examples.
 
-Comme toujours, pour créer notre diagramme on va tout d'abord :
+As always, to create our plot we will first:
 
-- *(i)* associer des données (data.frame ou tibble) à un object (`data=diamonds`). 
-- *(ii)* définir **les variables/colonnes du data.frame que l'on souhaite analyser** et les passer à la fonction **aes()**. 
+- *(i)* Associate data (data.frame or tibble) with an object (`data=diamonds`).
+- *(ii)* Define **the variables/columns of the data.frame to analyze** and pass them to the **aes()** function.
 
-Pour un **boxplot** ou un **violin plots**, les **variable esthétiques** acceptées sont globalement les mêmes que pour **geom_points**. Cependant, une différence majeure est que la variable *x* est obligatoirement un facteur (qui indique les noms des boîtes sur l'axe des *x*) et la variable *y* est obligatoirement un numérique (les valeurs prises par chacune des modalités). 
-
+For a **boxplot** or **violin plot**, the **aesthetic variables** accepted are generally the same as for **geom_points**. However, a key difference is that the *x* variable must be a factor (indicating the names of the boxes on the *x* axis) and the *y* variable must be numeric (the values taken by each category).
 
 ```{r firstgg2, exercise=TRUE , exercise.setup="convert" }
-# On crée le diagramme en passant 
-# à la fonction ggplot le data.frame
-# (diamonds) et le résultat de la fonction
-# aes() qui permet d'associer des noms de 
-# colonnes aux éléments d'esthétique.
+# We create the plot by passing 
+# the data.frame (diamonds) and the result 
+# of the aes() function to ggplot. 
+# The aes() function associates column names 
+# with aesthetic elements.
 p <- ggplot(data=diamonds, aes(x=cut, y=price))
 
-## On ajoute ensuite une géométrie
+## We then add a geometry
 p.bp <- p + geom_boxplot()
 print(p.bp)
 ```
 
 <div class="exo">
 
-- Sachant que `geom_boxplot()` et `geom_violin()` partagent les mêmes éléments d'esthétique, complétez le code suivant. Celui-ci permet de créez un diagramme en violon dans lequel les couleurs des violons correspondent au type de taille (`cut`).
+- Since `geom_boxplot()` and `geom_violin()` share the same aesthetic elements, complete the following code. This code creates a violin plot where the colors of the violins correspond to the cut type (`cut`).
 
 ```{r violin, exercise=TRUE , exercise.setup="convert" }
 col_palette <- c("Ideal" = "#A222A0", ___)
@@ -377,13 +378,14 @@ gradethis::grade_result_strict(
 
 </div>
 
-## Superposer des éléments graphiques
+## Overlaying Graphical Elements
 
-### Exemple autour du violin plot
+### Example with the Violin Plot
 
-Le modèle sous-jacent à ggplot permet de superposer relativement facilement des couches graphiques.
+The underlying ggplot model allows for relatively easy layering of graphical elements.
 
-Soit le diagramme précédent, $p$, produit  avec la géométrie `geom_violin()`.
+Consider the previous plot, $p$, created with the `geom_violin()` geometry.
+
 
 ```{r violinprepare, exercise=TRUE, exercise.setup="convert" }
 library(ggplot2)
@@ -398,7 +400,7 @@ p + geom_violin(color="black") +
   scale_fill_manual(values=col_palette)
 ```
 
-On pourrait souhaiter voir les points ayant permis la construction du modèle en violon. On pourrait se dire qu'on peut tout simplement ajouter une géométrie type `geom_points()`. Rien de plus simple il suffit d'ajouter une couche `geom_point()` à l'aide de l'opérateur d'addition (`+`). Les esthétiques sont héritées et donc `x=cut` et `y=price`sont passé naturellement à `geom_point()`. Un des soucis est que les points sont alignés verticalement...
+You might want to visualize the points that were used to construct the violin model. One might think to simply add a `geom_points()` geometry. Nothing could be easier: just add a `geom_point()` layer using the addition operator (`+`). The aesthetics are inherited, so `x=cut` and `y=price` are naturally passed to `geom_point()`. One issue is that the points are aligned vertically...
 
 ```{r violinvspoints, exercise=TRUE, exercise.setup="violinprepare"}
 col_palette <- c("Ideal" = "#A22200", 
@@ -413,7 +415,7 @@ p <- p + geom_violin(color="black") +
 print(p)
 ```
 
-On peut y remedier en utilisant plutôt `geom_jitter()` (plutôt que `geom_point()`) qui va ajouter **un peu de bruit sur l'axe des x** afin de déplacer les points des lignes verticales.
+This can be resolved by using `geom_jitter()` (instead of `geom_point()`), which adds **a bit of noise to the x-axis** to offset the points from the vertical lines.
 
 ```{r violinvsjitter, exercise=TRUE, exercise.setup="violinprepare"}
 col_palette <- c("Ideal" = "#A22200", 
@@ -428,7 +430,7 @@ p <- p + geom_violin(color="black") +
 print(p)
 ```
 
-Ce n'est pas idéale ici car nous avons beaucoup de points dans chacune des classes. On peut plutôt inverser les couches.
+This is not ideal here because we have many points in each class. Instead, we can reverse the layers.
 
 ```{r violinvsjitter_2, exercise=TRUE, exercise.setup="violinprepare"}
 col_palette <- c("Ideal" = "#A22200", 
@@ -445,7 +447,7 @@ print(p)
 
 <div class="exo">
 
-- Complétez le code précédant pour que les points aient la même couleur que les violons.
+- Complete the previous code so that the points have the same color as the violins.
 
 ```{r violinjittercol, exercise=TRUE , exercise.setup="violinprepare"}
 col_palette <- c("Ideal" = "#A22200", 
@@ -489,6 +491,7 @@ gradethis::grade_result_strict(
 
 </div>
 
-### C'est fini
 
-Merci d'avoir suivi ce tutoriel.
+### End of the section
+
+Thank you for following this tutorial.

@@ -140,91 +140,88 @@ knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=
 gradethis::gradethis_setup()
 ```
 
-## Principe et syntaxe
+When developing **computer code**, we often need to **ask the system questions** about the **contents of a variable** or multiple variables (e.g., has the user submitted an existing file, provided a valid response, or entered a password?). This is the **purpose of conditional structures**.
 
-Lorsque l'on développe un **code informatique** on a généralement besoin de **poser des questions au système** à propos du  **contenu d'une variable** ou plusieurs variables (e.g. l'utilisateur a-t-il soumis un fichier qui existe, a-t-il soumis une réponse valide, l'utilisateur a-t-il un mot de passe ?). C'est l'**objectif des structures conditionnelles**.
-
-Une structure conditionnelle **permet de tester si une condition est vraie ou fausse**. Ces structures conditionnelles **évaluent** de manière générale **un test renvoyant une variable logique** (vrai/faux):
+A conditional structure **allows testing whether a condition is true or false**. These conditional structures generally **evaluate** a test that returns a **logical variable** (true/false):
 
   - a > 4
   - b < 4
   - 5 < b & b < 10
   - a == 'hamster'
-  - a %in% c('hamster', 'chien', 'chat')
+  - a %in% c('hamster', 'dog', 'cat')
   - ...
 
-Dans la structure **if/else classique, on exécutera un certain nombre d'instructions si la condition est vraie, et un autre jeu d'intructions si celle-ci s'avère fausse**.
+In the **classic if/else structure, a set of instructions is executed if the condition is true, and a different set of instructions is executed if the condition is false**.
 
 ```
-x <- 3 < 4
+b <- 3
 
-if(x) {
-  
-  cat("C'est vrai.\n")
-  cat("Je confirme.")
-  
+if(b < 4) {
+
+  cat("It's true.\n")
+  cat("I confirm.")
+
 } else {
+
+  cat("It's false.\n")
+  cat("I confirm that it's false!")
+
+}
+```
+
+You may also encounter **if without else**.
+
+```
+
+if(b < 4) {
   
-  cat("C'est faux.\n")
-  cat("Je confirme que c'est faux !")
+  cat("It's true.\n")
+  cat("I confirm.")
   
 }
 ```
 
-On pourra aussi rencontrer **if sans else**.
-
-```
-x <- 4 > 3 & 5 < 6
-
-if(x) {
-  
-  cat("C'est vrai.\n")
-  cat("Je confirme.")
-  
-}
-```
-
-On encore **if/else if/else**.
+Or even **if/else if/else**.
 
 ```
 x <- 3
 
 if(x == 1) {
   
-  cat("x vaut 1.\n")
+  cat("x is 1.\n")
   
-}else if(x==2){
+} else if(x == 2) {
   
-  cat("x vaut 2.\n")
+  cat("x is 2.\n")
   
-}else{
+} else {
   
-    cat("x ne vaut pas 1 ou 2.\n")
+  cat("x is neither 1 nor 2.\n")
 }
 ```
 
-## La fonction ifelse()
+## The ifelse() Function
 
-En plus de la construction des constructions classiques que nous venons de voir et qui sont retrouvées dans de nombreux langages, R propose une version vectorisée. Cette fonction, `ifelse()` permet d'itérer sur un vecteur. La forme est la suivante :
+In addition to the classic constructions we just reviewed, which are found in many programming languages, R offers a vectorized version. The `ifelse()` function allows iteration over a vector. Its syntax is as follows:
 
 ```
-ifelse(vecteur booléen,  valeur_renvoyée_si_la_position_est_vrai,
-       valeur_renvoyée_si_la_position_est_fausse)
+ifelse(boolean_vector, value_returned_if_position_is_true,
+       value_returned_if_position_is_false)
 ```
 
-Ci-dessous un exemple plus concret.
+A more concret example:
 
 ```{r ifelsevector, exercise=TRUE}
 set.seed(123)
 x <- sample(c(1,2), size=10, replace=TRUE)
 print(x)
-x <- ifelse(x == 1,'chat', 'hamster')
+x <- ifelse(x == 1, 'chat', 'hamster')
 print(x) 
 ```
 
 <div class="exo">
 
-- On pourrait parvenir au même résultat que le résultat précédent en transformant x en facteur, en modifiant les niveau et en transformant x en chaîne de caractères. Quel serait le code ?
+- You could achieve the same result as the previous one by converting x into a factor, modifying the levels, and then converting x into a character string. What would the code look like?
 
 ```{r exoifelse, exercise=TRUE }
 set.seed(123)
@@ -232,12 +229,11 @@ x <- sample(c(1,2), size=10, replace=TRUE)
 ```
 
 ```{r exoifelse-solution}
-# sur plusieurs lignes
 x <- factor(x)
-levels(x) <- c('chat', 'hamster')
+levels(x) <- c('cat', 'hamster')
 x <- as.character(x)
-# ou sur une seule...
-x <- as.character(factor(x, levels = c('chat', 'hamster')))
+# or in a single line...
+x <- as.character(factor(x, levels = c('cat', 'hamster')))
 ```
 </div>
 
@@ -245,11 +241,11 @@ x <- as.character(factor(x, levels = c('chat', 'hamster')))
 
 <div class="exo">
 
-- Téléchargez le fichier suivant au format tabulé et contenant des informations sur 10 000 transcrits humains. Ces informations ont été obtenues à partir de la base de données [ensembl](https://www.ensembl.org/index.html). 
-- Affichez les noms de colonnes.
-- En utilisant la fonction `ifelse()` Créez une nouvelle colonne nommée *mono_exonic* dont la valeur sera 'mono' si le transcrit contient un exon (colonne `nb_exons`) ou 'multi' sinon.
-- Utilisez `table()` pour compter les occurrences de *mono* et *multi* dans la colonne *mono_exonic*. Stockez le résultat dans `count_mono_exonic`.
-- Représentez `count_mono_exonic` avec la fonction `barplot()`.
+- Download the following tab-delimited file containing information on 10,000 human transcripts. This information was obtained from the [ensembl](https://www.ensembl.org/index.html) database.
+- Display the column names.
+- Using the `ifelse()` function, create a new column named *mono_exonic* with the value 'mono' if the transcript contains one exon (column `nb_exons`), or 'multi' otherwise.
+- Use `table()` to count the occurrences of *mono* and *multi* in the *mono_exonic* column. Store the result in `count_mono_exonic`.
+- Represent `count_mono_exonic` with the `barplot()` function.
 
 
 ```{r txGRCh38, exercise=TRUE, exercise.lines=6}
@@ -276,6 +272,6 @@ gradethis::grade_result(
 </div>
 
 
-### C'est fini
+### End of the section
 
-Merci d'avoir suivi ce tutoriel.
+Thank you for following this tutorial.

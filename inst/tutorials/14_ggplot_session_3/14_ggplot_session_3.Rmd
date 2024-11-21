@@ -140,31 +140,31 @@ gradethis::gradethis_setup()
 ```
 
 
-## Diagrammes à barres simples
+## Simple Bar Charts
 
-La fonction **geom_bar()** est utilisée dans ggplot2 pour créer des **diagrammes à barres**, qui sont particulièrement adaptés pour représenter des données catégorielles. Cette fonction permet de construire des **barres verticales ou horizontales** en fonction des **variables spécifiées dans l'esthétique x et y** de la fonction `aes()`.
+The **geom_bar()** function in ggplot2 is used to create **bar charts**, which are particularly suited for representing categorical data. This function allows you to construct **vertical or horizontal bars** based on the **variables specified in the x and y aesthetics** of the `aes()` function.
 
-Dans cet exemple, nous allons créer un **graphique à barres** pour représenter la fréquence des différentes tailles de diamants (`cut`) dans le jeu de données `diamonds`. **La fonction va compter le nombre d'occurrence de tailles 'Fair', 'Good' 'Very Good'...**
-L'argument `position = "dodge"` permet de placer les barres côte à côte, ce qui facilite la comparaison des fréquences entre les différentes catégories. A notez ci-dessous l'utilisation de `labs()` qui permet de contrôler les **noms des axes**.
+In this example, we will create a **bar chart** to represent the frequency of different diamond cuts (`cut`) in the `diamonds` dataset. **The function will count the number of occurrences of each cut: 'Fair', 'Good', 'Very Good', etc.** 
+The `position = "dodge"` argument places the bars side by side, making it easier to compare frequencies across different categories. Note below the use of `labs()`, which allows control over the **axis labels**.
 
 ```{r convert, exercise=TRUE}
-## Chargeons la librairie ggplot2
+## Load the ggplot2 library
 library(ggplot2)
-## Ensuite chargeons le jeu de données chickwts
+## Next, load the chickwts dataset
 data(diamonds, package = "ggplot2")
 
 p <- ggplot(data = diamonds, aes(x = cut, fill = cut)) +
      geom_bar(position = "dodge") +
-     labs(title = "Nombre de Coupes de Diamants",
-          x = "Coupe",
-          y = "Nombre")
+     labs(title = "Number of Diamond Cuts",
+          x = "Cut",
+          y = "Count")
 
 print(p)
 ```
 
 <div class="exo">
 
-- Modifier le code suivant pour associer une couleur à chaque barre.
+- Modify the following code to associate a unique color with each bar.
 
 ```{r barplotcol, exercise=TRUE , exercise.setup="convert"}
 p <- ggplot(data = diamonds, aes(x = cut)) +
@@ -217,28 +217,29 @@ p <- ggplot(data = diamonds, aes(x = cut, fill=clarity)) +
 print(p)
 ```
 
-Notez que `clarity` est une **variable catégorielle ordinale** et ggplot choisit donc, naturellement, un **gradient discret de couleurs** pour les représenter. 
+Note that `clarity` is an **ordinal categorical variable**, and ggplot naturally chooses a **discrete color gradient** to represent it.
 
 ```{r clarity, exercise=TRUE, exercise.setup="convert" }
 head(diamonds$clarity)
 ```
 
-Comme dans les exemples précédents, on pourra changer les couleurs avec `scale_fill_manual`. On peut cependant, à ce stade, introduire une nouvelle function, `scale_fill_brewer()`, qui nécessite d'installer la libraire `RColorBrewer`. Pour cette fonction, on devra choisir le nom d'une des palettes renvoyées par `RColorBrewer::display.brewer.all()`. On passera à la fonction le nom d'une des palettes (*e.g*; `scale_fill_brewer(palette='Purples')`)
+As in the previous examples, you can change the colors with `scale_fill_manual`. However, at this stage, we can introduce a new function, `scale_fill_brewer()`, which requires installing the `RColorBrewer` library. For this function, you need to choose the name of one of the palettes displayed by `RColorBrewer::display.brewer.all()`. You pass the palette name to the function (*e.g.*, `scale_fill_brewer(palette='Purples')`).
 
 ```{r RColorBrewer, exercise=TRUE, fig.height=7, exercise.setup="convert"}
 if(!require('RColorBrewer')){install.packages('RColorBrewer')}
 RColorBrewer::display.brewer.all()
 ```
 
-Il existe **trois types de palettes dans `RColorBrewer`: séquentielle, divergente et qualitative**.
+There are **three types of palettes in `RColorBrewer`: sequential, diverging, and qualitative**.
 
-- Les **palettes séquentielles** conviennent aux données ordonnées qui progressent de la valeur la plus faible à la plus élevée. 
-- Les **palettes divergentes** mettent l'accent sur les valeurs critiques moyennes et les extrêmes aux deux extrémités de la plage de données. 
-- Les **palettes qualitatives** conviennent mieux à la représentation de données nominales ou catégorielles.
+- **Sequential palettes** are suitable for ordered data that progresses from the lowest to the highest value.
+- **Diverging palettes** emphasize critical middle values and extremes at both ends of the data range.
+- **Qualitative palettes** are best suited for representing nominal or categorical data.
+
 
 <div class="exo">
 
-- Testez différentes palettes séquentielles de RColorBrewer (Blues, BuGn, BuPu, GnBu, Greens, Greys, Oranges, OrRd, PuBu, PuBuGn, PuRd, Purples, RdPu, Reds, YlGn, YlGnBu, YlOrBr, YlOrRd) pour la représentation.
+- Test different sequential palettes from RColorBrewer (*e.g.* Blues, BuGn, BuPu, GnBu, Greens, Greys, Oranges, OrRd, PuBu, PuBuGn, PuRd, Purples, RdPu, Reds, YlGn, YlGnBu, YlOrBr, YlOrRd) for the representation.
 
 ```{r scalegradient, exercise=TRUE, exercise.setup="RColorBrewer"}
 p <- ggplot(data = diamonds, aes(x = cut, fill=clarity)) +
@@ -260,26 +261,26 @@ print(p)
 
 </div>
 
-## Positionnement des barres
+## Bar Positioning
 
-Dans ggplot2, **l'argument 'position'** de `geom_bar` **conditionne le positionnement des barres** et peux drastiquement changer la perception...
+In ggplot2, the **'position' argument** of `geom_bar` **determines the positioning of the bars** and can drastically change the perception:
 
-- **'Stack' empile les barres** pour représenter des valeurs cumulées, utile pour montrer les totaux et proportions des sous-catégories.
-- **'Dodge' place les barres côte à côte sans chevauchement**, idéal pour comparer directement les valeurs entre catégories.
-- **'Dodge2' est similaire à dodge' mais sépare davantage les barres** en fonction d'une autre variable, créant des groupes côte à côte.
-- **'Fill'** Rempli la totalité de la barre. Utile pour visualiser des proportions/pourcentages.
-- **'Identity'** place les barres les unes devant les autres. Attention c'est rarement ce qu'on veut...
-- **'Jitter'** qui ajoute un peu de bruit sur l'axe des x. Cette argument, dans le contexte du diagramme à barre, a  peu d'intérêt. Là aussi, les barres sont placées les unes devant les autres.
+- **'Stack' stacks the bars** to represent cumulative values, useful for showing totals and proportions of subcategories.
+- **'Dodge' places the bars side by side without overlap**, ideal for directly comparing values between categories.
+- **'Dodge2' is similar to 'dodge' but further separates the bars** based on another variable, creating side-by-side groups.
+- **'Fill'** fills the entire bar. Useful for visualizing proportions/percentages.
+- **'Identity'** places the bars in front of each other. Be cautious, as this is rarely what you want.
+- **'Jitter'** adds a bit of noise to the x-axis. In the context of bar charts, this argument has little value. Again, the bars are placed in front of each other.
 
 <div class="exo">
 
-- Dans le diagramme ci-dessous, changez successivement la position en 'stack', 'dodge' et 'fill'.
+- In the diagram below, change the position successively to 'stack', 'dodge', and 'fill'.
 
 ```{r scalegradient2, exercise=TRUE , exercise.setup="RColorBrewer"}
 
 p <- ggplot(data = diamonds, aes(x = cut, fill=clarity)) +
         geom_bar(position = "___", color="black") +
-       labs(title = "Nombre de type de clarté par Coupe",
+       labs(title = "Number of Clarity Types by Cut",
             x = "Coupe",
             y = "Nombre") + scale_fill_brewer(palette='Oranges')
 print(p)
@@ -288,19 +289,19 @@ print(p)
 ```{r scalegradient2-solution}
 ggplot(data = diamonds, aes(x = cut, fill=clarity)) +
         geom_bar(position = "stack", color="black") +
-       labs(title = "Nombre de type de clarté par Coupe",
+       labs(title = "Number of Clarity Types by Cut",
             x = "Coupe",
             y = "Nombre") + scale_fill_brewer(palette='Purples')
 
 ggplot(data = diamonds, aes(x = cut, fill=clarity)) +
         geom_bar(position = "dodge", color="black") +
-       labs(title = "Nombre de type de clarté par Coupe",
+       labs(title = "Number of Clarity Types by Cut",
             x = "Coupe",
             y = "Nombre") + scale_fill_brewer(palette='Purples')
 
 ggplot(data = diamonds, aes(x = cut, fill=clarity)) +
         geom_bar(position = "fill", color="black") +
-       labs(title = "Proportion des type de clarté par Coupe",
+       labs(title = "Number of Clarity Types by Cut",
             x = "Coupe",
             y = "Proportion") + scale_fill_brewer(palette='Purples')
 
@@ -308,26 +309,27 @@ ggplot(data = diamonds, aes(x = cut, fill=clarity)) +
 
 </div>
 
-## Exercices de consolidation
+## Consolidation Exercises
 
-### Jeu de données Iris
+### Iris Dataset
 
 <div class="exo">
 
-- Créez un graphique comme celui donné ci-dessous qui compare les longueurs de sépale (`Sepal.Length`) pour chaque espèce de fleurs (`Species`) dans le jeu de données iris (`data(iris)`). Le graphique, stocké dans une variable `p`, doit montrer les distributions sous forme de boîtes (`geom_boxplot()`) avec des points *jittered* (`geom_jitter()`) pour visualiser chaque observation individuelle. Les axes doivent être renommés "Espèces" et "Longueurs des sépales". Chaque espèce est associée à une couleur de boîte ('fill'). Le graphique sera contenu dans une variable nommée `p`.
+- Create a plot like the one shown below that compares the sepal lengths (`Sepal.Length`) for each flower species (`Species`) in the iris dataset (`data(iris)`). The plot, stored in a variable `p`, should display the distributions as boxes (`geom_boxplot()`) with jittered points (`geom_jitter()`) to visualize each individual observation. The axes should be renamed "Species" and "Sepal Lengths." Each species should be associated with a unique box color ('fill'). 
+
 
 ```{r, echo=FALSE, fig.height=4}
 library(ggplot2)
 data(iris)
-# Exemple de comparaison de distributions avec des violons
+# Example of comparing distributions with violins
 gg <- ggplot(iris, aes(x = Species, y = Sepal.Length, fill = Species)) +
   geom_boxplot(alpha = 0.7) +
   geom_jitter() +
   scale_fill_brewer(palette='Dark2') +
-  labs(title = "Comparaison des longueurs des sépales par espèce",
-       x = "Espèces",
-       y = "Longueurs des sépales",
-       fill = "Espèces") 
+  labs(title = "Comparison of Sepal Lengths by Species",
+       x = "Species",
+       y = "Sepal Lengths",
+       fill = "Species") 
 
 gg
 ```
@@ -338,15 +340,15 @@ data(iris)
 
 ```{r iris-solution}
 data(iris)
-# Exemple de comparaison de distributions avec des violons
+# Example of comparing distributions with violins
 p <- ggplot(iris, aes(x = Species, y = Sepal.Length, fill = Species)) +
   geom_boxplot(alpha = 0.7) +
   geom_jitter() +
   scale_fill_brewer(palette='Dark2') +
-  labs(title = "Comparaison des longueurs des sépales par espèce",
-       x = "Espèces",
-       y = "Longueurs des sépales",
-       fill = "Espèces") 
+  labs(title = "Comparison of Sepal Lengths by Species",
+       x = "Species",
+       y = "Sepal Lengths",
+       fill = "Species") 
 
 print(p)
 ```
@@ -354,8 +356,8 @@ print(p)
 ```{r iris-check}
 
 gradethis::grade_result_strict(
-  pass_if(~ p$labels$x == "Espèces"),
-  pass_if(~ p$labels$y == "Longueurs des sépales"),
+  pass_if(~ p$labels$x == "Species"),
+  pass_if(~ p$labels$y == "Sepal Lengths"),
   pass_if(~ length(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$fill))) == 3),
   pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBoxplot"),
   pass_if(~ class(p$layers[[2]]$geom)[1] == "GeomPoint")
@@ -363,15 +365,16 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-### Jeu de données ToothGrowth
+### ToothGrowth Dataset
 
 <div class="exo">
 
-- Créez un graphique à violon comme celui donné ci-dessous   pour comparer la distribution de la longueur des dents (`len`) en fonction de la méthode d'administration de la vitamine C (`supp`) dans le jeu de données `ToothGrowth`. 
+- Create a violin plot like the one shown below to compare the distribution of tooth lengths (`len`) based on the method of vitamin C administration (`supp`) in the `ToothGrowth` dataset.
 
-- Les modalités 'OJ' et 'VC' devront être remplacés par 'Orange juice' et 'Ascorbic acid'. 
-- Ajoutez des "rugs" (petites barres) sur le graphique (`geom_rug()`) pour visualiser la distribution des données le long de l'axe y. 
-- Les axes doivent être renommés "Suppléments" et "Longueurs des dents". Chaque violon possède sa propre une couleur ('fill'). 
+- The categories 'OJ' and 'VC' should be replaced with 'Orange juice' and 'Ascorbic acid'.
+- Add "rugs" (small lines) to the plot (`geom_rug()`) to visualize the data distribution along the y-axis.
+- The axes should be renamed "Supplements" and "Tooth Lengths". Each violin should have its own unique color ('fill').
+
 
 ```{r, echo=FALSE, fig.height=4}
 data(ToothGrowth)
@@ -381,11 +384,11 @@ gg <- ggplot(ToothGrowth, aes(x = supp, y = len, fill = supp, color=supp)) +
   geom_rug() +
   scale_fill_brewer(palette='Accent') +
   scale_color_brewer(palette='Accent') +
-  labs(title = "Comparaison de la longueur des dents en fonction de la dose",
-       x = "Suppléments",
-       y = "Longueurs des dents",
-       fill = "Supplément",
-       color="Supplément") 
+  labs(title = "Comparison of Tooth Length by Dose",
+       x = "Supplements",
+       y = "Tooth Lengths",
+       fill = "Supplements",
+       color = "Supplements") 
 gg
 ```
 
@@ -401,19 +404,19 @@ p <- ggplot(ToothGrowth, aes(x = supp, y = len, fill = supp, color=supp)) +
   geom_rug() +
   scale_fill_brewer(palette='Accent') +
   scale_color_brewer(palette='Accent') +
-  labs(title = "Comparaison de la longueur des dents en fonction de la dose",
-       x = "Suppléments",
-       y = "Longueurs des dents",
-       fill = "Supplément",
-       color="Supplément") 
+  labs(title = "Comparison of Tooth Length by Dose",
+       x = "Supplements",
+       y = "Tooth Lengths",
+       fill = "Supplements",
+       color = "Supplements") 
 print(p)
 ```
 
 ```{r ToothGrowth-check}
 
 gradethis::grade_result_strict(
-  pass_if(~ p$labels$x == "Suppléments"),
-  pass_if(~ p$labels$y == "Longueurs des dents"),
+  pass_if(~ p$labels$x == "Supplements"),
+  pass_if(~ p$labels$y == "Tooth Lengths"),
   pass_if(~ length(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$fill))) == 2),
   pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomViolin"),
   pass_if(~ class(p$layers[[2]]$geom)[1] == "GeomRug"),
@@ -423,27 +426,27 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-### Jeu de données palmerpenguins
+### Palmerpenguins Dataset
 
-Pour cet exemple, nous allons utiliser le jeu de données `penguins` du package `palmerpenguins`. Ce jeu de données contient des informations sur les manchots des îles Palmer en Antarctique.
+For this example, we will use the `penguins` dataset from the `palmerpenguins` package. This dataset contains information about penguins from the Palmer Archipelago in Antarctica.
 
 <div class="exo">
 
-- Sur la base du jeux de données penguins, générez un diagramme p identique au diagramme ci-dessous. Dans cet exemple, nous utilisons `flipper_length_mm` (longueur de la nageoire) sur l'axe des $x$, `bill_length_mm` (longueur du bec) sur l'axe des $y$ et `body_mass_g` (masse corporelle) comme taille des points, et `species` (espèce) pour la couleur des points. Vous devrez par ailleurs respecter les noms des axes en $x$ et en $y$.
+- Using the penguins dataset, generate a plot `p` identical to the diagram below. In this example, we use `flipper_length_mm` (flipper length) on the x-axis, `bill_length_mm` (bill length) on the y-axis, and `body_mass_g` (body mass) for the size of the points, with `species` (species) for the color of the points. You must also ensure the axis labels for the x and y axes match the given names.
 
 ```{r, echo=FALSE, fig.height=4, }
 library(palmerpenguins)
 data("penguins")
 penguins <- na.omit(penguins)
 
-# Créer une palette de couleurs personnalisée
+# Create a custom color palette
 palette_couleurs <- c("dodgerblue", "darkorange", "forestgreen")
 
-# Créer le bubble plot coloré
+# Create the colored bubble plot
 p <- ggplot(penguins, aes(x = flipper_length_mm, y = bill_length_mm, size = body_mass_g, color = species)) +
     geom_point(alpha = 0.7) +
     scale_color_manual(values = palette_couleurs) +
-    labs(x = "Longueur de la nageoire (mm)", 
+    labs(x = "Flipper Length (mm)", 
          y = "Longueur du bec (mm)", 
          color = "Espèce", 
          size = "Masse corporelle (g)") 
@@ -463,25 +466,25 @@ library(palmerpenguins)
 data("penguins")
 penguins <- na.omit(penguins)
 
-# Créer une palette de couleurs personnalisée
+# Create a custom color palette
 palette_couleurs <- c("dodgerblue", "darkorange", "forestgreen")
 
-# Créer le bubble plot coloré
+# Create the colored bubble plot
 p <- ggplot(penguins, aes(x = flipper_length_mm, y = bill_length_mm, size = body_mass_g, color = species)) +
     geom_point(alpha = 0.7) +
     scale_color_manual(values = palette_couleurs) +
-    labs(x = "Longueur de la nageoire (mm)", 
-         y = "Longueur du bec (mm)", 
-         color = "Espèce", 
-         size = "Masse corporelle (g)") 
+    labs(x = "Flipper Length (mm)", 
+         y = "Bill Length (mm)", 
+         color = "Species", 
+         size = "Body Mass (g)") 
 print(p)
 ```
 
 ```{r penguins-check }
 
 gradethis::grade_result_strict(
-  pass_if(~ p$labels$x == "Longueur de la nageoire (mm)"),
-  pass_if(~ p$labels$y == "Longueur du bec (mm)"),
+  pass_if(~ p$labels$x == "Flipper Length (mm)"),
+  pass_if(~ p$labels$y == "Bill Length (mm)"),
   pass_if(~ length(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$colour))) == 3),
   pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomPoint"),
   pass_if(~ sum(ggplot2::ggplot_build(p)$data[[1]]$size) > 1300)
@@ -489,6 +492,6 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-### C'est fini
+### End of the section
 
-Merci d'avoir suivi ce tutoriel.
+Thank you for following this tutorial.

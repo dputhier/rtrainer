@@ -146,74 +146,67 @@ gradethis::gradethis_setup()
 ![](img/graph_with_r.jpeg)
 --> 
 
-## Objectifs
+## Objectives
 
-Il est important de pouvoir **communiquer avec le système de fichier** afin de pourvoir **importer/lire** des fichiers ou **exporter/écrire** dans des fichiers. La section suivante présente quelques éléments permettant de **manipuler l'arborescence des fichiers**.
+It is important to be able to **interact with the file system** in order to **import/read** files or **export/write** to files. The following section introduces some elements for **manipulating the file structure**.
 
-## La fonction getwd()
+## The getwd() Function
 
-La fonction `getwd()` (*get working directory*) permet d'afficher **le répertoire de travail courant**. Ce répertoire est le répertoire dans lequel R travail à un instant $t$ et à partir duquel il lira ou dans lequel il écrira **par défaut** (*i.e* si aucun autre dossier de travail n'est spécifié).
+The `getwd()` (*get working directory*) function displays **the current working directory**. This directory is where R is working at a given time $t$ and from which it will read or write **by default** (*i.e.*, if no other working directory is specified).
 
 ```{r getwd, exercise=TRUE}
 getwd()
 ```
 
-## Création de répertoires: dir.create()
+## Creating Directories: dir.create()
 
-La fonction `dir.create()` permet de créer des répertoires. Ici nous allons créer un répertoire dans un dossier système, temporaire, pour ne pas encombrer votre espace de travail.
+The `dir.create()` function is used to create directories. Here, we will create a directory in a temporary system folder to avoid cluttering your workspace.
 
-la fonction `tempdir()` permet de créer **un chemin vers un répertoire temporaire** (sans créer le dossier correspondant). Cette fonction fonctionne **sur tous les systèmes d'exploitation (Windows, OSX, Linux...)**. Elle définira un chemin **à l'intérieur du répertoire parent dédié aux fichiers/dossiers temporaires** (*e.g* le dossier /tmp sous Linux et quelque chose comme C:\\Users\\nom_utilisateur\\AppData\\Local\\Temp sous windows). 
+The `tempdir()` function creates **a path to a temporary directory** (without creating the corresponding folder). This function works **on all operating systems (Windows, OSX, Linux, etc.)**. It defines a path **within the parent directory dedicated to temporary files/folders** (*e.g.*, the /tmp folder on Linux or something like C:\\Users\\username\\AppData\\Local\\Temp on Windows).
 
 ```{r tempdir_0, exercise=TRUE}
 tmp_dir_path <- tempdir()
 print(tmp_dir_path)
 ```
 
-Ou peut **créer, ensuite, le répertoire correspondant** avec la fonction `dir.create()`. Cette fonction est la fonction de référence permettant de créer un dossier étant donné un chemin fourni en entrée. 
+You can **then create the corresponding directory** with the `dir.create()` function. This is the standard function for creating a folder given a specified path as input. Here we specify `showWarnings=FALSE` to avoid any error in case the folder already exists (if you repeat the operation multiple times).
 
 ```{r tempdir, exercise=TRUE, exercise.setup="tempdir_0" }
-if(!dir.exists(tmp_dir_path)){dir.create(tmp_dir_path)}
+dir.create(tmp_dir_path, showWarnings = FALSE)
 ```
 
-**NB:** Ci-dessous, le répertoire est temporaire. Sous Linux il sera délété au prochain redémarrage de la machine (à moins que vous ne le délétiez avant). 
+## The dir() Function
 
-## La fonction dir()
-
-On pourra lister les fichiers dans un répertoire à l'aide de la fonction `dir()` (directory). La valeur renvoyée par `dir()` est un vecteur de chaînes de caractères. **A ce stade notre dossier ne devrait rien contenir**. Cependant ici nous travaillons **dans une application web** et ce pourrait être **un peu différent**, vous pourriez y trouver des fichiers préfixés par *lrn-exa* (ils sont liés aux librairies utilisées pour ce tutoriel). **Ne pas en tenir compte**.
-
+You can list the files in a directory using the `dir()` function. The value returned by `dir()` is a character vector. **At this stage, our folder should be empty.** However, since we are working **in a web application**, this might be **slightly different**; you might find files prefixed with *lrn-exa* (these are related to libraries used for this tutorial). **Ignore them.**
 
 ```{r exodir, exercise=TRUE, exercise.setup="tempdir"}
 dir(tmp_dir_path)
 ```
 
-## la fonction file.path() 
+## The file.path() Function 
 
-### Créer des chemins
+### Creating Paths
 
-On peut utiliser la fonction `file.path()` pour créer un chemin vers un objet (dossier ou fichier). Etant donné que le format des chemins diffère d'un système d'exploitation à l'autre (Linux, Windows, OSX...), en utilisant `file.path` le chemin produit sera adapté à la plateforme  sur laquelle R est installé. L'utilisation de `file.path()` permet donc d'avoir un code compatible entre les différents systèmes d'exploitation.
+You can use the `file.path()` function to create a path to an object (folder or file). Since the format of paths differs between operating systems (Linux, Windows, OSX...), using `file.path` ensures that the generated path will be adapted to the platform where R is installed. Using `file.path()` allows for writing code that is compatible across different operating systems.
 
 ```{r filepath, exercise=TRUE, exercise.setup="tempdir" }
 # Ici on crée 2 chemins différents
 fp <- file.path(tmp_dir_path, "all_projects", "project_1")
 fp
-fp_2 <- file.path(tmp_dir_path, "all_projects", "project_1")
-fp_2
 ```
 
-Ensuite on peut créer les dossiers correspondants avec `dir.create()`. Par défaut `dir.create()` n'accepte pas de créer un dossier enfant si le dossier parent n'existe pas (ici "all_projects"). On le force à accepter de le faire en indiquant `recursive=TRUE`. On indique aussi `showWarnings=FALSE` au cas ou le fichier existe déjà (si vous refaites l'opération plusieurs fois).
+You can then create the corresponding folders using `dir.create()`. By default, `dir.create()` does not allow creating a child folder if the parent folder does not exist (e.g., "all_projects"). You can force it to do so by specifying `recursive=TRUE`.
 
-**NB:** si le dossier n'existe pas la sapply renverra `TRUE` sinon `FALSE`.
 
 ```{r sapply, exercise=TRUE, exercise.setup="filepath" }
 dir.create(fp, recursive=TRUE, showWarnings=FALSE)
-dir.create(fp_2, recursive=TRUE, showWarnings=FALSE)
 ```
 
-### Exercice 
+### Exercise 
 
 <div class="exo">
 
-- Dans **chacun des sous-dossiers du dossier all_projects**, créer un dossier `input`.
+- Create a folder `input` inside **the folder project_1**.
 
 ```{r exomkdir, exercise=TRUE, exercise.setup="sapply"}
 
@@ -221,20 +214,16 @@ dir.create(fp_2, recursive=TRUE, showWarnings=FALSE)
 
 ```{r exomkdir-solution}
 dir.create(file.path(tmp_dir_path, "all_projects", "project_1", 'input'))
-dir.create(file.path(tmp_dir_path, "all_projects", "project_2", 'input'))
 ```
 
 ```{r exorecap, echo=FALSE, exercise.setup="sapply"}
 fp <- file.path(tmp_dir_path, "all_projects", "project_1", "input")
 dir.create(fp, recursive=TRUE, showWarnings=FALSE)
-
-fp_2 <- file.path(tmp_dir_path, "all_projects", "project_2", "input")
-dir.create(fp_2, recursive=TRUE, showWarnings=FALSE)
 ```
 
 <div class="exo">
 
-- Vérifiez que les dossiers existent en listant le contenu de `all_projects` avec `dir()`.
+- Check that the folder exists by listing the contents of `all_projects` using `dir()`.
 
 ```{r dir_test, exercise=TRUE, exercise.setup="exorecap"}
 
@@ -246,8 +235,7 @@ dir(file.path(tmp_dir_path, "all_projects"))
 
 ```{r dir_test-check }
 gradethis::grade_result(
-  pass_if(~ "project_1" %in% .result),
-  pass_if(~ "project_2" %in% .result)
+  pass_if(~ "project_1" %in% .result)
 )
 ```
 </div>
@@ -260,120 +248,43 @@ gradethis::grade_result(
 ```
 </div>
 
+## Changing Directories
 
-### Visualisation de l'arborescence
+The `setwd()` (*set working directory*) function allows you to **navigate the file structure** and move from one directory to another (thus setting a **new working directory**). This new directory will become the default location where R searches for documents (files and folders). You simply pass the name of the target directory to `setwd()`. After using `setwd()`, you can verify your position in the file structure with `getwd()`.
 
-Par défaut, R ne propose par de fonctions permettant de visualiser l'arborescence sous la forme d'un arbre. Cependant cette fonctionnalité est proposée par la librairie de fonctions `fs` (Cross-Platform **F**ile **S**ystem Operations). Nous allons donc la charger (elle devrait être pré-installée) avec la fonction `library()`.
-
-Ensuite on peut faire appel à la fonction `dir_tree()`.
-
-```{r dir_tree, exercise=TRUE, exercise.setup="exorecap"}
-library(fs)
-dir_tree(file.path(tmp_dir_path, "all_projects"))
-```
-
-## Changement de répertoire
-
-La fonction `setwd()` (*set working directory*) permet de **se déplacer dans l'arborescence** et d'aller d'un répertoire à un autre (et donc de définir un **nouveau répertoire de travail**). Ce nouveau répertoire deviendra le répertoire dans lequel R cherchera, par défaut, les documents (fichiers et dossiers). On passera simplement le nom du répertoire de destination à `setwd()`. Après avoir utilisé `setwd()` on peut vérifier sa position dans l'arborescence avec `getwd()`. 
-
-Déplaçons nous dans le répertoire *project/project_1.
+Let’s move into the *project/project_1* directory.
 
 ```{r setwd, exercise=TRUE, exercise.setup="exorecap" }
 setwd(file.path(tmp_dir_path, "all_projects", "project_1"))
 getwd()
 ```
 
-## Création de fichier
+## The read.table() Function
 
-R dispose de nombreuses fonctions pour effectuer des tâches sur des fichiers. 
+### Introduction to read.table()
 
-- `file.create()` : création de fichiers
-- `file.show()` : pour visualiser le contenu d'un fichier
-- `cat()` : écriture dans un fichier ou sur la sortie standard (*e.g.* l'écran) si l'argument ("file") n'est pas
-renseignée
-- `file.remove()` (ou `unlink()`) : détruire un fichier.
+This command is **essential** as it allows for **reading data tables** locally or remotely (http, ftp) in text format. These text-format tables contain a column separator such as, for example:
 
-Une bonne partie d'entre elles porte un nom qui commence ou finit par *file*.
+- Files with the **".csv" extension (*comma separated values*)** where the columns are **separated by commas**.
+- Files with the **".tsv" or ".tab" extension (*tab separated values*)** where the columns are **separated by tabs** (see the next section).
 
-```{r apropos, exercise=TRUE }
-# L'expression régulière signifie
-# 'un chaîne de caractères commençant (^)
-# par 'file'.
-apropos("^file")
-```
+All these ".csv", ".tsv" and ".tab" files are considered **flat files**. This means they contain only characters and no formatting information (e.g., bold, italic, underline, etc., as in a Word document).
 
+### What is a Tab-Delimited File?
+
+Since tab-delimited files (often with the ".tsv" extension) are very popular (they can be generated from Excel, for example), it is important to take a closer look at this format.
+
+The column separator in a tab-delimited file is **the '\t' character**. If you have **not studied computer science, you might have never heard of it**. However, you have likely encountered it without realizing it... It is written as '\t', but **the computer represents it as a large space** (though it is not actually a space).
 <div class="exo">
 
-- Recherchez toutes les fonctions dont le nom finit (\$ en expression régulière) par *file*.
-
-```{r apropos2, exercise=TRUE }
-
-```
-
-```{r apropos2-solution}
-apropos("file$")
-```
-
-```{r apropos2-check }
-gradethis::grade_result(
-  pass_if(~ "download.file" %in% .result)
-)
-```
-</div>
-
-Ici nous pouvons créer un fichier "file_1.txt", contenant "Hello World", dans le dossier "all_projects/project_1".
-
-```{r exocat, exercise=TRUE , exercise.setup="exorecap"}
-dir_name <- file.path(tmp_dir_path, "all_projects", "project_1")
-fp <- file.path(dir_name, "file_1.txt")
-cat("Hello World", file=fp)
-dir(dir_name)
-# Uncomment to show file content
-#file.show(fp)
-```
-
-## La fonction scan()
-
-Bien sûr, généralement on ne travaille pas avec des fichiers dont le contenu est *Hello World*. On **importera des fichiers depuis des logiciels tiers** qui contiendront des **données de nature très variées**. 
-Une première fonction, assez méconnue, pour importer des données est la fonction `scan()`. Elle permet la lecture d'un fichier (argument `file` que je vous laisse découvrir plus tard) mais aussi la lecture via **un copier-coller**. Ce dernier mode de lecture peut-être assez intéressant pour **transférer rapidement** (mais sans guère de traçabilité...) des données dans R. Ce mode d'utilisation **ne fonctionnera pas dans notre interface Web mais fonctionnera dans l'éditeur de référence RStudio**. **Vous pourrez le tester plus tard**. 
-
-Par exemple si le presse-papier contient une série de valeurs numérique provenant d'Excel par exemple, on pourra écrire dans R :
-
-```{r eval=FALSE}
-# Ca ne fonctionnera pas dans le navigateur web...
-x <- scan(what=double())
-# Ensuite on colle (e.g. ctrl+V)
-plot(x)
-```
-
-## La fonction read.table()
-
-### Présentation de read.table()
-
-Cette commande est **incontournable** puisqu'elle permettra la **lecture de tableaux de données** locaux ou distants (http, ftp) au format texte. Ces tableaux au format texte contiendront un séparateur de colonne comme, par exemple:
-
-- Les fichiers dont **l'extension est ".csv" (*comma separated values*)** et dont les colonnes sont **séparées par des virgules**.
-- Les fichiers dont dont **l'extension est ".tsv" ou ".tab" (*tab separated value*)** et dont les colonnes sont **séparées par des tabulations** (voir prochaine section). 
-- Potentiellement des fichiers dont l'extension est, **imprécisément, définie comme ".txt"** (*texte*) et qu'on aurait du nommer avec l'extension ".csv" ou  ".tsv/.tab" car il contiennent des données en colonnes...
-
-Tous ces fichiers .csv", ".tsv" et ".txt" sont considérés comme des **fichiers plats**. C'est à dire qu'ils ne contiennent que des caractères et aucune information de mise en forme (e.g gras, italique, souligné (...) comme un document word). 
-
-### Qu'est ce qu'un fichier tabulé
-
-Etant donné que le fichier tabulé (contenant souvent l'extension ".tsv") est très populaire (on peut le produire à partir d'Excel par exemple) il est important de s'attarder un peu sur se format. 
-
-Le séparateur de colonne dans le fichier tabulé est **le caractère '\t'**. Si vous n'avez **pas fait d'informatique vous n'en avez sans doute jamais entendu parlé**. Vous l'avez pourtant sans doute rencontré mais sans savoir que c'était lui... Il s'écrit '\t' mais **l'ordinateur le représente sous la forme d'un grand espace** (mais ce n'en est pas un...).
-
-<div class="exo">
-
-- Interprétez le code suivant. 
+- Run the following code (`cat()` is an alternative to `print()`).
 
 ```{r tabulation, exercise=TRUE }
 cat("1\t2\t3")
 ```
 
 ```{r q1, echo=FALSE }
-learnr::question("Que voyez vous quand R interprète le code ?",
+learnr::question("What do you see when R interprets the code?",
   answer("2\t3\t4", correct = TRUE),
   answer("2\\t3\\t4"),
   allow_retry = TRUE 
@@ -381,56 +292,42 @@ learnr::question("Que voyez vous quand R interprète le code ?",
 ```
 </div>
 
-Un autre caractère important qu'il est nécessaire de connaître est le caractère '\\n' (**newline**). On le retrouve dans tous les fichiers (tabulés ou non...) à moins qu'ils ne contiennent qu'une seule ligne... Ce caractère est en effet interprété par les logiciels comme un retour à la ligne.
+Another important character to know is the '\\n' character (**newline**). It appears in all files (tab-delimited or not...) unless they contain only a single line. This character is interpreted by software as a line break.
 
 <div class="exo">
 
-- Interprétez le code suivant. 
+- Run the following code (`cat()` is an alternative to `print()`).
 
 ```{r newline, exercise=TRUE }
 cat("1\t2\t3\n4\t5\t6\n8\t9\t10")
 ```
 
 ```{r q2, echo=FALSE }
-learnr::question("Que voyez vous ?",
-  answer("Les positions contenant un '\\n' sont interprétés par un retour à la ligne le logiciel.", correct = TRUE),
-  answer("Les positions contenant un '\\n' sont délétés"),
+learnr::question("What do you see?",
+  answer("Positions containing a '\\n' are interpreted as a line break by the software.", 
+         correct = TRUE),
+  answer("Positions containing a '\\n' are deleted"),
   allow_retry = TRUE 
 )
 ```
 
 </div>
 
-Soit la matrice suivante (au format tabulé):
-
+Consider the following matrix (in tab-delimited format):
 
 ```{r newline_1, exercise=TRUE }
 cat("Gene\tA\tB\tC\ngene_1\t1\t2\t3\ngene_2\t4\t5\t6\ngene_3\t8\t9\t10")
 ```
 
-On peut-donc **créer un fichier tabulé** avec le code suivant 
+We can therefore create a tab-delimited file with the following code (`cat()`can print to a file...): 
 
 ```{r newline_2, exercise=TRUE, exercise.setup="exocat" }
 cat("Gene\tA\tB\tC\ngene_1\t1\t2\t3\ngene_2\t4\t5\t6\ngene_3\t8\t9\t10\n", 
     file=file.path(tmp_dir_path, "all_projects", "project_1", "file_1.tab"))
 ```
 
-**NB:** On écrira rarement toute une matrice caractère par caractère comme ici. Mais cet exercice est proposé dans un but pédagogique.
+**NB:** It is extremely rare to write an entire matrix character by character as shown here. However, this exercise is presented for educational purposes.
 
-<div class="exo">
-
-- Analysez le contenu du fichier *"file_1.tab"* avec **file.show()**
-
-```{r fileshow, exercise=TRUE , exercise.setup="newline_2"}
-
-```
-
-```{r fileshow-solution}
-file.show(file.path(tmp_dir_path, "all_projects", "project_1", "file_1.tab"))
-```
-
-
-</div>
 
 ### Les arguments de la fonction read.table()
 
@@ -467,63 +364,11 @@ gradethis::grade_result(
 ```
 </div>
 
-### Exercices
+## Reading a Remote File
 
-<div class="exo">
+R can be given a path in the file system as well as a **URL (i.e., an internet link)**.
 
-Demandez l'aide sur la fonction `read.table()`. Regardez particulièrement les arguments passés à *read.table()* dans le code précédent (*file, sep, row.names, header, quote*)
-
-```{r readtable2, exercise=TRUE, eval=TRUE}
-
-```
-
-```{r readtable-solution}
-?read.table
-```
-
-Répondez aux questions suivantes par vrai ou faux
-
-```{r readtable3, echo=FALSE}
-question("l'argument *header* permet: ",
-  answer("De donner le numéro de ligne de l'entête dans le fichier"),
-  answer("D'indiquer si le fichier contient des noms de colonnes.", correct = TRUE),
-  allow_retry = TRUE
-)
-```
-
-```{r readtable4, echo=FALSE}
-question("L'argument row.names accepte ?",
-  answer("Une valeur numérique ?", correct = TRUE),
-  answer("Un booléen ?"),
-  answer("Une chaîne de caractères ?"),
-  allow_retry = TRUE
-)
-```
-
-```{r readtable5, echo=FALSE}
-question("L'argument sep peut être: ?",
-  answer("Une valeur numérique ?"),
-  answer("Un booléen ?"),
-  answer("Une chaîne de caractères ?", correct = TRUE),
-  allow_retry = TRUE
-)
-```
-
-```{r readtable6, echo=FALSE}
-question("L'argument comment.char peut être: ?",
-  answer("Une valeur numérique ?"),
-  answer("Un booléen ?"),
-  answer("Une chaîne de caractères ?", correct = TRUE),
-  allow_retry = TRUE
-)
-```
-</div>
-
-## Lecture d'un fichier distant
-
-On peut donner à R un chemin dans l'arborescence mais aussi une **URL (i.e. un lien sur internet)**.
-
-Ici, par exemple, on lit un tableau (jeu de données sultan) de la base de données *recount*. Ce tableau est accessible [ici](https://bowtie-bio.sourceforge.net/recount/countTables/sultan_count_table.txt)
+For example, here we read a table (Sultan dataset) from the *recount* database. This table is accessible [here](https://bowtie-bio.sourceforge.net/recount/countTables/sultan_count_table.txt).
 
 ```{r readtabledist, exercise=TRUE}
 url <- "https://bowtie-bio.sourceforge.net/recount/countTables/sultan_count_table.txt"
@@ -536,19 +381,19 @@ sultan <- read.table(file = url,
                     comment.char = "#")
 ```
 
-### Exercice 
+### Exercise 
 
 <div class="exo">
 
-- Récuperez le jeu de données [**modencodefly**](https://bowtie-bio.sourceforge.net/recount/pooled/modencodefly_pooledreps_count_table.txt) depuis la base de données *recount*. Ce jeux de données représente les valeurs d'expressions des gènes (lignes) dans des échantillons (colonnes). Les mesures ont été effectuées par séquençage d'ARN.
+- Retrieve the dataset [**modencodefly**](https://bowtie-bio.sourceforge.net/recount/pooled/modencodefly_pooledreps_count_table.txt) from the *recount* database. This dataset represents gene expression values (rows) across samples (columns). The measurements were performed using RNA sequencing.
 
-- Ajouter la valeur 1 à toute la matrice (pseudo-comptage pour permettre la transformation en logarithme).
-- Tranformez les valeurs en logarithme base 2 (`log2()`) 
-- Effectuer un graphique en nuage de points (`plot()`) dans lequel de l'échantillon **SRX008027** seront représentées sur l'axe des x et celle de **SRX008015** seront représentées sur l'axe des y.
-- Pour la fonction plot essayer plusieurs valeurs numérique pour l'argument `pch` (*point character*).
-- Regardez l'aide sur la fonction `densCols()` et représentez la densité en point par un gradient de couleurs.
+- Add the value 1 to the entire matrix (pseudo-count to allow logarithmic transformation).
+- Transform the values using base 2 logarithm (`log2()`).
+- Create a scatter plot (`plot()`) where the values from the sample **SRX008027** are represented on the x-axis and those from **SRX008015** on the y-axis.
+- For the `plot` function, try different numeric values for the `pch` (*point character*) argument.
+- Check the help for the `densCols()` function and represent the point density using a color gradient.
 
-- Créez un nouveau diagramme dans lequel les points de coordonnées 0,0 sont éliminés...
+- Create a new plot where the points with coordinates 0,0 are removed...
 
 ```{r modencodefly, exercise=TRUE , exercise.setup="readtabledist"}
 
@@ -586,6 +431,7 @@ plot(modencodefly$SRX008027[test],
 
 </div>
 
-### C'est fini
+### End of the section
 
-Merci d'avoir suivi ce tutoriel.
+Thank you for following this tutorial.
+

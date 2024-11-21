@@ -1,11 +1,11 @@
 ---
 # theme
-# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
-# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# "bootstrap", "cerulean", "cosmo", "darkly", "flatly", "journal", "lumen", "paper", 
+# "readable", "sandstone", "simplex", "spacelab", "united", "yeti"
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 
-title: "Les matrices"
+title: "The 'matrix' object"
 output:
   learnr::tutorial:
     theme: default
@@ -147,13 +147,13 @@ gradethis::gradethis_setup(fail.encourage = TRUE)
 --> 
 
 
-## Généralités
+## Definitions
 
-### Les matrices 
+### Matrices 
 
-Dans R, les matrices (objets **matrix**) sont des tableaux à deux dimensions. Elles contiennent, généralement, des noms de lignes et de colonnes. Une matrice **contient obligatoirement des éléments de même mode** (*numeric, character, boolean...*).
+In R, matrices (**matrix** objects) are two-dimensional arrays. They generally contain row and column names. A matrix **must contain elements of the same mode** (*numeric, character, boolean...*).
 
-On peut créer une matrice de la manière suivante (par exemple).
+As an example, a matrix can be created as follows.
 
 ```{r exo1, exercise=TRUE }
 mat <- matrix(data=round(rnorm(25),2), 
@@ -165,7 +165,7 @@ print(mat)
 
 <div class="exo">
 
-- Créez une matrice nommée *mat* de 10 colonnes contenant 200 valeurs aléatoires issues d'une loi uniforme (*runif()*) de minimum 0 et maximum 10 et arrondies à l'entier le plus proche (*round()*). Les valeurs du vecteur seront entrées par ligne (*byrow = TRUE*) dans la matrice.
+- Create a matrix named *mat* with 10 columns containing 200 random values from a uniform distribution (*runif()*) of minimum 0 and maximum 10 and rounded to two decimal digits (*round()*). Vector values are entered per row (*byrow = TRUE*) in the matrix.
 
 ```{r mat1, exercise=TRUE }
 set.seed(123)
@@ -174,19 +174,20 @@ set.seed(123)
 
 ```{r mat1-solution}
 set.seed(123)
-mat <- matrix(data=round(runif(200, min=0, max=10), 0), 
-            ncol = 10, 
-            byrow = TRUE)
+my_data <- round(runif(200, min=0, max=10), 2)
+mat <- matrix(data=my_data, 
+              ncol = 10, 
+              byrow = TRUE)
 ```
 
 ```{r mat1-check }
 gradethis::grade_result(
-  pass_if(~identical( sum(mat), 1011))
+  pass_if(~identical( round(sum(mat), 0), 1013))
 )
 ```
 </div>
 
-On peut aussi créer une matrice en regroupant des vecteurs de mêmes tailles avec les fonctions *cbind()* (*column bind*) ou *rbind()* (*row bind*).
+You can also create a matrix by grouping vectors of the same size using the functions *cbind()* (*column bind*) or *rbind()* (*row bind*).
 
 ```{r exo1b, exercise=TRUE }
 mat <- cbind(0:5, 20:25, 30:35)
@@ -198,11 +199,11 @@ mat <- rbind(0:5, 20:25, 30:35)
 mat
 ```
 
-## Fonctions pour l'objet *matrix*
+## Functions for *matrix* object
 
-### Noms de lignes et de colonnes
+### Row and column names
 
-On pourra changer les noms des colonnes/lignes de la manière suivante:
+Column/row names can be changed as follows:
 
 ```{r exo2, exercise=TRUE }
 mat <- matrix(data=round(rnorm(20), 2), 
@@ -215,9 +216,9 @@ print(mat)
 ```
 
 
-### Dimensions de la matrice
+### Matrix dimensions
 
-On pourra connaître le **nombre de lignes, de colonnes et les dimensions de la matrice** avec les fonctions **nrow(), ncol()** et **dim()** respectivement.
+We can find out the **number of rows, columns and dimensions of the matrix** with the **nrow(), ncol()** and **dim()** functions respectively.
 
 ```{r exo3, exercise=TRUE, exercise.setup="exo2" }
 nrow(mat)
@@ -225,26 +226,24 @@ ncol(mat)
 dim(mat)
 ```
 
-
-### Exercice
+### Exercise
 
 <div class="exo">
 
-- Etant donnée la matrice suivante, utilisez la fonction paste0() pour créer des noms de lignes de la forme *gene_1, gene_2, gene3...* et des colonnes de la forme *sample_1, sample_2, sample_3...*. Associez ces noms de colonnes et lignes à la matrice *mat*. Vous obtenez une matrice d'expression dans laquelle l'expression de chaque gène dans chaque échantillon (*sample*) est stocké.
+- Given the following matrix, use the `paste0()` function to create row names of the form *gene_1, gene_2, gene3...* and column names of the form *sample_1, sample_2, sample_3...*. Associate these column and row names with the matrix *mat*. 
 
-```{r exo3a, exercise=TRUE}
+```{r colrow, exercise=TRUE}
 set.seed(123)
 mat <- matrix(data=round(runif(200, 0, 100), 0), 
             ncol = 10, 
             byrow = TRUE)
 ```
 
-```{r exo3a-solution}
+```{r colrow-solution}
 set.seed(123)
 mat <- matrix(data=round(runif(200, 0, 100), 0), 
             ncol = 10, 
             byrow = TRUE)
-
 
 rown <- paste0("gene_", 1:nrow(mat))
 rownames(mat) <- rown
@@ -252,7 +251,7 @@ coln <- paste0("sample_", 1:ncol(mat))
 colnames(mat) <- coln
 ```
 
-```{r exo3a-check }
+```{r colrow-check }
 gradethis::grade_result(
   pass_if(~identical( rownames(mat),  c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5", "gene_6", 
 "gene_7", "gene_8", "gene_9", "gene_10", "gene_11", "gene_12", 
@@ -264,9 +263,9 @@ gradethis::grade_result(
 ```
 </div>
 
-### La fonction de transposition
+### The transposition function
 
-Il arrive que l'on ait besoin de **transposer la matrice** (souvent notée $mat^{T}$). La matrice transposée est obtenue en **échangeant les lignes et les colonnes** de la matrice d'entrée. Par exemple dans le cadre d'application en *apprentissage automatique* (*machine learning*), il est fréquent que les caractéristiques/descripteurs (*features*), ici les gènes, soient en colonnes. Dans ce cas, les objets décrits (ici les échantillons) sont en lignes. On utilisera la fonction **t()**.
+Sometimes we need to **transpose the matrix** (often referred to as $mat^{T}$). The transposed matrix is obtained by **exchanging the rows and columns** of the input matrix. For example, in *machine learning* applications, the characteristics/descriptors (*features*), in this case genes, are often in the columns. In this case, the objects described (here, the samples) appear as rows. The transposition can be obtained using the **t()** function.
 
 ```{r exo3aasetup, echo=FALSE}
 set.seed(123)
@@ -284,11 +283,13 @@ colnames(mat) <- coln
 t(mat)
 ```
 
-### La fonction diag()
+### The diag() function
 
-On peut facilement manipuler l'objet **matrix** avec diverses fonctions spécifiques. Par exemple, modifier **la diagonale** (**diag()**).
+You can easily manipulate the **matrix** object with various specific functions. For example, getting and modifying **the diagonal** values can be performed by the **diag()** function.
 
-Imaginons que cette matrice représente la **matrice d'adjacence d'un graphe**  qui pour toute **protéine**, A à H, indique, par un *1* si celle-ci **interagit** avec une autre (0 sinon). Les protéines seront les **noeuds** (*nodes/vertices*) du graphe et les interactions constitueront les arêtes (*edges*).
+Let's imagine that a matrix represents the **adjacency matrix of a graph** which for any **protein**, A to H, indicates with a *1* whether it **interacts** with another (0 otherwise). Proteins will be the **nodes** (*nodes/vertices*) of the graph and interactions will constitute the edges (*edges*).
+
+Let's create such a matrix (we will see just later the graph representation).
 
 ```{r exo3b, exercise=TRUE }
 mat <- matrix(c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 
@@ -303,89 +304,116 @@ print(mat)
 ```
 
 
-On peut représenter ce graphe avec les fonctions de la **librairies igraph**. 
-
-**NB:** Ici, on choisit de déclarer le graphe comme non dirigé (*mode="undirected"*) car pour les interactions protéines-protéines de notre tableau, il n'y a pas de notion de source et de cible. On ne sait pas si l'une active ou réprime l'autre. 
+This graph can be represented using functions from the `igraph` library. We just have to pass the matrix representation of the graph to the `graph_from_adjacency_matrix()` function of `igraph`library. Here, we choose to declare the graph as undirected (*mode="undirected "*) because for the protein-protein interactions in our table, there is no notion of source and target (*i.e* we don't know whether one activates or represses the other, they just interact...). 
 
 ```{r exo3c, exercise=TRUE , exercise.setup="exo3b"}
 library(igraph)
-my_graph <- graph_from_adjacency_matrix(mat, mode="undirected")
+my_graph <- igraph::graph_from_adjacency_matrix(mat, mode="undirected")
 plot(my_graph)
 ```
 
-Sur le diagramme, et en extrayant les valeurs de la diagonale de la matrice, on voit que B interagit avec lui même, de même que D.
+From the diagram, and by extracting the values from the matrix diagonal, we can see that B interacts with itself, as does D. This proteins may create homodimers. To check all the proteins that can create homodimers, we can just ask for the matrix diagonal.
 
 ```{r exo3d, exercise=TRUE , exercise.setup="exo3b"}
 diag(mat)
 ```
 
-On peut simplement éliminer ces intéractions si on ne souhaite pas s'intéresser aux homo-dimères. Pour ce faire on assigne à **diag(mat)** la valeur 0.
+If we do not want to focus on these homodimeric interactions we may simply set the diagonal values to 0.
 
 ```{r exo3e, exercise=TRUE , exercise.setup="exo3c"}
 diag(mat) <- 0
-print(diag(mat))
+all(diag(mat) == 0) # TRUE
+print(mat) # 
 ```
 
-On peut vérifier graphiquement que ces arêtes (*i.e* interactions) ont disparu.
+<div class="exo">
 
-```{r exo3f, exercise=TRUE , exercise.setup="exo3e"}
-my_graph <- graph_from_adjacency_matrix(mat, mode="undirected")
-plot(my_graph)
-```
+- By creating a graph using the `graph_from_adjacency_matrix()` from the `igraph` library, check graphically that homodimeric interaction are no more present in the graph.
 
-## Indexation
 
-### Indexation par une matrice
-
-On pourra indexer une matrice par une matrice. On utilisera typiquement ce type d'indexation avec des test de comparaison (>, >=, ==, !=...). Par exemple on peut interroger toute la matrice en une seule opération.
-
-```{r exo4, exercise=TRUE, exercise.setup="exo3e" }
-mat == 1
-```
-
-On pourra aussi modifier les valeurs avec l'indexation par matrice. Ci-dessous, par exemple, on remplace les valeurs 1 par des valeurs aléatoires issues d'une loi uniforme (min=0, max=1). Cette valeur correspondra à un poids sur les arêtes (par exemple la confiance qu'on a quant à ces interactions ou la force, standardisée, de ces interactions). Notez que, pour un graphe non dirigé, la matrice d'adjacence est symétrique. Cela implique que $mat_{i,j} = mat_{j,i}$. Ce n'est pas le cas ici mais nous allons corriger cela juste après.
-
-```{r exo4b, exercise=TRUE, exercise.setup="exo3e" }
-# La valeur de poids sera ici entre 1 et 10
-mat[mat == 1 ] <- round(runif(sum(mat), 0, 5), 2)
+```{r exograph, exercise=TRUE, exercise.setup="exo3e"}
 mat
 ```
 
-Les fonctions  *upper.tri()* ou *lower.tri()* renvoient une matrice logique triangulaire. 
+```{r exograph-solution}
+library(igraph)
+my_graph <- igraph::graph_from_adjacency_matrix(mat, mode="undirected")
+plot(my_graph)
+```
 
-```{r exo3g, exercise=TRUE, exercise.setup="exo4b" }
+</div>
+
+### The lower.tri() function
+
+The functions `upper.tri()` or `lower.tri()` return a logical matrix indicating if a cell from the matrix is part of the lower or upper triangle. 
+
+```{r exo3g, exercise=TRUE, exercise.setup="exo3e" }
 lower.tri(mat)
 ```
 
-Ces fonctions permettent, éventuellement, de sélectionner ou modifier les cellules/éléments du triangle haut ou bas de la matrice. Pour que notre exemple soit plus réaliste et respecte la symétrie d'une matrice d'adjacence on peut donc la modifier de la manière suivante. L'instruction n'est pas totalement naturelle mais google est votre ami dans ce cas (pour l'auteur de ce tutoriel aussi)...
+```{r exo3gb, exercise=TRUE, exercise.setup="exo3e" }
+upper.tri(mat)
+```
+
+## Indexing
+
+### Indexing by a matrix
+
+A test can be applied to all cells of the matrix. For example we can test whther the value is 1.
+
+```{r indexing, exercise=TRUE, exercise.setup="exo3e" }
+mat == 1
+```
+
+We can apply more complex test by using boolean operators. For instance we could test whether a cell value is equal to one andpart of the lower triangle.
+
+```{r indexing_2, exercise=TRUE, exercise.setup="exo3e" }
+mat == 1 & lower.tri(mat)
+```
+
+We could convert specifically values from these cells into integers between 1 and 5. We could imagine that these values would now indicate how many experiments reported an interaction between two proteins and, consequently, whether we are more or less confident with a particular interaction. From a graph theory point of view, we are creating the adjacency matrix of a **weighted graph**. Note that, at this step, the matrix is not symetrical (see below)
+
+```{r exo4, exercise=TRUE, exercise.setup="exo3e" }
+set.seed(123)
+values <- sample(x=1:5, size = 10, replace = TRUE)
+mat[mat == 1 & lower.tri(mat)] <- values
+print(mat)
+```
+
+Indeed, for an undirected and weighted graph, the adjacency matrix should be symmetrical (if we observed 3 times an interactions between a and b then the same applies to b and a...). This implies that $mat_{i,j} = mat_{j,i}$. This is not the case here. We'll correct using the following code. The instruction isn't totally natural, but google is your friend in this case (for the author of this tutorial too)...
 
 ```{r exo3h, exercise=TRUE, exercise.setup="exo3g"}
-mat[lower.tri(mat)] <-  t(mat)[lower.tri(mat)]
+# Don't concentrate too much on this code 
+# (but more on the result)
+mat[upper.tri(mat)] <- t(mat)[upper.tri(mat)]
 isSymmetric(mat)
+mat
 ```
+
+We can now display this weighted graph, again using the `igraph` library. As you can see, the thickness of the edges is displayed according to the confidence we have in the interaction between two proteins.
 
 ```{r exo3i, exercise=TRUE , exercise.setup="exo3h"}
 library(igraph)
 my_graph <- graph_from_adjacency_matrix(mat, mode="undirected", weighted=TRUE)
-# Ne vous concentrez pas trop sur cette dernière ligne de commande.
-# Elle est nécessaire mais un peu avancée pour les débutants.
+# Don't concentrate too much on this last command line.
+# It's necessary but a bit advanced for beginners.
 plot(my_graph, edge.width=as.integer(cut(abs(E(my_graph)$weight ), breaks = 5)))
 ```
 
-### Indexation à deux dimensions
+### Two-dimensional indexing
 
-Etant donné qu'il y a des lignes et des colonnes, on utilisera (le plus souvent) l'indexation à deux dimensions. On passera alors deux informations à l'opérateur d'indexation sous la forme **[line, column]** (ou *line* et *column* sont des vecteurs de la taille des lignes et des colonnes respectivement). Si *line* n'est pas défini (*e.g.*  [, column]), toutes les lignes sont extraites. Même principe pour **column**.
+Since a matrix contains rows and columns, we'll (most of the time) use two-dimensional indexing. Two pieces of information are passed to the indexing operator in the form **[lines, columns]** (where *lines* and *columns* are vectors for the size of rows and columns respectively). If *lines* is not defined (*e.g.* [, columns]), all rows are extracted. Same principle for **columns**.
 
 <div class="exo">
 
-Etant donné la matrice déclarée ci-dessous:
+Given the matrix declared below:
 
-- Extraire la valeur de la cellule en position 1,1 et stockez le résultat dans une variable a. 
-- Extraire les valeurs des cellules en position 1,1 et 1,2 et stockez le résultat dans une variable b. 
-- Extraire les valeurs des cellules de la ligne 1 et stockez le résultat dans une variable c. 
-- Extraire les valeurs des cellules des lignes 1 et 3 et stockez le résultat dans une variable d. 
-- Extraire les valeurs des cellules de la colonne 1 et stockez le résultat dans une variable e. 
-- Extraire les valeurs des cellules des colonnes 1 et  3 et stockez le résultat dans une variable f. 
+- Extract the value of the cell at position 1,1 and store the result in a variable a. 
+- Extract the values of the cells at position 1,1 and 1,2 and store the result in a variable b. 
+- Extract cell values from row 1 and store the result in a variable c. 
+- Extract cell values from rows 1 and 3 and store the result in a variable d. 
+- Extract cell values from column 1 and store the result in a variable e. 
+- Extract cell values from columns 1 and 3 and store the result in a variable f. 
 
 ```{r matrix4, exercise=TRUE, eval=TRUE}
 set.seed(123)
@@ -427,13 +455,14 @@ gradethis::grade_result_strict(
 
 <div class="exo">
 
-Etant donné la matrice déclarée ci-dessous:
+Given the matrix declared below:
 
-- Extraire les valeurs des cellules des colonnes 1 et 3 pour les lignes 1 et 3 et stockez le résultat dans une variable g. 
-- Extraire toutes les lignes pour lesquelles les valeurs de la colonne 1 sont supérieures à 11 et stockez le résultat dans une variable h. 
-- Extraire la cellule pour laquelle le nom de la ligne est "a" et le nom de la colonne est "B" et stockez le résultat dans une variable i. 
-- Extraire les cellules pour lesquelles les nom des lignes sont "a", "b" et "c" et le nom de colonnes est "B" et stockez le résultat dans une variable j. 
-- Extraire toutes les colonnes pour lesquelles les valeurs de la ligne 1 sont supérieures à 10 et stockez le résultat dans une variable k. 
+- Extract the values from the cells in columns 1 and 3 for rows 1 and 3, and store the result in a variable g.
+- Extract all rows where the values in column 1 are greater than 11, and store the result in a variable h.
+- Extract the cell where the row name is "a" and the column name is "B", and store the result in a variable i.
+- Extract the cells where the row names are "a", "b", and "c", and the column name is "B", and store the result in a variable j.
+- Extract all columns where the values in row 1 are greater than 10, and store the result in a variable k.
+
 
 ```{r matrix4a, exercise=TRUE, eval=TRUE}
 set.seed(123)
@@ -470,49 +499,51 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-### Conversion implicite par la fonction d'indexation
+### Implicit Conversion by the Indexing Function
 
-La fonction d'indexation peut provoquer une conversion de type qui n'est pas toujours désirée (mais est souvent très pratique). Par exemple, ci-dessous, **si on sélectionne un colonne de la matrice**, on se retrouve avec **un vecteur** ce qui parait assez naturel (la même chose est observé si on sélectionne un ligne).
+The indexing function can cause a type conversion that is not always desired (but is often very practical). For example, below, **if we select a column from the matrix**, we end up with **a vector**, which seems quite natural (the same is observed if we select a row).
+
 
 ```{r drop, exercise=TRUE}
 mat <- matrix(1:20, ncol=4)
 is(mat[, 1])
 ```
 
-On peut empêcher ce comportement par défault en positionnant l'argument **drop** de la fonction d'indexation sur FALSE. Il est par défaut sur TRUE.
+We can prevent this default behavior by setting the **drop** argument of the indexing function to FALSE. It is set to TRUE by default.
 
 ```{r drop_2, exercise=TRUE}
 mat <- matrix(1:20, nc=10)
 is(mat[, 1, drop=FALSE])
 ```
 
-## La fonction apply
+## The apply Function
 
-On peut **appliquer** (*apply*) les fonctions prenant un vecteur en premier argument (*e.g.* mean, median, var, sd...) sur les lignes ou les colonnes d'une matrice en utilisant la fonction **apply()**.
+Using the `apply()` function, we can **apply** functions, that take a vector as their first argument (*e.g.* `mean()`, `median()`, `var()`, `sd()`...), to the rows or columns of a matrix.
 
-La syntaxe et les arguments de la fonction apply sont les suivants :**apply(X, MARGIN, FUN,...)**. 
+The syntax and arguments of the apply function are as follows: **apply(X, MARGIN, FUN,...)**.
 
-- X est une matrice ou un data.frame
-- MARGIN **indique si la fonction doit être appliquée sur les lignes (MARGIN=1) ou les
-colonnes (MARGIN=2)**
-- **FUN** est la fonction à appliquer
-- **... des arguments supplémentaires** pour FUN
+- X is a matrix or a data.frame
+- MARGIN **indicates whether the function should be applied to**:
+  - **the rows (MARGIN=1)**
+  - **or the columns (MARGIN=2)**
+- **FUN** is the function to be applied
+- **... additional arguments** for FUN
 
-Si on écrit *apply(X=mat, MARGIN=2, FUN=median)*, chaque colonne (*MARGIN=2*) de *mat* (*X=mat*) sera successivement passée à la fonction median. Cela renverra un vecteur de taille *ncol(mat)* contenant les valeurs médianes de chacune des colonnes.
+If we write `apply(X=mat, MARGIN=2, FUN=median)`, each column (`MARGIN=2`) of `mat` (`X=mat`) will be passed successively to the `median()` function. This will return a vector of size `ncol(mat)` containing the median values of each column.
 
 <div class="exo">
 
-Etant donné la matrice $mat$ utilisez **apply()** pour:
+Given the matrix $mat$, use **apply()** to:
 
-- Calculer la moyenne (**mean()**) de chacune des lignes et stockez le résultat dans la variable a.
-- Calculer la variance (**var()**) de chacune des lignes et stockez le résultat dans la variable b.
-- Calculer l'ecart-type (**sd()**) de chacune des lignes et stockez le résultat dans la variable c.
-- Calculer l'espace interquartile (**IQR()**) de chacune des lignes et stockez le résultat dans la variable d.
-- Calculer l'écart absolu médian (**mad()**) de chacune des lignes et stockez le résultat dans la variable e.
-- Calculer la valeur minimum (**min()**) de chacune des lignes et stockez le résultat dans la variable f.
-- Calculer la valeur maximum (**max()**) de chacune des lignes et stockez le résultat dans la variable g.
-- Calculer la valeur médiane (**median()**) de chacune des lignes et stockez le résultat dans la variable h.
-- Appeler la fonction **summary()** sur chacune des lignes et stockez le résultat dans la variable i.
+- Calculate the mean (**mean()**) of each row and store the result in the variable a.
+- Calculate the variance (**var()**) of each row and store the result in the variable b.
+- Calculate the standard deviation (**sd()**) of each row and store the result in the variable c.
+- Calculate the interquartile range (**IQR()**) of each row and store the result in the variable d.
+- Calculate the median absolute deviation (**mad()**) of each row and store the result in the variable e.
+- Calculate the minimum value (**min()**) of each row and store the result in the variable f.
+- Calculate the maximum value (**max()**) of each row and store the result in the variable g.
+- Calculate the median value (**median()**) of each row and store the result in the variable h.
+- Call the **summary()** function on each row and store the result in the variable i.
 
 ```{r matrix5, exercise=TRUE}
 set.seed(123)
@@ -558,72 +589,18 @@ gradethis::grade_result_strict(
 </div>
 
 
-Lorsque la fonction appelé contient plusieurs arguments que l'on souhaite positionné, on passera les arguments à la suite de la fonction apply:
+When the function being called has multiple arguments that need to be specified, the arguments can be passed after the apply function:
 
 ```{r matrix6, exercise=TRUE, eval=TRUE, exercise.setup="matrix5"}
-# E.g. appliquer une moyenne tronquée 
-# sur les lignes en délétant 20% 
-# des valeurs extrêmes.
+# E.g. apply a trimmed mean 
+# to the rows by removing 20% 
+# of the extreme values.
 apply(mat, 1, mean, trim = 0.2)
 ```
 
 <div class="exo">
 
-- Regardez l'aide sur la fonction *mean()*. Utilisez l'argument *na.rm* pour calculer la moyenne tronquée (*trim = 0.2*) sur les colonnes de cette matrice (*MARGIN=2*) qui contient des valeurs manquantes. Stockez le résultat dans la variable 'a'.
-
-```{r matrix6b, exercise=TRUE , exercise.setup="matrix5"}
-set.seed(123)
-nb_cells <- ncol(mat) * nrow(mat)
-mat[mat < 5] <- NA
-```
-
-```{r matrix6b-solution}
-set.seed(123)
-nb_cells <- ncol(mat) * nrow(mat)
-mat[mat < 5] <- NA
-
-a <- apply(mat, MARGIN = 2, mean, trim = 0.2, na.rm=TRUE)
-```
-
-```{r matrix6b-check }
-gradethis::grade_result(
-  pass_if(~ round(sum(a), 0) == 45)
-)
-```
-</div>
-
-<div class="exo">
-
-- Regardez l'aide sur la fonction **quantiles()**. Calculer les valeurs du $1^{ème}$ et $3^{ème}$ quartiles de **chaque colonne**. Stocker les résultats dans q_25 et q_75 respectivement.
-
-```{r matrix6c, exercise=TRUE }
-set.seed(123)
-mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
-            ncol = 4, 
-            byrow = TRUE)
-```
-
-```{r matrix6c-solution}
-set.seed(123)
-mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
-            ncol = 4, 
-            byrow = TRUE)
-
-q_25 <- apply(mat, MARGIN = 2, quantile, 0.25)
-q_75 <- apply(mat, MARGIN = 2, quantile, 0.75)
-```
-
-```{r matrix6c-check }
-gradethis::grade_result(
-  pass_if(~ round(sum(q_25),0) == 30),
-  pass_if(~ round(sum(q_75),0) == 55)
-)
-```
-</div>
-
-<div class="exo">
-
-- Regardez l'aide sur la fonction **quantiles()**. Calculer les valeurs du $1^{ème}$ et $3^{ème}$ quartiles de **chaque ligne**. Stocker les résultats dans q_25 et q_75 respectivment.
+- Check the help for the **quantiles()** function. Calculate the values of the $1^{st}$ and $3^{rd}$ quartiles for **each column**.
 
 ```{r matrix6d, exercise=TRUE }
 set.seed(123)
@@ -650,40 +627,10 @@ gradethis::grade_result(
 ```
 </div>
 
-<div class="exo">
+## Mathematical Operations
 
-- Regardez l'aide sur la fonction **quantiles()**. Calculer les valeurs du $1^{ème}$ et $3^{ème}$ quartiles de **chaque ligne**. Stocker les résultats dans q_25 et q_75 respectivment. **Attention, la matrice contient des valeurs manquantes**
+We will often work with **numeric matrices** on which we can perform **mathematical operations**. As with vectors, these operations are generally greatly simplified because **they implicitly apply to all elements of the matrix**. Thus, we can write the following instructions:
 
-```{r matrix6e, exercise=TRUE }
-set.seed(123)
-mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
-            ncol = 4, 
-            byrow = TRUE)
-mat[mat < 5] <- NA
-```
-
-```{r matrix6e-solution}
-set.seed(123)
-mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
-            ncol = 4, 
-            byrow = TRUE)
-mat[mat < 5] <- NA
-
-q_25 <- apply(mat, MARGIN = 1, quantile, 0.25, na.rm=TRUE)
-q_75 <- apply(mat, MARGIN = 1, quantile, 0.75, na.rm=TRUE)
-```
-
-```{r matrix6e-check }
-gradethis::grade_result(
-  pass_if(~ round(sum(q_25),0) == 98),
-  pass_if(~ round(sum(q_75),0) == 130) 
-)
-```
-</div>
-
-## Opération mathématiques 
-
-On travaillera fréquemment avec des **matrices numériques** sur lesquels on pourra effectuer des **opérations mathématiques**. Comme pour les vecteurs, ces opérations sont généralement grandement simplifiées car **elles s'appliquent implicitement à tous les éléments de la matrice**. Ainsi on pourra écrire les instructions suivantes:
 
 ```{r matrix7, exercise=TRUE, eval=TRUE, exercise.setup="matrix4"}
 mat + 10
@@ -709,17 +656,18 @@ mat ^ 1/2
 mat + mat ^ 2
 ```
 
-## Produit matriciel
+<!--
+## Matrix Product
 
-Le calcul matriciel facilite les calculs complexes. Le produit matriciel, notamment, est utilisé par de très nombreux contextes effectuer des réduction de dimension (analyse en composantes principales), effectuer des transformations (e.g rotations d'une image), analyser des graphes, effectuer de la classification ou de la prédiction (*e.g.* *machine learning*) (...).
+Matrix computation facilitates complex calculations. The matrix product, in particular, is used in numerous contexts to perform dimensionality reduction (e.g., principal component analysis), apply transformations (e.g., image rotations), analyze graphs, or perform classification and prediction (*e.g.*, *machine learning*), among others.
 
-**From Wikipedia**: Le produit de deux matrices ne peut se définir que si le nombre de colonnes de la première matrice est le même que le nombre de lignes de la deuxième matrice, c'est-à-dire lorsqu'elles sont de type compatible.
+**From Wikipedia**: The product of two matrices can only be defined if the number of columns in the first matrix is the same as the number of rows in the second matrix, meaning they must have compatible dimensions.
 
-Si $A=(a_{ij})$ est une matrice de type $(m, n)$ et $B=(b_{ij})$ est une matrice de type $(n, p)$, alors leur ''produit'', noté $AB=(c_{ij})$ est une matrice de type $(m, p)$ donnée par :
+If $A=(a_{ij})$ is a matrix of type $(m, n)$ and $B=(b_{ij})$ is a matrix of type $(n, p)$, then their ''product'', denoted $AB=(c_{ij})$, is a matrix of type $(m, p)$ given by:
 
 $\forall i, j : c_{ij} = \sum_{k=1}^n a_{ik}b_{kj} = a_{i1}b_{1j}+a_{i2}b_{2j}+\cdots+ a_{in}b_{nj}$
 
-A titre d'exemple d'application du calcul matriciel, nous pouvons reprendre l'exemple du graphe d'interactions protéines-protéines que nous avions créé précédemment.
+As an example of matrix computation, we create a very small version ofthe protein-protein interaction graph we discussed previously.
 
 ```{r exo13, exercise=TRUE }
 mat <- matrix(c(1, 1, 0, 1, 0, 1, 0, 1, 0),
@@ -736,66 +684,22 @@ my_graph <- graph_from_adjacency_matrix(mat, mode="undirected")
 plot(my_graph)
 ```
 
-Pour calculer le nombre de chemins (en acceptant les allers-retours) de longueur $n$ reliant deux sommets/noeuds d'un graphe il suffit de calculer la puissance $n^{ième}$ de la matrice d'adjacence. Pour une démonstration mathématique (qui n'est pas l'objet de ce cours), vous pouvez consulter [cette vidéo](https://www.youtube.com/watch?v=4tfpDZYWyWw).
+To calculate the number of paths (allowing round trips) of length $n$ between two vertices/nodes in a graph, it suffices to compute the $n^{th}$ power of the adjacency matrix. For a mathematical demonstration (which is beyond the scope of this course), you can refer to [this vidéo](https://www.youtube.com/watch?v=4tfpDZYWyWw).
 
 ```{r exo15, exercise=TRUE, exercise.setup="exo13" }
 mat_2 <- mat %*% mat
 print(mat_2)
 ```
 
-On voit dans l'exemple ci-dessus qu'il existe deux chemins de taille 2 pour aller de B à B: **(i)** aller à A et revenir à B ou **(ii)** aller à C et revenir à B. Par contre il n'existe qu'un seul chemin de taille 2 pour aller de A à C, en passant par B.
+In the example above, we calculte the number of path of size 2. We see that there are two paths of length 2 to go from B to B: **(i)** go to A and return to B, or **(ii)** go to C and return to B. However, there is only one path of length 2 from A to C, passing through B.
 
-<div class="exo">
+This principle allows for simulating a random walk in a graph (*random walk*) and is used to analyze much more complex graphs to identify dense regions where the probability of moving from one node to another is high (*e.g.*, the *Markov Clustering* algorithm). These regions often correspond, for example, to proteins interacting in complexes to perform a common function.
+-->
 
-- Etant donné la matrice suivante, calculez le nombre de chemin de taille 3 et stockez le résultat dans *mat_3*. 
+### End of the section
 
-```{r exo16, exercise=TRUE }
-mat <- matrix(c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 
-                1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 
-                1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 
-                0, 0),
-            ncol = 8, 
-            byrow = TRUE)
-cr_names <- LETTERS[1:8]
-colnames(mat) <- rownames(mat) <- cr_names
-diag(mat) <- 0
-library(igraph)
-my_graph <- graph_from_adjacency_matrix(mat, mode="undirected")
-plot(my_graph)
-```
+Thank you for following this tutorial.
 
-```{r exo16-solution}
-mat <- matrix(c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 
-                1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 
-                1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 
-                0, 0),
-            ncol = 8, 
-            byrow = TRUE)
-cr_names <- LETTERS[1:8]
-colnames(mat) <- rownames(mat) <- cr_names
-diag(mat) <- 0
-library(igraph)
-my_graph <- graph_from_adjacency_matrix(mat, mode="undirected")
-plot(my_graph)
-
-mat_3 <- mat %*% mat %*% mat
-```
-
-```{r exo16-check }
-gradethis::grade_result(
-  pass_if(~identical( sum(mat_3), 204 ))
-)
-```
-
-Ce grand principe permet de simuler une marche aléatoire dans un graphe (*random walk*) et est utilisé pour analyser des graphes bien plus complexes et rechercher des régions denses dans lesquelles la probabilité d'aller d'un noeud à l'autre est grande (*e.g* algorithme *Markov Clustering*) et qui correspondent, par exemple, à protéines interagissant en complexe pour réaliser une fonction commune.
-
-</div>
-
-
-
-### C'est fini
-
-Merci d'avoir suivi ce tutoriel.
 
 <!--```{r end, eval=TRUE, echo=FALSE } 
 htmltools::tags$button("Retour au Menu", 

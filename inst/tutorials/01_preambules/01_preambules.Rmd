@@ -136,39 +136,39 @@ gradethis::gradethis_setup()
 ```
 
 
-## Quelques mots à propos de R
+## A few words about R
 
-L'avènement des technologies de pointe dans le domaine des **techniques d'analyse biologique "haut débit"** a entraîné la production exponentielle de données. Par conséquent, il est devenu monnaie courante pour les biologistes de manipuler des ensembles de données comprenant **des milliers, des millions voire des milliards de valeurs**. Dans ce contexte, il est essentiel de disposer de logiciels flexibles capables **d'automatiser les processus de collecte, de traitement et d'analyse statistique de ces données**.
+The advent of cutting-edge technologies in the field of **high-throughput biological analysis techniques** has led to the exponential production of data. As a result, it has become commonplace for biologists to manipulate data sets comprising **thousands, millions or even billions of values**. In this context, it is essential to have flexible software capable of **automating the processes of collecting, processing and statistically analyzing these data**.
 
-R est un logiciel de traitement de données et d'analyse statistique développé initialement par **Robert Gentleman et Ross Ihaka**. Ce logiciel fonctionne sur diverses plates-formes telles que Unix, Linux, Windows et Macintosh, et bénéficie du statut de logiciel libre. La liberté inhérente à son utilisation sous-entend une évolution constante, rendue possible par une **communauté active de développeurs qui partagent leurs améliorations** de manière régulière.
+R is a data processing and statistical analysis software package originally developed by **Robert Gentleman and Ross Ihaka**. It runs on a variety of platforms including Unix, Linux, Windows and Macintosh, and enjoys free software status. The freedom inherent in its use implies constant evolution, made possible by an active **community of developers who share their improvements** on a regular basis.
 
-L'utilité de R s'étend à une vaste **communauté de scientifiques** issus d'horizons variés, tels que les biologistes, statisticiens, mathématiciens et géographes. Cet écosystème favorise l'échange des outils élaborés et encourage la convergence des disciplines vers des **projets collaboratifs**. Cette dynamique est sans aucun doute le moteur du succès de cet outil.
+R's usefulness extends to a vast **community of scientists** from diverse backgrounds, such as biologists, statisticians, mathematicians and geographers. This ecosystem fosters the exchange of tools developed and encourages the convergence of disciplines towards **collaborative projects**. This dynamic is undoubtedly the driving force behind the tool's success.
 
-R se distingue par sa flexibilité et sa **relative facilité d'utilisation**. Contrairement aux langages compilés tels que le C/C++, le Fortran ou le Pascal, qui requièrent la création d'un programme complet avant exécution, R se présente comme un **langage interprété**. En d'autres termes, les **lignes de commandes sont exécutées de manière interactive** par la machine. Cependant, l'approche de R peut parfois dérouter les utilisateurs novices, nécessitant une certaine expérience pour maîtriser son fonctionnement.
+R stands out for its flexibility and **relative ease of use**. Unlike compiled languages such as C/C++, Fortran or Pascal, which require the creation of a complete program before execution, R is an **interpreted language**. In other words, command lines are executed interactively** by the machine. However, R's approach can sometimes confuse novice users, requiring a certain amount of experience to master its workings.
 
-L'investissement initial dans l'apprentissage de R est **rapidement récompensé**. En effet, une **multitude d'outils est mise à disposition sous forme de librairies**, communément appelées *packages*. Chacun de ces *packages* contient un éventail de fonctions de haut niveau dédiées à des tâches spécifiques. Cette richesse permet aux biologistes d'exploiter le potentiel de R pour l'analyse statistique de données provenant aussi bien de **méthodes biologiques "classiques" que de méthodes "haut débit", telles que le transcriptome, l'épigénome, le protéome ou l'interactome**.
+The initial investment in learning R is **quickly rewarded**. In fact, a **multitude of tools is made available in the form of libraries**, commonly known as *packages*. Each *package* contains a range of high-level functions dedicated to specific tasks. This richness enables biologists to exploit R's potential for the statistical analysis of data from both "classical" **biological methods and "high-throughput" methods, such as the transcriptome, epigenome, proteome or interactome**.
 
-Enfin, R se dote d'une **gamme d'outils graphiques sophistiqués** qui autorisent la création de sorties entièrement personnalisables. Les données analysées peuvent ainsi être exportées sous divers formats tels que .jpg, .png, .bmp, .ps, .pdf, .html et .txt, renforçant la capacité à partager et à présenter les résultats de manière variée et attrayante.
+Last but not least, R is equipped with a **sophisticated range of graphical tools** that enable the creation of fully customizable outputs. Analyzed data can be exported in various formats such as .jpg, .png, .bmp, .ps, .pdf, .html and .txt, enhancing the ability to share and present results in a varied and attractive way.
 
-## Création des objets
+## Object creation
 
-### Opérateurs d’assignation
+### Assignment operators
 
-R est un langage basé sur des objets (*vector, matrix, data.frame, list, factor,*...). Généralement on utilisera l'opérateur '<-' (flèche) pour créer des objets. Pour commencer, créons un objet simple de type "vecteur" (une sorte de tableau) qui contiendra une valeur numérique. Ici le code "x <- 15" peut se lire "la variable x prend pour valeur 15" ou "on assigne 15 à x".
+R is an object-based language (*vector, matrix, data.frame, list, factor,*...). We generally use the '<-' (arrow) operator to create objects. To begin with, let's create a simple "vector" object (a kind of array) that will contain a numerical value. Here, the code "x <- 15" could read "the variable x takes the value 15" or "we assign 15 to x".
 
 ```{r assign0, exercise=TRUE}
 x <- 15
 print(x)
 ```
 
-L’opérateur d’assignation flèche '<-' peut être substitué par l’opérateur '=' (on trouve souvent cet syntaxe chez les débutants dans le langage R). Cependant, on préfèrera **toujours utiliser** '<-' qui indique qu'on stocke une valeur (*15*) dans une variable nommée *(x)*. C'est d'ailleurs la recommandation d'Hadley Wickham, développeur de très nombreuses librairies de fonctions, dans son [*tidyverse style guide*](https://style.tidyverse.org/) (*cf* section 2.7).
+The arrow assignment operator '<-' can be substituted by the '=' operator (this syntax is often used by R language beginners). However, it is **always preferable to use** '<-', which indicates that a value (*15*) is stored in a variable named *(x)*. This is the recommendation of Hadley Wickham, developer of numerous function libraries, in his [*tidyverse style guide*](https://style.tidyverse.org/) (*cf* section 2.7).
 
 ```{r assign1, exercise=TRUE, exercise.setup = "assign0"}
 x = 15
 print(x)
 ```
 
-La forme suivante (*i.e* la flèche inversée) est acceptée. Cependant, on la rencontrera **extrêmement rarement** et elle n'est pas conseillée (par convention de style là aussi).
+The following form (*i.e* the inverted arrow) is accepted. However, it will be encountered **extremely rarely** and is not recommended (again, by stylistic convention).
 
 ```{r assign0b, exercise=TRUE}
 15 -> x
@@ -176,7 +176,7 @@ print(x)
 ```
 
 <div class="exo">
-- Ecrire un code permettant de stocker 3 dans une variable x, 5 dans y puis la somme (opérateur *+*) de x et y dans z. Imprimez le contenu des 3 variables.
+- Write a code to store 3 in a variable x, 5 in y and then the sum (operator *+*) of x and y in z. Print the contents of the 3 variables.
 
 ```{r assign2, exercise=TRUE, exercise.setup = "assign1"}
 
@@ -201,14 +201,15 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-### Comment nommer les objets
+### How to name objects
 
-Il existe plusieurs recommandations pour nommer les objets.
+There are several recommendations for naming objects.
 
-- Il est généralement recommandé d'utiliser des noms de variables explicites, en minuscules. 
-- Les noms des variables seront en anglais. En effet, les autres éléments du langage sont en anglais.  Par ailleurs, dans le milieux scientifique, vous risquez de travailler avec des non-francophones...
-- Nous suivrons les recommandations d'[Hadley Wickman](http://adv-r.had.co.nz/Style.html) et nous utiliserons un caractère "souligné" (_) pour séparer les mots d'un nom de variable. 
-- Efforcez-vous d'utiliser des noms concis et significatifs. Quelques exemples ci-dessous.
+- It is generally recommended to use explicit, lower-case variable names. 
+- Variable names should be in English. All other language elements are in English.  Moreover, in the scientific world, you're likely to be working with non-French speakers...
+- We'll follow the recommendations of [Hadley Wickman](http://adv-r.had.co.nz/Style.html) and use an "underscore" character (_) to separate words in a variable name. 
+- Try to keep names concise and meaningful. Here are a few examples.
+
 
 ```{r assign3, exercise=TRUE}
 age <- 20
@@ -217,23 +218,23 @@ nb_iteration <- 100
 nb_genes <- 20e3
 ```
 
-**NB:** Nous prenons quelques libertés dans ce tutoriel en nommant les variables x, y ou z. Cela vous permet de rédiger rapidement et d'aller à l'essentiel. Ce n'est pas conseillé pour votre code en production.
+**In this tutorial, we take a few liberties by naming the variables x, y or z. This allows you to write quickly and to the point. This is not recommended for your production code.
 
-## Elements de code
+## Code elements
 
-### Les commentaires
+### Comments
 
-Le code pourra être commenté à l’aide du caractère "#". Toute commande à la suite de ce caractère ne sera pas interprétée. Cela permet d'annoter son code (donner des explications sur son fonctionnement pour soi et pour les autres).
+Code may be commented using the "#" character. Any command following this character will not be interpreted. This allows you to annotate your code (that is explain how it works for yourself and others).
 
 ```{r assign3b, exercise=TRUE}
 z <- 10
-# Le code ci-dessous n'est pas interprété. La variable z est donc inchangée.
+# The code below is not interpreted. The z variable is therefore unchanged.
 # z <- 56
 print(z)
 ```
 
 <div class="exo">
-- Ajouter le commentaire suivant au code ci-dessous: "La valeur 10 est assignée à z".
+- Add the following comment to the code below: "The value 10 is assigned to z".
 
 ```{r comment, exercise=TRUE, exercise.setup = "assign1"}
 z <- 10
@@ -241,7 +242,7 @@ z <- 10
 
 
 ```{r comment-solution, eval=TRUE, echo=FALSE}
-# La valeur 10 est assignée à z
+# The value 10 is assigned to z
 z <-  10
 ```
 
@@ -251,9 +252,9 @@ grade_code()
 
 </div>
 
-### Séparation des instructions
+### Instruction separation
 
-Les instructions peuvent être séparées par un retour à la ligne ou par le caractère **';'**.
+Instructions can be separated by a carriage return or by the **';'** character.
 
 ```{r assign4, exercise=TRUE}
 x <- 12; y <- 13
@@ -262,7 +263,7 @@ cat(y) # <=> print(y)
 ```
 
 <div class="exo">
-- Ajoutez, sur la même ligne de code : y <- 5
+- Add, on the same line of code: y <- 5
 
 ```{r semicolumn, exercise=TRUE, exercise.setup = "assign1"}
 z <- 10
@@ -279,66 +280,72 @@ grade_code(allow_partial_matching=FALSE)
 
 </div>
 
-## Gestion des objets en mémoire
+## Manage objects in memory
 
-### Lister et détruire les objets
+### Listing and destroying objects
 
-Les objets créés sont stockés dans la mémoire vive de l’ordinateur. Ils ne sont pas, à ce stade, stockés sur le disque. Si on quitte le programme sans sauvegarder, ils seront détruits. 
+Created objects are stored in the computer's RAM. At this stage, they are not stored on disk. If you quit the program without saving, they will be destroyed. 
 
-Pour savoir quels objets sont disponibles (*i.e* ont été créés à un instant *t*), on peut **lister** les objets en mémoire avec la fonction **ls()**. 
+To find out which objects are available (*i.e* have been created at a given time), you can **list** the objects in memory with the **ls()** function. 
 
 ```{r assign5, exercise=TRUE}
-# On crée des objets
+# Objects are created
 x <- 1; y <- 2; z <- 3
-# On liste les objets en mémoire
+# List objects in memory
 ls()
 ```
 
-On peut détruire des objets en utilisant la fonction **rm()** (**remove**).
+Objects can be destroyed using the **rm()** function (**remove**).
 
 ```{r assign5b, exercise=TRUE, exercise.setup="assign5"}
-# On détruit x 
+# Destroy x 
 rm(x)
 ls()
 ```
 
-### Variables prédéfinies
+### Predefined variables
 
-Il existe un certaine nombre de variables qui sont prédéfinies dans l'environnement R. On peut citer `LETTERS` (alphabet en majuscules),  `letters` (alphabet en minuscules), `pi` (...). On les utilisera dans le code en fonction de nos besoins.
+There are a number of predefined variables  in the R environment. These include `LETTERS` (upper-case alphabet), `letters` (lower-case alphabet), `pi` (...). We'll use them in our code according to our needs.
 
-```{r}
+```{r letters, exercise=TRUE}
 letters
+```
+```{r letters_2, exercise=TRUE}
 LETTERS
-pi
+```
+```{r pi, exercise=TRUE}
+LETTERS
 ```
 
 
-## Les fonctions
+## Functions
 
-### Fonctions ? 
+### Functions ? 
 
-Les **objets** *x*, *y* et *z* crées précédemment sont des vecteurs ("vector") pour le langage R. Ici, ils contiennent chacun une valeur numérique. Nous avons, par ailleurs utilisé les **fonctions** **ls()** et **rm()**. Dans R, on peut appeler des fonctions pour interroger des objets et réaliser des actions à partir de ceux-ci. Les fonctions se présentent sous la forme suivante:
-
-```
-nomdelafonction(arg1= a, arg2= b,...)
-
-# Ci-dessus arg1 et arg2 (...) correspondent au noms des arguments
-# a et b correspondent aux objets/valeurs que l’on souhaite passer à la fonction
-# pour qu'elle effectue une tâche en utilisant ceux-ci.
+The **objects** *x*, *y* and *z* created earlier are vectors for the R language. Here, they each contain a numerical value. We've also used the **functions** **ls()** and **rm()**. In R, you can call functions to query objects and perform actions on them. Functions take the following form:
 
 ```
+functionname(arg1= a, arg2= b,...)
 
-On peut par exemple utiliser la fonction `sum()` pour additionner des vecteurs. Cependant on peut lui substituer l'opérateur '+' (qui, en fait, s'apparente à un fonction cachée).
+# Above arg1 and arg2 (...) correspond to argument names
+# a and b correspond to the objects/values you wish to pass to the 
+# 'functionname' function to perform a task using them.
+
+```
+
+For example, you can use the `sum()` function to add vectors. However, we can substitute the '+' operator (which, in fact, is similar to a hidden function).
 
 
 ```{r function0, exercise=TRUE }
+# Both lead to the same
+# result
 sum(17, 15)
 17 + 15
 ```
 
 <div class="exo">
 
-- Utilisez la fonction `ls()` avec en lui passant l'argument `pattern='a'` pour lister l'ensemble des objets en mémoire possédant un 'a' dans leur noms. Stockez le résultat dans une variable nommée 'z'.
+- Use the `ls()` function with argument `pattern='a'` to list all objects in memory with an 'a' in their name. Store the result in a variable named 'z'.
 
 ```{r lsexo, exercise=TRUE}
 abc <- 3 
@@ -370,23 +377,28 @@ gradethis::grade_result_strict(
 
 </div>
 
-### Exemples d'utilisation de fonctions
 
-La fonction `c()` (**combine**) permet de combiner des valeurs (e.g numériques) dans un vecteur (*vector*). La fonction `length()` permet de connaître la taille d'un vecteur. 
+### Examples of function usage
 
+The `c()` (**combine**) function is used to combine values (e.g. numerical) in a vector (*vector*). The `length()` function lets you find out the size of a vector. 
 
-**NB:** ci-dessous 1:8 produit un vecteur contenant tous les entiers de 1 à 8. 
+**NB:** below 1:8 produces a vector containing all integers from 1 to 8. 
 
-```{r fonction1, exercise=TRUE}
+```{r function1, exercise=TRUE}
+# Integers from 1 to 8
 x <- 1:8
+# Combine -50, x (i.e. 1 to 8) and 70 
+# into a new vector y
 y <- c(-50, x, 70)
 print(y)
+
+# The length of y (i.e the number of elements in y)
 print(length(y))
 ```
 
-Les fonctions `is()` et `class()` sont des fonctions permettant de connaître le type d'un objet. Connaître le type d'un objet est important pour savoir quelles fonctions peuvent lui être appliquées. 
+The `is()` and `class()` functions are used to find out the type of an object. Knowing the type of an object is important for knowing which functions can be applied to it. 
 
-```{r fonction2, exercise=TRUE}
+```{r function2, exercise=TRUE}
 y <- c(2.567, 3.987, 4, 10.34566)
 is(y)
 class(y)
@@ -394,7 +406,7 @@ class(y)
 
 <div class="exo">
 
-- Utilisez stockez le type de x (`class()`) dans z.
+- Store the type of x (`class()`) in z.
 
 ```{r is, exercise=TRUE}
 x <- matrix()
@@ -414,14 +426,15 @@ gradethis::grade_result_strict(
 
 </div>
 
-Ci dessous un exemple d'utilisation de la fonction `round()` arrondir des valeurs numériques. 
+Below is an example of how to use the `round()` function to round numerical values. 
 
 ```{r fonction3, exercise=TRUE}
 y <- c(2.567, 3.987, 4, 10.34566)
 round(y)
 ```
 
-La fonction round possède plusieurs arguments: *x* et *digits* (qui contrôle le nombre de chiffres derrière la virgule).
+The `round()` function has several arguments: *x* and *digits* (which controls the number of digits behind the decimal point).
+
 
 ```{r}
 args(round)
@@ -432,82 +445,52 @@ y <- c(2.567, 3.987, 4, 10.34566)
 round(x=y, digits = 2)
 ```
 
-Notez que **les noms des arguments peuvent être abrégés** (attention l'abréviation peut être ambiguë quand il y a de nombreux arguments ayant le même préfixe).
+Note that **argument names can be abbreviated** (note that abbreviation can be ambiguous when there are many arguments with the same prefix).
 
 ```{r fonction4, exercise=TRUE}
 y <- c(2.567, 3.987, 4, 10.34566)
 round(x=y, d = 2)
 ```
 
-les **noms des arguments peuvent aussi être omis**. Cependant il devront être dans l'ordre attendu.
+**Argument names can also be omitted**. However, they must be in the expected order.
 
 ```{r fonction4b, exercise=TRUE}
 y <- c(2.567, 3.987, 4, 10.34566)
 round(y, 2)
 ```
 
-Cela peut conduire à des erreurs (l'ordinateur refuse d'effectuer l'opération et renvoie une erreur) ou des comportements inattendus comme ci-dessous.
+## Getting help in R
 
-```{r fonction5, exercise=TRUE}
-y <- c(2.567, 3.987, 4, 10.34566)
-round(2, y)
-```
+### The help() function
 
-## L'aide dans R
+Help on a given function can be obtained using the `help()` function. Help can also be called up using the "?" character. Help sheets about functions provide information on input arguments, returned values and usage through examples.
 
-### La fonction help()
+The various help fields are as follows:
 
-L'aide sur une fonction donnée peut être obtenu grâce à la fonction `help()`. L'aide peut aussi être appelée à l’aide du caractère "?". Cette fiche d'aide permet d'obtenir de l'information sur les arguments d'entrée, les valeurs retournées ainsi que l’utilisation à travers des exemples d'utilisation.
-
-Les différents champs de l'aide sont notamment:
-
-- **Description:**  renseigne sur le rôle de cette fonction.
-- **Usage:**  décrit la fonction et ses paramètres par défaut.
-- **Arguments:** liste les arguments à passer à cette fonction.
-- **Value:** le type de(s) l'objet(s) retourné(s) par la fonction.
-- **See Also:** autres fonctions assez similaires ou complémentaires.
-- **Examples:** quelques exemples d'utilisation de cette fonction}.
+- **Description:** provides information on the function's role.
+- **Usage:** describes the function and its default parameters.
+- **Arguments:** lists the arguments to be passed to this function.
+- **Value:** the type of object(s) returned by the function.
+- **See Also:** other similar or complementary functions.
+- **Examples:** some examples of how to use this function}.
 
 <div class="exo">
-Demandez de l'aide sur la fonction round:
+Ask for help for the `mean()` function:
 
-```{r fonction6, exercise=TRUE, exercise.setup = "fonction1"}
+```{r function6, exercise=TRUE, exercise.setup = "function1"}
 
 ```
 
-```{r fonction6-solution}
-?round
-# ou
-help(round)
+```{r function6-solution}
+?mean
+# or
+help(mean)
 ```
 
-
-```{r helpexo, echo=FALSE}
-my_question <- c(
-    "Description",
-    "Usage",
-    "Arguments",
-    "Value",
-    "See Also",
-    "Examples"
-  )
-
-# Initialize the question
-  sortable::question_rank(
-  "Quel est l'ordre des différentes sections dans la fiche d'aide ?",
-  answer(my_question, correct = TRUE),
-  answer(sample(my_question, replace=FALSE), 
-         correct = FALSE, message = "Other direction!"),
-  allow_retry = TRUE,
-  options = sortable::sortable_options(
-    animation = 150
-  ))
-```
-</div>
 
 <div class="exo">
 
-- Cherchez de l'aide sur les fonctions de calculs suivantes: `min()`, `max()`, `sort()`, `log()`, `log2()`, `log10()`. 
+- Look for help on some of the following calculation functions: `min()`, `max()`, `sort()`, `log()`, `log2()`, `log10()`. 
 
 ```{r findhelp, exercise=TRUE}
 
@@ -525,24 +508,16 @@ my_question <- c(
 
 </div>
 
-### La fonction example()
 
-Cette fonction permet de lancer les exemples de l'aide associée à une fonction donnée. 
+### The apropos() function
 
-
-```{r example, exercise=TRUE }
-example(round)
-```
-
-### La fonction apropos()
-
-la fonction `apropos()` est terriblement pratique car elle renvoie l'ensemble des fonctions dont les noms contiennent une chaîne de caractères recherchée (e.g. `apropos('Sys')` pour chercher toutes les fonctions dont les noms contiennent 'Sys'). Souvent, les fonctions de base dans les langages de programmation ont des noms assez similaires, cela aide beaucoup. Attention cette fonction est sensible à la casse (*i.e* minuscule/majuscule).
+the function `apropos()` may be very handy, as it returns all functions whose names contain a searched string (e.g. `apropos('Sys')` to search for all functions whose names contain 'Sys'). Often, functions in programming have meaningful naming, which helps a lot. Please note that this function is case-sensitive (*i.e* lowercase/lowercase).
 
 <div class="exo">
-Recherchez toutes les fonctions dont le nom contient 'file' (*i.e* fichier). Attention 'file' doit être entre guillemets.
+Find all functions whose name contains 'read'. Please note that 'read' must be enclosed in quotation marks.
 
 <div class="tips">
-**NB**: En informatique on parle de guillemets simples ou simples guillemets pour faire référence  à l'apostrophe (' '). On parle de guillemets doubles ou doubles guillemets pour faire référence au guillemets (" "). Cette appellation nous vient du monde anglo-saxon (*single quote* et *double quote*). Dans le langage R, les deux formes ont la même signification et permettent de désigner une suite de caractères qu'on appelle *chaîne de caractères* (ici 'file' ou "file"). Cela permet une certaine flexibilité si une chaîne de caractères contient un guillemet simple par exemple (*e.g.* x <- "extrémités 5' et 3' des molécules d'ADN").
+**NB**: In computing, we use the term **'single quote'** to refer to the apostrophe (' ') and **'double quote'** to refer to quotation marks (” ”). In the R language, both forms have the same meaning, and are used to **delimit a sequence of characters** called a *character string* (here **'read' or “read”**). 
 </div>
 
 ```{r apropos, exercise=TRUE }
@@ -550,77 +525,52 @@ Recherchez toutes les fonctions dont le nom contient 'file' (*i.e* fichier). Att
 ```
 
 ```{r apropos-solution}
-apropos("file")
+apropos("read")
 ```
-```{r apropos-check}
-grade_code()
-```
-
 
 </div>
 
-<div class="exo">
-```{r helpexo2, echo=FALSE}
-learnr::question("Dans la question précédente, pourquoi faut-il mettre *file* entre guillemets et écrire apropos('file') et non pas apropos(file)",
-  answer("Parce que *file* sans guillemet sous-entendrait qu'il existe en mémoire un objet nommé *file*.", correct = TRUE),
-  answer("Parce que le premier argument de la fonction *apropos()* doit obligatoirement être un chaîne de caractère.", correct = TRUE),
-  allow_retry = TRUE 
-)
-```
-</div>
+## Exercises
 
-<div class="exo">
-```{r helpexo3, echo=FALSE}
-learnr::question("Est-ce que l'instruction suivante fonctionnerait ? file <- 'file'; apropos(file)",
-  answer("Non"),
-  answer("Oui", correct = TRUE),
-  allow_retry = TRUE 
-)
-```
-</div>
+### Exercise 1
 
-## Exercices
-
-### Exercice 1
-
-Répondez aux questions suivantes:
+Answer the following questions:
 
 <div class="exo">
 ```{r exoq1, echo=FALSE }
-learnr::question("Il est conseillé d'utiliser l'opérateur '=' plutôt que '<-' pour l'assignation ?",
-  answer("oui"),
-  answer("non", correct = TRUE),
+learnr::question("It's advisable to use the '=' operator rather than '<-' when assigning ?",
+  answer("Yes"),
+  answer("No", correct = TRUE),
   allow_retry = TRUE 
 )
 ```
 
 ```{r exoq2, echo=FALSE }
-learnr::question("Lors de l'appel à une fonction, si les arguments sont nommés, leur ordre n'importe pas.",
-  answer("oui", correct = TRUE),
-  answer("non"),
+learnr::question("When calling a function, if the arguments are named, their order doesn't matter.",
+  answer("Yes", correct = TRUE),
+  answer("No"),
   allow_retry = TRUE 
 )
 ```
 
 ```{r exoq4, echo=FALSE }
-learnr::question("Lors de l'appel à une fonction, si on abrège les noms des arguments il faut faire attention à ce que les abréviations ne soient pas ambiguës.",
-  answer("oui", correct = TRUE),
-  answer("non"),
+learnr::question("When calling a function, if you abbreviate the names of the arguments, take care that the abbreviations are not ambiguous.",
+  answer("Yes", correct = TRUE),
+  answer("No"),
   allow_retry = TRUE 
 )
 ```
 
 ```{r exoq3, echo=FALSE }
-learnr::question("La fonction ls() permet de lister les fichiers ?",
-  answer("oui"),
-  answer("non", correct = TRUE),
+learnr::question("The ls() function is used to list files?",
+  answer("Yes"),
+  answer("No", correct = TRUE),
   allow_retry = TRUE 
 )
 ```
 
 </div>
 
-### C'est fini
+### Finished
 
-Merci d'avoir suivi ce tutoriel.
-
+Thank you for following this tutorial.

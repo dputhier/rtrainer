@@ -1,11 +1,11 @@
 ---
 # theme
-# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
-# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# "bootstrap", "cerulean", "cosmo", "darkly", "flatly", "journal", "lumen", "paper", 
+# "readable", "sandstone", "simplex", "spacelab", "united", "yeti"
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 
-title: "Les facteurs"
+title: "The 'factor' object"
 output:
   learnr::tutorial:
     theme: default
@@ -146,109 +146,101 @@ gradethis::gradethis_setup()
 --> 
 
 
-## Les facteurs
+## Factors
 
-### la fonction factor()
+In R, **factors** are categorical variables that can be created from character strings or numerical vectors. The **factor** is a central object in R as it will allow, for instance, to:
 
-La fonction `factor()` permet de créer des variables catégorielles (des **facteurs**) à partir de vecteurs de modes caractère ou numérique. On pourra en effet, choisir d'analyser les individus ou les variables selon leur appartenance à une catégorie donnée. Par exemple, ci dessous, on crée un vecteur, contenant les traitements reçus par 500 patients. 
+- Create diagrams (*e.g* distributions, boxplot...)
+- Compute statistics (*e.g* mean, variance, t-test...) according to categories
+- ...
 
-```{r exo1, exercise=TRUE}
-# ttmt est, pour l'instant, un simple vecteur de chaînes de caractères.
+As an example, you may be interested to analyze values according to any membership. For example, below, we create an ordered vector containing the treatments received by 500 patients. 
+
+```{r fact1, exercise=TRUE}
+# ttmt is, for the moment, a simple vector of character strings.
 ttmt <- sort(sample(c("Placebo", "hydroxychloroquine", "dexamethasone"), size=500, replace = TRUE))
 class(ttmt)
 print(head(ttmt))
 ```
 
-Par défaut, ce vecteur ne contient pas de notions de catégories.
+By default, this vector contains no information about any categories.
 
-```{r exo1b, exercise=TRUE,  exercise.setup = "exo1" }
-# Un vecteur de chaînes de caractères n'a pas de catégories/niveaux.
-levels(ttmt)
-```
+### The as.factor() function
 
-### la fonction as.factor()
+The `as.factor()` function converts a vector into a factor (*i.e* categorical variable).
 
-La fonction `as.factor()` permet de convertir le vecteur en facteur (*i.e* variable catégorielle).
-
-```{r exo2, exercise=TRUE, exercise.setup = "exo1" }
-# ttmt est transformé en un facteur.
+```{r exo2, exercise=TRUE, exercise.setup = "fact1" }
+# ttmt is tranformed/casted into a factor
 ttmt <- as.factor(ttmt)
 class(ttmt)
 ```
 
-Si on imprime le facteur, les catégories (*levels*) apparaissent.
 
-```{r exo2b, exercise=TRUE, exercise.setup = "exo2" }
-# ttmt est transformé en un facteur.
-print(ttmt)
-```
-
-```{r exo2b2,  echo=FALSE }
-learnr::question("Lorsqu'on imprime l'objet ttmt (`print(ttmt)`), comment R indique-t-il qu'il s'agit d'un facteur ?",
-  answer("Il indique 'Levels: dexamethasone hydroxychloroquine Placebo' sur la première ligne"),
-  answer("Il indique 'Levels: dexamethasone hydroxychloroquine Placebo' sur la dernière ligne", correct = TRUE),
-  allow_retry = TRUE 
+```{r quizz_fact_1, echo=FALSE }
+learnr::question("Let's print the ttmt factor. How does R indicate that it's a factor ?",
+  answer("It indicates ‘Levels: dexamethasone hydroxychloroquine Placebo’ on the first line", correct = FALSE),
+  answer("It indicates ‘Levels: dexamethasone hydroxychloroquine Placebo’ on the last line", correct = TRUE ),
+  allow_retry = TRUE
 )
 ```
 
+### The levels() function
 
-### La fonction levels()
-
-La fonction `levels()` permet de connaitre le nom des catégories (les **niveaux/modalités** de ces catégories).
+The `levels()` function lets you extract the names of the categories (the **levels/modalities** of these categories).
 
 ```{r exo3, exercise=TRUE, exercise.setup="exo2" }
 levels(ttmt)
 ```
 
-On pourra modifier les noms des catégories comme dans l'exemple suivant. On vérifie que les niveaux ont bien changé.
+You can change the category names as shown in the following example. Check, using `print()`, that the levels have changed.
 
-```{r exo3b, exercise=TRUE, exercise.setup="exo2" }
-# On peut changer les noms des catégories.
+```{r exo3b, exercise=TRUE, exercise.setup="exo2"}
+# We can change the category names.
 levels(ttmt) <- c("dex", "hcq", "cont")
 levels(ttmt)
 ```
 
+### The table() function
 
-## La fonction table()
-
-### La fonction table()
-
-La fonction `table()` permet de renvoyer les effectifs de chacune des catégories.
+The `table()` function returns the size of each category. For instance, let say we have information related to patients genders.
 
 ```{r exo4, exercise=TRUE, exercise.setup="exo3b" }
-table(ttmt)
-```
-
-Si il y a plusieurs variables catégorielles (*i.e.* facteurs), ont pourra là aussi compter les effectifs. Par exemple, si on connait le genre des patients.
-
-```{r exo5, exercise=TRUE, exercise.setup="exo3b" }
 set.seed(123)
 gender <- sample(c("Male", "Female"), size = 500, replace = T)
 gender <- as.factor(gender)
 print(head(gender))
 ```
 
-Analysons les **effectifs des variables** *gender* et *ttmt*. Pour ce faire, on crée le **tableau de contingence** correspondant (permet de croiser deux variables, ici *ttmt* et *gender*, et dénombrer les effectifs pour chacune des catégories).
+The `table()` function can be used to count the number of men and women.
 
-```{r exo6b, exercise=TRUE, exercise.setup="exo5" }
+```{r exo5, exercise=TRUE, exercise.setup="exo4" }
+table(gender)
+```
+
+Now that we have two variables (`ttmt`and `gender`) we can also easily cross the variables and create a contengency matrix to get the number of men/women expose to the various treatments.
+
+
+```{r exo6a, exercise=TRUE, exercise.setup="exo5" }
 table(ttmt, gender)
 ```
 
-On peut éventuellement représenter graphiquement le tableau de contingence. Les surfaces correspondant alors aux effectifs.
+The contingency table can also be represented graphically with basic R commands. The areas then correspond to the numbers.
 
-```{r exo6ba, exercise=TRUE, exercise.setup="exo6b" }
+```{r exo6b, exercise=TRUE, exercise.setup="exo5" }
 mosaicplot(table(ttmt, gender), color = c("salmon", "olivedrab"), main="Mosaic plot")
 ```
 
-### Exercice avec la fonction table()
+The areas then correspond to the size of each category.
+
+### Exercise with the table() function
 
 <div class="exo">
 
-- Etant donné la catégorie `age` comptez le nombre d'individus dans les différentes modalités à travers les facteurs `ttmt`, `gender` et `age`.
+- Given the `age` factor (see below), count the number of individuals in the different levels through the factors `ttmt`, `gender` and `age`.
 
-**NB:** Le premier argument de table (*cf* `help(table)`) est '...' ce qui indique qu'on peut passer autant de facteurs que l'on souhaite en argument.
+**NB:** The first argument to table (*cf* `help(table)`) is '...', which means you can pass as many factors as you like as arguments.
 
-```{r exo5c, exercise=TRUE , exercise.setup="exo6"}
+```{r exo5c, exercise=TRUE , exercise.setup="exo5"}
 set.seed(456)
 age <- sample(c("<10", "10-30", "30-50", ">50"), size = 500, replace = T)
 ```
@@ -259,50 +251,48 @@ age <- sample(c("<10", "10-30", "30-50", ">50"), size = 500, replace = T)
 table(ttmt,  gender, age)
 ```
 
-```{r exo5c-code-check}
-grade_code()
-```
-
 </div>
 
 
-## Variables catégorielles ordinales
+## Ordinal variables
 
-### Création de variables catégorielles ordinales
+An ordinal variable is rather close to a categorical variable. The only difference is that ordinal variables are ordered (e.g. education level: "high school", "BS","MS","PhD"; rating: "like", "neutral", "dislike"...).
 
-Il est possible de créer des variables catégorielles ordinales dans lesquels il existe une relation d'ordre entre les catégories possibles. Par exemple le traitement 2 est plus puissant que le traitement 1 (e.g. doses différentes). 
+### Creating ordinal variables
 
-```{r exo6, exercise=TRUE, exercise.setup="exo5" }
-ttmt <- factor(ttmt, levels = c("cont", "hcq", "dex"), ordered = TRUE)
-ttmt
+For example, `age` could be naturally converted to an ordinal variable using the `factor()` function (which contains additional arguments compared to `as.factor()`). 
+
+```{r exo6, exercise=TRUE, exercise.setup="exo5c" }
+age <- factor(age, levels = c("<10", "10-30", "30-50", ">50"), ordered = TRUE)
+age
 ```
 
-```{r exo6b1,  echo=FALSE }
-learnr::question("Lorsqu'on imprime l'objet ttmt, comment R indique-t-il qu'il s'agit d'une variable catégorielle ordinale  ?",
-  answer("Il indique 'Levels: cont < hcq < dex' sur la première ligne"),
-  answer("Il indique 'Levels: cont < hcq < dex' sur la dernière ligne", correct = TRUE),
+```{r exo6b1, echo=FALSE }
+learnr::question("When printing the age object, how does R indicate that it's an ordinal  variable?",
+  answer("It indicates 'Levels: <10 < 10-30 < 30-50 < >50' on the first line", correct = FALSE),
+  answer("It says 'Levels: <10 < 10-30 < 30-50 < >50' on the last line ?", correct = TRUE),
   allow_retry = TRUE 
 )
 ```
 
-```{r exo6b0,  echo=FALSE }
-learnr::question("A quoi correspond le '<' dans  Levels: cont < hcq < dex' ?",
-  answer("Il indique que les modalités peuvent être classées dans un certain ordre naturel permettant une comparaison.", correct = TRUE),
-  answer("Il permet de séparer n'a pas de sens."),
-  answer("Il indique que les modalités ne peuvent pas être classées."),
+```{r exo6b0, echo=FALSE }
+learnr::question("What does the '<' in 'Levels: cont < hcq < dex' stand for?",
+  answer("It indicates that the modalities can be classified in a certain natural order to enable comparison.", correct = TRUE),
+  answer("It allows to separate doesn't make sense."),
+  answer("It indicates that the modalities cannot be sorted."),
   allow_retry = TRUE 
 )
 ```
 
-## Appliquer des opérations
+## Applying operations based on catagories
 
-### La fonction tapply()
+### The tapply() function
 
-On peut utiliser un facteur pour faire des opérations sur un vecteur en fonction de catégories. Par exemple, on peut appliquer des fonctions dans chacune des catégories avec `tapply()`. Ici on donne l'exemple du calcul de la moyenne (`mean()`) et de la visualisation des distributions des réponses (*infection*) dans les 3 classes de patients (i.e. ayant reçu les trois traitements). 
+A factor can be used to perform operations on a vector according to categories. For example, you can apply functions in each category with `tapply()`. Here we give the example of calculating the mean (`mean()`) and visualizing the distributions of responses (*infection*) in the 3 classes of patients (*i.e.* having received the three treatments). 
 
-```{r exo7, exercise=TRUE, exercise.setup="exo5" } 
-# infection est un vecteur contenant les niveaux
-# d'infection de chaque patient
+```{r exo7, exercise=TRUE, exercise.setup="exo6" } 
+# infection is a vector containing the infection levels
+# infection levels of each patient
 infection <- round(c(rnorm(150, mean = 3, sd=1), 
                       rnorm(150, mean = 10, sd=2), 
                       rnorm(200, mean = 10, sd=1)), 
@@ -310,35 +300,33 @@ infection <- round(c(rnorm(150, mean = 3, sd=1),
 tapply(infection, ttmt, mean)
 ```
 
-On peut aussi calculer cette moyenne en fonction de plusieurs variables catégorielles.
+This mean can also be calculated as a function of several categorical variables.
 
 ```{r exo8, exercise=TRUE, exercise.setup="exo7" } 
 tapply(infection, list(ttmt, gender), mean)
 ```
 
-Ces facteurs sont extrêmement intéressants aussi pour des opérations graphiques. Par exemple, ci-dessous on réalise des boîtes à moustache en fonction des catégories de patients. 
-
-Tout d'abord, tout simplement l'infection en fonction (*~*) du traitement.
+These factors are also extremely useful for graphical operations. Below, for example, we've created boxplot based on patient categories using very basic R functions. The `~` (tilda) can be read as 'as a function of' or 'according to'.
 
 ```{r exo9, exercise=TRUE, exercise.setup="exo7" } 
 boxplot(infection ~ ttmt)
 ```
 
-Mais on peut aussi analyser l'effet ('~') du traitement et (*+*) l'effet du genre.  
+But we can also analyze the effect (`~`) of treatment and (`+`) gender.  
 
 ```{r exo9b, exercise=TRUE, exercise.setup="exo7" } 
-# On change les paramètres graphiques (par())
-# afin d'augmenter la taille de ma marge (mar), à gauche, 
-# car les noms des classes sont longs.
+# We change the graphic parameters (par())
+# to increase the size of my margin (mar) on the left, 
+# because the class names are long.
 par(mar=c(1,7,1,1))
 boxplot(infection ~ ttmt + gender, horizontal = TRUE, las=1, ylab="")
-# On ajoute une grille pour la lisibilité.
+# We add a grid for readability.
 grid()
 ```
 
-## Création de facteurs avec la fonction cut()
+## Creating factors with the cut() function
 
-la fonction *cut()* permet de diviser le vecteurs d'entrée en intervalles et encode les valeurs du vecteur d'entrée en fonction de leurs intervalles d'appartenance. 
+The *cut()* function divides the input numeric vector into intervals and encodes the values of the input vector according to the intervals to which they belong. This allows, when needed, to transform a numerical variable into a set of categories.
 
 ```{r exo10_0, exercise=TRUE, exercise.setup="exo7" }
 infection_class <- cut(infection, breaks = 4)
@@ -346,30 +334,30 @@ is(infection_class)
 print(levels(infection_class))
 ```
 
-Maintenant qu'on a créé des classes de niveau d'infection, on pourra créer le tableau de contingence correspondant. 
+
+Now that we've created infection level classes, we could create the corresponding contingency table:
 
 ```{r exo10_1, exercise=TRUE, exercise.setup="exo10_0"}
 cont_table <- table(infection_class, ttmt)
 cont_table
 ```
 
-Nous reverrons l'utilisation de cet objet *factor* plus en détail par la suite.
+We'll look at the use of this *factor* object in more detail later.
 
+## Exercises
 
-## Exercices
-
-### Exercice 1
+### Exercise 1
 
 <div class="exo">
 
-- Etant donné l'objet  ci-dessous.
+- Given the object below.
 
 ```{r exo10, exercise=TRUE }
-chromosome <- c(NA, 11, 2, 7, 7, 8, 10, 2, 20, 22, 1, 3, 10, 10, 11, 20)
+chromosome <- c(11, 2, 7, 7, 8, 10, 2, 20, 22, 1, 3, 10, 10, 11, 20)
 ```
 
 ```{r exo11, echo=FALSE}
-learnr::question("Quel est le type de chromosome ?",
+learnr::question("What is the type of the chromosome object?",
   answer("factor"),
   answer("character"),
   answer("numeric", correct = TRUE),
@@ -379,22 +367,22 @@ learnr::question("Quel est le type de chromosome ?",
 ```
 
 ```{r exo12, echo=FALSE}
-learnr::question("Combien de catégories y-at-il ?",
-  answer("Zéro"),
-  answer("Plusieurs"),
+learnr::question("What are the associated categories (levels()) ?",
+  answer("Zero"),
+  answer("Several"),
   answer("NULL", correct = TRUE),
   allow_retry = TRUE
 )
 ```
 
-- On transforme *chromosome* avec le code suivant.
+- Transform `chromosome` with the following code.
 
 ```{r exo13, exercise=TRUE, exercise.setup="exo10" } 
 chromosome <- as.factor(chromosome)
 ```
 
 ```{r exo14, echo=FALSE } 
-learnr::question("Quel est le type de chromosome ?",
+learnr::question("What is the type of chromosome ?",
   answer("factor", correct = TRUE),
   answer("character"),
   answer("numeric"),
@@ -404,71 +392,76 @@ learnr::question("Quel est le type de chromosome ?",
 ```
 
 ```{r exo15, echo=FALSE }
-learnr::question("Combien de catégories y-a-t-il ?",
-  answer("0"),
+learnr::question("How many levels does it contains?",
+  answer("0", correct = FALSE),
   answer("9", correct = TRUE),
-  answer("10"),  
-  answer("NULL"),
+  answer("10", correct = FALSE),  
+  answer("NULL", correct = FALSE),
   allow_retry = TRUE
 )
 ```
+
 </div>
 
-### Exercice 2
+### Exercise 2
 
 <div class="exo">
 
-- Etant donné l'objet *codons* ci-dessous. Complétez le code pour imprimer le nombre de codons "ATT". Stocker cette valeur dans une variable nommée *att_nb*.
+- Given the *codons* object below. Complete the code to print the number of "ATG" codons. Store this value in a variable named *att_nb*.
 
-```{r exo16, exercise=TRUE }
+```{r exo16, exercise=TRUE}
 set.seed(123)
-codons <- sample(c("ATT", "GTT", "GGG", "CTT"), size=1000, replace = TRUE)
+codons <- sample(c("ATT", "ATG", "TTG", "TCG", "GCG", "TGA"), size=1000, replace = TRUE)
+codons <- as.factor(codons)
 ```
 
 
 ```{r exo16-solution }
 set.seed(123)
-codons <- sample(c("ATT", "GTT", "GGG", "CTT"), size=1000, replace = TRUE)
+codons <- sample(c("ATT", "ATG", "TTG", "TCG", "GCG", "TGA"), size=1000, replace = TRUE)
 codons <- as.factor(codons)
 tb_codon <- table(codons)
-att_nb <- tb_codon['ATT']
+att_nb <- tb_codon['ATG']
 ```
 
 ```{r exo16-check }
 gradethis::grade_result(
-  pass_if(~ setNames(att_nb, NULL) ==  249)
+  pass_if(~ setNames(att_nb, NULL) ==  176)
 )
 ```
 </div>
 
 <div class="exo">
 
-- Proposez une instruction pour transformer les catégories de codons en "att", "gtt", "ggg" et "ctt".
+- Propose an instruction to transform the codon categories "ATG" into "START" and "TGA" into "STOP".
 
 ```{r exo17,  exercise=TRUE, echo=FALSE, exercise.setup="exo16" } 
+set.seed(123)
+codons <- sample(c("ATT", "ATG", "TTG", "TCG", "GCG", "TGA"), size=1000, replace = TRUE)
 codons <- as.factor(codons)
 ```
 
 
-```{r exo17-solution }
-codons <- as.factor(codons)
-levels(codons) <- c("att", "ctt", "ggg", "gtt")
-# Ou
-levels(codons) <- tolower(levels(codons))
+```{r exo17-solution}
+# Look at the order 
+levels(codons)
+# Change the names of the levels
+levels(codons) <- c("START", "ATT", "GCG", "TCG", "STOP", "TTG")
 ```
 
 
 ```{r exo17-check }
 gradethis::grade_result(
-  pass_if(~identical(levels(codons), c("att", "ctt", "ggg", "gtt")))
+  pass_if(~  table(codons)["START"] == 176),
+  pass_if(~  table(codons)["STOP"] == 164)
 )
 ```
 </div>
 
 
-### C'est fini
+### End of the section
 
-Merci d'avoir suivi ce tutoriel.
+Thank you for following this tutorial.
 
 
 <!--
@@ -479,3 +472,4 @@ Merci d'avoir suivi ce tutoriel.
                          )
  $$```
  -->
+

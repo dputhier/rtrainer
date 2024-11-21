@@ -5,7 +5,7 @@
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 # Estimated time = 2h
-title: "Les vecteurs"
+title: "The 'vector' object."
 output:
   learnr::tutorial:
     theme: default
@@ -140,19 +140,18 @@ knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=
 gradethis::gradethis_setup()
 ```
 
-
 <!--  
 <img src="img/graph_with_r.jpeg"> 
 ![](img/graph_with_r.jpeg)
 --> 
 
-## Les modes
+## Modes
 
-Tous les éléments d'un vecteur sont de même types. Dans le langage R, on parle de 'modes' (ou modalités). Il existe quatre modes: "numérique", "caractère", "logique" et "complexe". 
+All elements of a vector are of the same type. In the R language, we speak of 'modes' (or modalities). There are four modes: "numeric", "character", "logical" and "complex". 
 
-### Mode numérique
+### Numerical mode
 
-Nous l'avons déjà vu en partie. R permet de créer des vecteurs de numériques. Par exemple, ci-dessous, on crée une suite d'entiers de 1 à 10 qui est stocké dans un vecteur.
+We've already seen part of this. R lets you create numerical vectors. For example, below, we create a sequence of integers from 1 to 10, which is stored in a vector.
 
 ```{r vectornum0, exercise=TRUE}
 integers <- 1:10
@@ -161,7 +160,7 @@ print(integers)
 
 <div class="exo">
 
-- Créez un vecteur `z` contenant les entiers suivants dans cet ordre: 3, 12, 17, 20 à 41 et 50.
+- Create a vector `z` containing the following integers in this order: 3, 12, 17, 20 to 41 and 50.
 
 ```{r integerexo, exercise=TRUE}
 
@@ -178,72 +177,52 @@ gradethis::grade_result(
 ```
 </div>
 
-<div class="exo">
 
-- Utilisez  `sum()` pour calculer la somme des éléments de z. Stockez le résultat dans la variable `sum_z`. 
+### Character mode
 
-```{r integerexo2, exercise=TRUE }
-z <- c(3, 12, 17, 20:41, 50)
-```
-
-```{r integerexo2-solution}
-z <- c(3, 12, 17, 20:41, 50)
-sum_z <- sum(z)
-```
-
-```{r integerexo2-check }
-gradethis::grade_result(
-  pass_if(~ sum_z == 753)
-)
-```
-</div>
-
-
-### Mode caractère
-
-On fournit ci-dessous un exemple de vecteurs contenant des chaînes de caractères (*character strings*).
+Below is an example of vectors containing *character strings*.
 
 ```{r vector0, exercise=TRUE}
-noms <-  c("Céline", "Alain", "Fairouz") 
-print(noms)
-class(noms) # <=> is(noms) 
+names <- c("Céline", "Alain", "Fairouz") 
+print(names)
+class(names) # <=> is(names) 
 ```
 
 <div class="exo">
 
-- Créez un vecteur `noms` contenant les chaînes de caractères suivantes: "Riad", "Sabine" et "Nastassja".
+- Create `this_names`, a vector containing the following strings: “Riad”, “Sabine” and “Nastassja”.
 
 ```{r charliste, exercise=TRUE}
 
 ```
 
 ```{r charliste-solution}
-noms <-  c("Riad", "Sabine", "Nastassja") 
+this_names <-  c("Riad", "Sabine", "Nastassja") 
 ```
 
 ```{r charliste-check }
 gradethis::grade_result(
-  pass_if(~ noms[1] == "Riad"),
-  pass_if(~ noms[2] == "Sabine"),
-  pass_if(~ noms[3] == "Nastassja")
+  pass_if(~ this_names[1] == "Riad"),
+  pass_if(~ this_names[2] == "Sabine"),
+  pass_if(~ this_names[3] == "Nastassja")
 )
 ```
 
 </div>
 
-### Mode logique
+### Logic mode
 
-On fournit ci-dessous un exemple de vecteurs contenant des booléens (des variables à deux états, 'vrai' et 'faux' ou 0 et 1). A noter que vrai et faux sont représentés par les mots clés TRUE et FALSE (qui sont donc des termes réservés du langage). On pourra éventuellement substituer TRUE et FALSE par T et F, respectivement. Cependant cette dernière solution n'est pas conseillée pour la respecter la lisibilité et peut être, dans certain contextes (e.g. écriture d'une librairie) considéré comme une erreur.
+Below is an example of vectors containing Booleans (variables with two states, 'true' and 'false' or 0 and 1). Note that true and false are represented by the keywords `TRUE` and `FALSE` (which are reserved terms in the language). TRUE and FALSE can be replaced by `T` and `F` respectively. However, this last solution is not recommended for lisibility reasons and may, in certain contexts (e.g. writing a library) be considered an error.
 
 ```{r vector1, exercise=TRUE}
-logic <- c(TRUE, FALSE, TRUE) # éventuellement: logic <- c(T, F, T)
+logic <- c(TRUE, FALSE, TRUE) # or, possibly: logic <- c(T, F, T)
 print(logic)
 class(logic) # is(logic)
 ```
 
 <div class="exo">
 
-- Créez un vecteur `true_false` contenant les valeurs booléennes vrai, faux, faux, faux, vrai.
+- Create a `true_false` vector containing the Boolean values true, false, false, false, true.
 
 ```{r logique, exercise=TRUE}
 
@@ -262,21 +241,22 @@ gradethis::grade_result(
 
 </div>
 
-### Opérateurs de comparaison
+### Comparison operators
 
-Les vecteurs logiques sont généralement crées par R lors de comparaisons avec des opérateurs de comparaison comme ceux du tableau ci-dessous.
+Logical vectors are generally created by R when comparing with comparison operators such as those in the table below:
 
-| Opération | Résultat                                                                  |
+
+| Operation | Result |                                                                  |
 |-------|-------------------------------------------------------------------------------|
-| a == b | Opérateur d'égalité. Renvoie true si a et b contiennent des valeurs égales. |
-| a != b	| Renvoie true si a et b contiennent des valeurs différentes. |
-| a > b	| Renvoie true si la valeur de a est supérieure à la valeur de b. |
-| a < b	| Renvoie true si la valeur de a est inférieure à la valeur de b. |
-| a >= b	| Renvoie true si la valeur de a est supérieure ou égale à la valeur de b. |
-| a <= b	| Renvoie true si la valeur de a est inférieure ou égale à la valeur de b. |
-| !a	| La négation logique (le contraire). |
+| a == b | Equality operator. Returns true if a and b contain equal values. |
+| a != b	| Returns true if a and b contain different values. |
+| a > b	| Returns true if the value of a is greater than the value of b. |
+| a < b	| Returns true if the value of a is less than the value of b.  |
+| a >= b	| Returns true if the value of a is greater than or equal to the value of b.  |
+| a <= b	| Returns true if the value of a is less than or equal to the value of b. |
+| !a	|  Logical negation (the opposite). |
 
-Un exemple simple est donné ci-dessous.
+A simple example is given below.
 
 ```{r bool1,  exercise=TRUE}
 x <- c(1, 7, 10, 11, 3, -2, -4, 10)
@@ -285,7 +265,7 @@ x > 5
 
 <div class="exo">
 
-- Soit le vecteur x suivant, testez si les positions sont inférieures à 0 et mettez le résultat dans une variable z.
+- Take the following vector x, test whether the positions are less than 0 and put the result in a variable z. Print z.
 
 ```{r logicaltest, exercise=TRUE}
 x <- c(2, -3, -2, 0, 6, 5)
@@ -294,6 +274,7 @@ x <- c(2, -3, -2, 0, 6, 5)
 ```{r logicaltest-solution}
 x <- c(2, -3, -2, 0, 6, 5)
 z <- x < 0
+print(z)
 ```
 
 ```{r logicaltest-check }
@@ -304,7 +285,7 @@ gradethis::grade_result(
 
 </div>
 
-On pourra aussi comparer les positions deux à deux de deux vecteurs.
+You can also compare the paired positions of two vectors.
 
 ```{r bool1a,  exercise=TRUE, exercise.setup="bool1" }
 x <- c(1, 7, 10, 11, 3, -2)
@@ -314,7 +295,7 @@ x > y
 
 <div class="exo">
 
-- Soit les vecteur x et y suivants, stockez dans z le vecteur booléen indiquant si une position de x est égale (==) à une position de y.
+- Given the following vectors `x` and `y`, store in `z` the Boolean vector indicating whether a position of `x` is equal (==) to a position of `y`.
 
 ```{r logicaltest_1, exercise=TRUE}
 x <- c(2, -3, -2, 0, 6, 5)
@@ -335,17 +316,9 @@ gradethis::grade_result(
 
 </div>
 
-
-La négation logique (*i.e* le contraire) est obtenue avec "!".
-
-```{r bool2, exercise=TRUE, exercise.setup = "bool1a" }
-is_true <- x == y
-!is_true
-```
-
 <div class="exo">
 
-- Soit les vecteur x et y suivants, stockez dans z le vecteur booléen indiquant si une position de x diffère (!=) de celle de y.
+- Given the following vectors `x` and `y`, store in z the Boolean vector indicating whether a position of `x` differs (!=) from that of `y`.
 
 ```{r logicaltest_2, exercise=TRUE}
 x <- c(2, -3, -2, 0, 6, 5)
@@ -367,10 +340,9 @@ gradethis::grade_result(
 
 </div>
 
-### Opérateurs logiques 
+### Logic operators 
 
-Les vecteurs logiques supportent des opérations logiques avec, notamment, l'opérateur "&" (ET/AND) et l'opérateur "|" (OU/OR). Ils permettent de tester deux vecteurs, **position par position**, afin de savoir si les deux positions sont vraies (&) ou si l'une d'entre elle est vraie (|).
-
+Logical vectors support logical operations, including the "&" operator (AND) and the "|" operator (OR). They can be used to test two vectors, **position by position**, to determine whether both positions are true (&) or whether at least one of them is true (|).
 
 ```{r vector1b, exercise=TRUE}
 x <- c(TRUE, FALSE, TRUE, FALSE)
@@ -380,7 +352,7 @@ print(x | y)
 ```
 
 <div class="exo">
-- Stockez dans z le vecteur logique correspondant au test: x > 1 et y < 7
+- Store in z the logic vector corresponding to the test: x > 1 and y < 7
 
 ```{r logicaltest_3, exercise=TRUE}
 x <- c(1, 7, 10, 11, 3, -2, -4, 10)
@@ -391,6 +363,7 @@ y <- c(2, 3, 10, 11, 4, -5, -4, 12)
 x <- c(1, 7, 10, 11, 3, -2, -4, 10)
 y <- c(2, 3, 10, 11, 4, -5, -4, 12)
 z <- x > 1 & y < 7
+print(z)
 ```
 
 ```{r logicaltest_3-check}
@@ -400,9 +373,9 @@ gradethis::grade_result(
 ```
 </div>
 
-### Fonction any() et all()
+### Any() and all() functions
 
-On pourra tester si au moins une (**any()**) ou toutes (**all()**) les positions d'un vecteur booléens sont vraies.
+With these function we can test whether at least one (**any()**) or all (**all()**) of the positions of a Boolean vector are true.
 
 ```{r exo1, exercise=TRUE}
 x <- 1:10
@@ -417,31 +390,10 @@ all(x > 0)
 any(x > 0)
 ```
 
-<div class="exo">
-- Stockez dans z la valeur logique correspondant au test: une des positions de x est supérieure (>) à 1 et une position de  y est inférieure (<) à 7.
+### The which() function
 
-```{r logicaltest_4, exercise=TRUE}
-x <- c(1, 7, 10, 11, 3, -2, -4, 10)
-y <- c(2, 3, 10, 11, 4, -5, -4, 12)
-```
+The `which()` function returns the positions of a vector for which a condition holds.
 
-```{r logicaltest_4-solution}
-x <- c(1, 7, 10, 11, 3, -2, -4, 10)
-y <- c(2, 3, 10, 11, 4, -5, -4, 12)
-z <- any(x > 1 & y < 7)
-```
-
-```{r logicaltest_4-check}
-gradethis::grade_result(
-  pass_if(~identical(z, TRUE))
-)
-```
-</div>
-
-
-### La fonction which()
-
-La fonction **which()** renvoie les positions pour lesquels une condition est vraie.
 
 ```{r exo2, exercise=TRUE}
 x <- c(2, -3, 5, 7, 10, 2, -4, 11)
@@ -449,7 +401,7 @@ which(x < 0)
 ```
 
 <div class="exo">
-- Stockez dans z toutes les positions pour lequelles les valeurs de x et de y sont les mêmes
+- Store in vector `z` all positions for which the values of `x` and `y` are the same
 
 ```{r vector1c, exercise=TRUE}
 x <- c(1, 7, 10, 11, 3, -2, -4, 10)
@@ -471,7 +423,7 @@ gradethis::grade_result(
 </div>
 
 <div class="exo">
-- Stockez dans z toutes les positions pour lesquelles les valeurs de x et y diffèrent.
+- Store in vector `z` all positions for which the values of `x` and `y` differ.
 
 ```{r vector1c2, exercise=TRUE}
 x <- c(1, 7, 10, 11, 3, -2, -4, 10)
@@ -493,9 +445,9 @@ gradethis::grade_result_strict(
 </div>
 
 <div class="exo">
-- Stockez dans z toutes les positions pour lesquelles les valeurs de y sont au moins deux fois plus grandes que dans x.
+- Store in vector `z` all positions for which `y` values are at least two times greater than `x`.
 
-**NB**: l'opérateur de multiplication est '*' dans R.
+**NB**: The multiplication operator in R is '*'.
 
 ```{r vector1c3, exercise=TRUE}
 x <- c(1, 7, 10, 11, 3, -2, -4, 10)
@@ -517,27 +469,18 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-
-Pour finir sur les valeurs booléennes, on peut ajouter que même si une variable n'est pas booléenne, elle peut être testée. On peut par exemple tester directement un numérique. La règle suivante s'applique alors: toutes les valeurs non nulles sont considérées comme vraies:
-
-
-```{r exo2b, exercise=TRUE}
-x <- c(0, 3, 6, -7)
-!x 
-y <- c(0, 1, 0, 4, 0, 1)
-!y
-z <- c(1, 1, 0, 3, 0, 1)
-y & z
-```
-
-## Exemple de fonctions pour créer des vecteurs.
+## Example of functions to create vectors.
 
 ### rep()
 
-Il existe de très nombreuses fonctions permettant de créer des vecteurs. Par exemple, la fonction **rep()** permet de répéter un vecteur existant.
+There are numerous functions for creating vectors. For example, the `rep()` function repeats an existing vector or value.
+
+```{r repeat_1, exercise=TRUE}
+rep(x=1:5, times=3)
+```
 
 <div class="exo">
-Utilisez la fonction **rep()** et **c()** pour stocker dans la variable *dna* le vecteur suivant:
+Use the `rep()` (**rep**eat) and `c()` functions to store the following vector in the `dna` variable:
 
 ```{r vector2, eval=T, echo=F}
 print(rep(c("A", "T", "T"), 10))
@@ -560,15 +503,17 @@ gradethis::grade_result(
 ```
 </div>
 
-### La fonction seq()
+### The seq() function
 
-La fonction `seq()` permet de créer des séquences de valeurs numériques espacées de manière régulière. On définit une valeur de départ (`from`), une valeur d'arrivée (`to`) et on incrémente selon un pas défini (`by`) ou un nombre cible de valeurs (`length.out`).
+The `seq()` function is used to create sequences of numerical values at regular intervals. You define a starting value (`from`), an ending value (`to`) and increment according to a defined step (`by`) or a targeted number of values (`length.out`).
 
 <div class="exo">
-- Regardez l'aide sur la fonction `seq()` et proposez :
 
-  - Une instruction pour créer un vecteur $a$ contenant des valeurs régulièrement espacés (par pas de 0,1) entre 1 et 10.
-  - Une instruction pour créer un vecteur $b$ contenant 20 valeurs régulièrement espacées entre 1 et 10.  
+- Look at the help on the `seq()` function and propose :
+
+  - An instruction to create a vector `a` containing regularly spaced values (in steps of 0.1) between 1 and 10 (argument `by`).
+  
+  - An instruction to create a vector `b` containing 20 values regularly spaced between 1 and 10 (argument `length.out`).  
 
 ```{r seq1, exercise=TRUE}
 
@@ -590,40 +535,31 @@ gradethis::grade_result(
 </div>
 
 
+## Generating random values 
 
-## Générez des nombres aléatoires 
+### Functions for generating random values
 
-### Les fonctions de génération de valeurs aléatoires
+R allows you to generate random numbers (*i.e.* **r**andom) from a wide variety of distributions (normal distribution, uniform distribution, Poisson distribution, Binomial distribution...). 
 
-R permet de générer des nombres aléatoires (*i.e.* **r**andom) issus de distributions diverses et variées. 
+The code below randomly draws 1000 values from a normal distribution with mean 0 and standard deviation 1. The `head()` function displays the first elements of the vector.
 
-- **rnorm()**: loi normale (deux paramètres: moyenne et écart-type).
-- **runif()**: loi uniforme (deux paramètres: valeurs minimum et maximum).
-- **rpois()**: loi de Poisson (un paramètre: la moyenne).
-- **rhyper()**: Loi hypergeometrique (trois paramètres: m, n, k).
-- **rbinom()**: Loi binomiale (deux paramètres: probabilité de succès et nombre d'essais).
-- **rnbinom()**: Loi binomiale négative (trois paramètres: nombre cible de succès et probabilité de succès).   
-- ...
+**NB:** In the computer context, the values appear random, but are in fact calculated from algorithms that attempt to reproduce random processes. The "seed" of the `set.seed()` function (`123` in the example below) allows you to force the algorithm to return the same "random" values (as if you could somehow force randomness...). 
 
-Le code ci-dessous permet de tirer aléatoirement 1000 valeurs issues d'une loi normale de moyenne 0 et écart-type 1. La fonction `head()` permet de voir les premiers éléments du vecteur.
-
-**NB:** Dans le contexte dde l'ordinateur, les valeurs semblent aléatoires, mais sont en réalité calculés à partir d'algorithmes qui tentent de reproduire des processus aléatoires. La "graine" (*seed* en anglais) de la fonction `set.seed()` (`123` dans l'exemple ci-dessous) permet de forcer l'algorithme à renvoyer les même valeurs 'aléatoires' (comme si l'on pouvait en quelque sorte forcer le hasard...). 
-
-**NB:** La fonction `length()` permet de connaître la taille/longueur d'un vecteur.
+**NB:** The `length()` function is used to find out the size/length of a vector.
 
 ```{r vector4, exercise=TRUE}
 set.seed(123)
-x <- round(rnorm(n=1000, mean=0, sd=1), digit=2) # print(x) pour voir le contenu
+x <- round(rnorm(n=1000, mean=0, sd=1), digit=2) # use print(x) to show x
 length(x)
 head(x)
 ```
 
 
 <div class="exo">
-- Stockez dans z 500 valeurs issues d'une loi normale de moyenne 2 et d'écart-type 3. Les valeurs devront être arrondies (`round()``) à deux chiffres derrière la virgule.
+- Store in `z` 500 values drawn from a normal distribution with a mean of 2 and a standard deviation of 3. The values should be rounded (`round()`) to two decimal.
 
 ```{r rnorm1, exercise=TRUE}
-set.seed(123)
+set.seed(123) # Keep this to ensure everyone has the same results
 
 ```
 
@@ -640,9 +576,9 @@ gradethis::grade_result(
 ```
 </div>
 
-### Visualiser les distributions des valeurs générées 
+### Visualize the distributions of the generated values
 
-On peut dresser l'histogramme d'une distribution avec la fonction **hist()**. L'argument **breaks** contrôle le nombre d'intervalles dans l'histogramme.
+You can plot the histogram of a distribution with the `hist()` function. The `breaks` argument controls the **number of intervals** in the histogram.
 
 ```{r vector5, exercise=TRUE, exercise.setup = "vector4"}
 x <- round(rnorm(n=1000, mean=0, sd=1), digit=2)
@@ -650,7 +586,7 @@ hist(x, breaks = 20, col="blue", border="white")
 ```
 
 <div class="exo">
-Dressez la distribution de $x$ avec **hist()** en utilisant des valeurs croissantes $(30, 50, 100)$ pour le paramètre **breaks**. Qu'observez-vous ?
+Plot the distribution of `x` with `hist()` using increasing values $(30 then 50 then 100) for the breaks parameter. What do you observe?
 
 
 ```{r vector5b, exercise=TRUE, exercise.setup = "vector4"}
@@ -664,11 +600,11 @@ hist(x, breaks = 100)
 ```
 </div>
 
-### Exercices autour de la génération de nombres aléatoires
+### Exercises on generating random numbers
 
 <div class="exo">
-- Après avoir positionné le générateur de valeurs aléatoires (*set.seed(123)*), créez 100 valeurs issues d'une loi normale de paramètres **mean=10, sd =2** et stockez les dans une variable nommée *rnd*.
 
+- After setting the random number generator (`set.seed(123)`), create 100 values drawn from a normal distribution with parameters `mean=10, sd=2` and store them in a variable named `rnd`.
 
 ```{r vector6, exercise=TRUE}
 set.seed(123)
@@ -686,40 +622,11 @@ gradethis::grade_result(
 ```
 </div>
 
-<div class="exo">
-- Après avoir positionné le générateur de valeurs aléatoires (*set.seed(123)*), créez 100 valeurs issues d'une loi de Poisson de paramètres **lambda=10** et stockez les dans une variable nommée *rnd*.
+## Sorting operations
 
+### The sort() function
 
-- D'un loi normale de paramètres **mean=10, sd =2**
-
-```{r vector6b, exercise=TRUE}
-set.seed(123)
-```
-
-```{r vector6b-solution}
-set.seed(123)
-rnd <- rpois(100, lambda=10)
-```
-
-```{r vector6b-check}
-gradethis::grade_result(
-  pass_if(~identical(rnd, c(8L, 9L, 14L, 10L, 10L, 15L, 11L, 5L, 4L, 13L, 11L, 11L, 10L, 
-8L, 15L, 11L, 3L, 7L, 6L, 8L, 6L, 8L, 4L, 6L, 6L, 8L, 5L, 12L, 
-12L, 12L, 12L, 11L, 9L, 9L, 8L, 7L, 12L, 9L, 13L, 7L, 8L, 8L, 
-12L, 9L, 10L, 9L, 9L, 14L, 9L, 14L, 5L, 6L, 10L, 11L, 8L, 8L, 
-6L, 11L, 13L, 12L, 11L, 12L, 9L, 9L, 7L, 7L, 11L, 9L, 7L, 10L, 
-9L, 10L, 11L, 8L, 12L, 9L, 11L, 13L, 11L, 8L, 13L, 13L, 11L, 
-10L, 8L, 14L, 8L, 16L, 14L, 9L, 6L, 15L, 10L, 13L, 8L, 7L, 7L, 
-11L, 9L, 14L)))
-)
-```
-</div>
-
-## Opérations de tris 
-
-### La fonction sort()
-
-La fonction **sort()** permet de trier un vecteur et le paramètre (booléen) **decreasing** permet de faire un tri croissant ou décroissant.  
+The `sort()` function allows you to sort a vector with the **decreasing** argument indicating whether to perform an **ascending** or **descending** sorting. 
 
 ```{r vector7, exercise=TRUE}
 x <- c(20:25, 1:5, 50)
@@ -727,7 +634,7 @@ sort(x, decreasing = TRUE)
 ```
 
 <div class="exo">
-Stockez dans x les valeurs de x ordonnées de manière croissante.
+Store in `x` the values of `x` ordered in ascending order.
 
 ```{r vector8, exercise=TRUE, exercise.setup ="vector7"}
 
@@ -744,20 +651,20 @@ gradethis::grade_result(
 ```
 </div>
 
-## Tirages aléatoires dans des vecteurs
+## Random sampling from a vector
 
-### La fonction sample()
+### The sample() function
 
-La fonction `sample()` permet d'effectuer un tirage aléatoire de x éléments (argument `size`) dans un vecteur, avec ou sans remise. Notez que, dans l’exemple suivant, quand l’argument `replace` est positionné sur TRUE, le tirage aléatoire est effectué avec remise (sans remise si replace=FALSE).
+The `sample()` function allows you to randomly select `size` elements out of a vector `x` (see argument below). Note that in the following example, when the `replace` argument is set to `TRUE`, each drawn element is replaced in `x`before drawing the next element. 
 
 ```{r vector9, exercise=TRUE}
 sample(x=1:10, size = 5, replace = TRUE)
 ```
 
-### Exercices autours de la commande sample
+### Exercises around the sample() function
 
 <div class="exo">
-- Effectuez 3 tirages aléatoires de 5 éléments **avec remise** dans un vecteur contenant tous les entiers de 1 à 10.
+- Perform 3 random selection of 5 elements with replacement from a vector containing all integers from 1 to 10.
 
 ```{r vector10, exercise=TRUE}
 
@@ -771,23 +678,23 @@ print(sample(x=1:10, size = 5, replace = TRUE))
 </div>
 
 ```{r vector10q, echo=FALSE }
-learnr::question("Est-ce que les valeurs retournées changent d'un appel à l'autre ?",
-  answer("Non"),
-  answer("Oui", correct = TRUE),
+learnr::question("Do the returned values change from one call to another?",
+  answer("No"),
+  answer("Yes", correct = TRUE),
   allow_retry = TRUE 
 )
 ```
 
 ```{r vector10a2, echo=FALSE }
-learnr::question("Dans chacun des vecteur produits, observez vous des valeurs redondantes ?",
-  answer("Non"),
-  answer("Oui", correct = TRUE),
+learnr::question("In the generated vectors, do you observe any duplicate values?",
+  answer("No"),
+  answer("Yes", correct = TRUE),
   allow_retry = TRUE 
 )
 ```
 
 <div class="exo">
-- Effectuez 3 tirages aléatoire de 5 éléments **sans remise** dans un vecteur contenant tous les entiers de 0 à 10.
+- Perform 3 random draws of 5 elements **without replacement** from a vector containing all integers from 0 to 10.
 
 ```{r vector11, exercise=TRUE}
 
@@ -801,68 +708,29 @@ print(sample(x=1:10, size = 5, replace = FALSE))
 </div>
 
 ```{r vector11q, echo=FALSE }
-learnr::question("Dans chacun des vecteur produits, observez vous des valeurs identiques ?",
-  answer("Oui"),
-  answer("Non", correct = TRUE),
+learnr::question("In each of the generated vectors, do you observe any identical values?",
+  answer("Yes"),
+  answer("No", correct = TRUE),
   allow_retry = TRUE 
 )
 ```
 
-<div class="exo">
-- Effectuez 3 tirages aléatoire de 5 éléments **sans remise** dans un vecteur contenant tous les entiers de 0 à 10. A chaque fois, positionner le générateur de valeur aléatoire sur 123. Faite la même chose en le positionnant sur 456. 
+## Mathematical operations on vectors
 
-```{r vector11a, exercise=TRUE}
-set.seed(123)
-#...
-set.seed(456)
-#...
-```
+### Mathematical operators
 
-```{r vector11aq, echo=FALSE }
-learnr::question("Pour une même valeur de graine (*seed*) est-ce que les valeurs retournées changent d'un appel à l'autre ?",
-  answer("Oui"),
-  answer("Non", correct = TRUE),
-  allow_retry = TRUE 
-)
-```
+Mathematical operations can be performed on vectors using standard operators: +, -, \*, \\\ ... To raise to a power, the hat operator (^) is used. These operations will be 'vectorized' (*i.e*. applied successively to all elements of the vector(s)). For those familiar with other languages, this substitutes for 'for' loops and significantly simplifies the syntax.
 
+The vector structure of the language makes iterations over the elements of the vector implicit. The advantage of this vectorization is that it allows you to perform very complex operations in just a few lines of code.
 
-```{r vector11a-solution}
-set.seed(123)
-print(sample(x=1:10, size = 5, replace = FALSE))
-set.seed(123)
-print(sample(x=1:10, size = 5, replace = FALSE))
-set.seed(123)
-print(sample(x=1:10, size = 5, replace = FALSE))
-
-set.seed(456)
-print(sample(x=1:10, size = 5, replace = FALSE))
-set.seed(456)
-print(sample(x=1:10, size = 5, replace = FALSE))
-set.seed(456)
-print(sample(x=1:10, size = 5, replace = FALSE))
-```
-</div>
-
-## Opérations mathématiques sur les vecteurs
-
-### Opérateurs mathématiques
-
-On peut effectuer des opérations mathématiques sur les vecteurs à l'aide d'opérateurs classiques: +, -, \*, \\\ ... Pour élever à la puissance on utilise l'accent circonflexe (^). Ces opérations seront 'vectorisés' (*i.e* appliquées à tous les éléments du/des vecteur(s)). Pour ceux qui connaîtraient d'autres langages, cela se  substitue aux boucles "for" et allège fortement la syntaxe. 
-
-La structure vectorielle du langage rend implicites les itérations sur les éléments du vecteur. 
-L'avantage de cette vectorisation est d'effectuer des opérations très complexes en quelques lignes de code.
-
-Pour ajouter 10 à tous les éléments d'un vecteur numérique, on écrira:
+To add 10 to all elements of a numeric vector, you would thus write:
 
 ```{r vector22, exercise=TRUE, eval=TRUE}
 x <- 1:10
-print(x + 2)
-y <- 11:20
-print(x + y)
+print(x + 10)
 ```
 
-Pour additionner les chaque position *p* de deux vecteurs, on écrira
+To sum the elements at each position *p* of two vectors `x` and `y`, you would write:
 
 ```{r vector22b, exercise=TRUE, eval=TRUE}
 x <- 1:10
@@ -870,17 +738,18 @@ y <- 11:20
 print(x + y)
 ```
 
-Le même principe s'appliquera aux autres opérations.
+The same principle will apply to other operations:
 
 ```{r vector23, exercise=TRUE, eval=FALSE, exercise.setup="vector22"}
 x ^ 2
 x * 3
 x / 4
+x * y
 ```
 
 <div class="exo">
 
-- Stockez la somme de `x` et `y` dans `z`.
+- Compute the sum of each position of `x` and `y` and store the result in `z`.
 
 ```{r exovectorisation, exercise=TRUE }
 x <- 1:5
@@ -890,18 +759,18 @@ y <- 5:1
 ```{r exovectorisation-solution}
 x <- 1:5
 y <- 5:1
-z <- sum(x + y)
+z <- x + y
 ```
 
 ```{r exovectorisation-check }
 gradethis::grade_result(
-  pass_if(~ z==30)
+  pass_if(~ sum(z)==30)
 )
 ```
 </div>
 
 <div class="exo">
-- Etant donné les vecteur x et y calculez pour chaque position la somme des carrés et stockez le résultat dans z. 
+- Calculate the sum of the squares of the values of `x` and `y` for each position. Store the result in `z`.
 
 ```{r vector23b, exercise=TRUE}
 x <- 1:10
@@ -922,7 +791,7 @@ gradethis::grade_result(
 
 <div class="exo">
 
-- Soit l'exemple suivant:
+- Consider the following example:
 
 ```{r notworking, exercise=TRUE }
 x <- 1:3
@@ -931,9 +800,9 @@ x + y
 ```
 
 ```{r qnw1, echo=FALSE }
-learnr::question("Que se passe-t-il dans l'exemple précédent ?",
-  answer("R refuse d'additionner deux vecteurs de taille différentes car la tailles de l'un n'est pas un multiple de l'autre."),
-  answer("R accepte (en emettant un avertissement) d'additionner deux vecteurs de tailles différentes quand la taille de l'un n'est pas un multiple de l'autre.", correct = TRUE),
+learnr::question("What happens in the previous example?",
+  answer("R refuses to add two vectors of different sizes because the size of one is not a multiple of the other."),
+  answer("R accepts (with a warning) to add two vectors of different sizes when the size of one is not a multiple of the other.", correct = TRUE),
   allow_retry = TRUE 
 )
 ```
@@ -942,7 +811,7 @@ learnr::question("Que se passe-t-il dans l'exemple précédent ?",
 
 <div class="exo">
 
-- Soit l'exemple suivant:
+- Given the following example:
 
 ```{r notworking_2, exercise=TRUE }
 x <- 1:4
@@ -951,25 +820,25 @@ x + y
 ```
 
 ```{r qnw2, echo=FALSE }
-learnr::question("Que se passe-t-il dans l'exemple précédent ?",
-  answer("R accepte l'opérations d'addition sans avertissement car la taille de l'un est un multiple de la taille de l'autre.", correct = TRUE),
-    answer("R refuse d'additionner deux vecteurs de taille différentes car leurs tailles diffèrent."),
+learnr::question("What happens in the previous example?",
+  answer("R accepts the addition operation without warning because the size of one is a multiple of the size of the other.", correct = TRUE),
+    answer("R refuses to add two vectors of different sizes because their sizes differ."),
   allow_retry = TRUE 
 )
 ```
 
 </div>
 
-## Les valeurs manquantes
+## Missing values
 
-Un vecteur peut contenir des valeurs manquantes. Dans R elle sont notées `NA` (Not Available). 
+A vector can contain missing values. In R, they are denoted as `NA` (Not Available).
 
 ```{r vector23c, exercise=TRUE, eval=TRUE}
 x <- c(NA, 40, 2, NA, 7, 8, 30)
 print(x)
 ```
 
-D'autres valeurs non-définies existent comme `Inf` **(Infinite)**, `-Inf` ou `NaN` **(NotANumber)**. Elles sont généralement produites par des erreurs de calcul.
+Other undefined values exist such as `Inf` (**Infinite**), `-Inf`, or `NaN` (**NotANumber**). They are generally produced by calculation errors.
 
 ```{r vector23d, exercise=TRUE, eval=TRUE}
 1/0
@@ -977,7 +846,7 @@ log(0)
 0/0
 ```
 
-Les fonctions `is.na()`, `is.infinite()`, `is.nan()` permettent d'itérer sur des vecteurs et de renvoyer pour chaque position une valeur booléenne indiquant si la position est de type `NA`, `Inf`/`-Inf` ou `NaN`. respectivement.
+The functions `is.na()`, `is.infinite()`, and `is.nan()` allow you to iterate over vectors and return a boolean value for each position indicating whether the position is of type `NA`, `Inf/-Inf`, or `NaN`, respectively.
 
 ```{r vector23db, exercise=TRUE, eval=TRUE}
 is.na(c(1:3, NA, 1:3))
@@ -987,9 +856,9 @@ is.infinite(c(1:3, Inf, 1:3))
 
 
 <div class="exo">
-- Etant donnée le vecteur ci-dessous, recherchez les positions qui sont `NA` avec `is.na()` et stockez leur nombre dans z.
+- Given the vector below, store in `z` the number of position that are `NA` (use `is.na()`).
 
-NB: On peut sommer (`sum()` des booléens pour compter les positions `TRUE`).
+**Tips**: You can apply `sum()` over a boolean vector to count the TRUE positions.
 
 ```{r vector23e, exercise=TRUE}
 set.seed(123)
@@ -1010,7 +879,8 @@ gradethis::grade_result(
 </div>
 
 <div class="exo">
-- Etant donnée le vecteur ci-dessous, recherchez les positions qui sont `-Inf`/`Inf` avec `is.infinite()` et stockez leur nombre dans z.
+- Given the vector below, store in `z` the number of position that are `-Inf/Inf` (use `is.infinite()`).
+
 
 ```{r vector23f, exercise=TRUE}
 set.seed(123)
@@ -1029,46 +899,25 @@ gradethis::grade_result(
 ```
 </div>
 
-<div class="exo">
-- Etant donnée le vecteur ci-dessous, avec la fonction `which()`, recherchez toutes les positions (*i.e* indices) contenant une valeur numérique (ie. pas un NA, NaN, Inf/-Inf) et stockez leur nombre dans z (`length()`).
 
-```{r vector23g, exercise=TRUE}
-set.seed(123)
-x <- sample(c(1:10, NA, -Inf, Inf), size = 1000, replace = TRUE)
-```
+## Looping through a vector
 
-```{r vector23g-solution}
-set.seed(123)
-x <- sample(c(1:10, NA, -Inf, Inf), size = 1000, replace = TRUE)
-z <- length(which(!is.na(x) & !is.infinite(x) & !is.na(x)))
-```
+You can browse all the positions of a vector and apply a function with the `sapply()` function. The function is used by passing a vector as the first argument and the name of a function as the second argument.
 
-```{r vector23g-check}
-gradethis::grade_result(
-  pass_if(~ z == 785)
-)
-```
-</div>
-
-## Itérer sur un vecteur
-
-On peut parcourir toutes les positions d'un vecteur et appliquer une fonction avec la fonction `sapply()`. La fonction s'utilise en passant un vecteur en premier argument (ou un appel à une fonction qui renvoie un vecteur ) et le nom d'une fonction en deuxième argument.
-
-Par exemple on peut appliquer la fonction `class()` (ou `is()`) pour connaître les types de chaque objet en mémoire. Nous reviendrons par la suite sur les fonctions de la famille **apply**.
+For example, you can use the function `class()` (or `is()`) to find out the type of each object in memory. We'll come back to the **apply** family of functions later.
 
 ```{r sapply, exercise=TRUE}
-sapply(ls(), class)
+x <- ls()
+sapply(x, class)
 ```
 
-## Exercices
+## Quizz
 
-### Exercice 1
-
-Répondez aux questions suivantes:
+Answer the following questions:
 
 <div class="exo">
 ```{r exoq1, echo=FALSE }
-learnr::question("Combien existe-t-il de modes dans R ?",
+learnr::question("How many modes exist in R?",
   answer("0"),
   answer("2"),
   answer("4", correct = TRUE),
@@ -1078,7 +927,7 @@ learnr::question("Combien existe-t-il de modes dans R ?",
 ```
 
 ```{r exoq2, echo=FALSE }
-learnr::question("Sélectionnez les valeurs logiques acceptées par le langage R.",
+learnr::question("Select the logical values accepted by the R language.",
   answer("T",  correct = TRUE),
   answer("true"),
   answer("t"),
@@ -1092,16 +941,10 @@ learnr::question("Sélectionnez les valeurs logiques acceptées par le langage R
 ```
 
 ```{r exoq3, echo=FALSE }
-learnr::question("Sélectionnez les items qui  sont des opérateurs logiques dans R.",
+learnr::question("Select the items that are logical operators in R.",
   answer("="),
-  answer("!",  correct = TRUE),
   answer("\\>=",  correct = TRUE),
-  answer("=>"),
-  answer("<=<"),
-  answer("\\>=<"),
-  answer("<=>"),
   answer("==",  correct = TRUE),
-  answer("=<"),
   answer("<=", correct = TRUE),
   answer("!=!"),
   answer("!=", correct = TRUE),
@@ -1113,7 +956,7 @@ learnr::question("Sélectionnez les items qui  sont des opérateurs logiques dan
 ```
 
 ```{r exoq4, echo=FALSE }
-learnr::question("Soient x et y deux vecteurs numériques, quelles sont les instructions acceptables par R.",
+learnr::question("If x and y are two numerical vectors, which instructions may be accepted by R.",
   answer("x > y",  correct = TRUE),
   answer("x * y > 0",  correct = TRUE),
   answer("x / y < 10",  correct = TRUE),
@@ -1128,52 +971,10 @@ learnr::question("Soient x et y deux vecteurs numériques, quelles sont les inst
 
 </div>
 
-### Exercice 2
 
-<div class="exo">
-Considérons deux vecteurs `x` et `y` (*cf* ci-dessous) dont chaque position `i` correspondrait au niveau d'Interféron de types I mesuré avant (`x`) et après (`y`) une infection dans différents patients (1, 2, 3...50).
+### The end
 
-- Calculez le ratio d'induction (en linéaire) de l'induction de l'interféron. Stockez le dans a.
-- Calculez le logarithme (en base 2) du ratio en utilisant la fonction `log2()`. Stockez le dans b.
-- Avec la fonction `which()`, recherchez les positions pour lesquels la valeur absolue (`abs()`) du log2-ratio est supérieure à 1 (induction ou répression d'un facteur 2). **Comptez les**. Stockez le résultat dans c.
-- Avec la fonction `which()`, recherchez les positions pour lesquels la valeur absolue (`abs()`) du log2-ratio est supérieure à 2 (induction ou répression d'un facteur 4). **Comptez les**. Stockez le résultat dans d.
-- Avec la fonction `which()`, recherchez les positions pour lesquels la valeur absolue (`abs()`) du log2-ratio est supérieure à 3 (induction ou répression d'un facteur 8). **Comptez les**. Stockez le résultat dans e.
-
-**NB:** On utilise la fonction `abs() pour calculer les valeurs absolues  d'un vecteur.
-
-```{r vector24, exercise=TRUE}
-set.seed(123)
-x <- runif(50, min=0, max=1)
-names(x) <- paste0("patient ", 1:length(x))
-y <- runif(50, min=0, max=3)
-names(y) <- paste0("patient ", 1:length(x))
-head(x)
-head(y)
-```
-
-```{r vector24-solution}
-a <- x/y
-b <- log2(a)
-c <- length(which(abs(b) > 1 ))
-d <- length(which(abs(b) > 2 ))
-e <- length(which(abs(b) > 3 ))
-```
-
-```{r vector24-check}
-gradethis::grade_result_strict(
-  pass_if(~ exists("a") & round(sum(a)) == 556, "Variable a is OK !"),
-  pass_if(~ exists("b") & round(sum(b)) == -68, "Variable b is OK !"),
-  pass_if(~ exists("c") & c == 37 , "Variable c is OK !"),  
-  pass_if(~ exists("d") & d == 17 , "Variable d is OK !"), 
-  pass_if(~ exists("b") & e == 9 , "Variable e is OK !")
-)
-```
-</div>
-
-### C'est fini
-
-Merci d'avoir suivi ce tutoriel.
-
+Thank you for following this tutorial.
 
 <!--```{r exo10, eval=TRUE, echo=FALSE } 
 htmltools::tags$button("Retour au Menu", 
