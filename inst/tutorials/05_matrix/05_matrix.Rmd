@@ -8,6 +8,8 @@
 title: "The 'matrix' object"
 output:
   learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     highlight: default
     fig_caption: yes
@@ -156,9 +158,10 @@ In R, matrices (**matrix** objects) are two-dimensional arrays. They generally c
 As an example, a matrix can be created as follows.
 
 ```{r exo1, exercise=TRUE }
-mat <- matrix(data=round(rnorm(25),2), 
-            ncol = 5, 
-            byrow = TRUE)
+x <- round(rnorm(25), 2)
+mat <- matrix(data=x, 
+              ncol = 5, 
+              byrow = TRUE)
 print(mat)
 ```
 
@@ -265,7 +268,7 @@ gradethis::grade_result(
 
 ### The transposition function
 
-Sometimes we need to **transpose the matrix** (often referred to as $mat^{T}$). The transposed matrix is obtained by **exchanging the rows and columns** of the input matrix. For example, in *machine learning* applications, the characteristics/descriptors (*features*), in this case genes, are often in the columns. In this case, the objects described (here, the samples) appear as rows. The transposition can be obtained using the **t()** function.
+To transpose a matrix ($mat^{T}$), rows and columns are swapped. In machine learning, features (*e.g.*, genes) often appear in columns, while samples are rows. Use the `t()` function to perform the transposition.
 
 ```{r exo3aasetup, echo=FALSE}
 set.seed(123)
@@ -292,10 +295,13 @@ Let's imagine that a matrix represents the **adjacency matrix of a graph** which
 Let's create such a matrix (we will see just later the graph representation).
 
 ```{r exo3b, exercise=TRUE }
-mat <- matrix(c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 
-                1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 
-                1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 
-                0, 0),
+mat <- matrix(c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 
+                0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 
+                1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 
+                0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 
+                0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+                1, 1, 0, 0),
             ncol = 8, 
             byrow = TRUE)
 cr_names <- LETTERS[1:8]
@@ -304,7 +310,8 @@ print(mat)
 ```
 
 
-This graph can be represented using functions from the `igraph` library. We just have to pass the matrix representation of the graph to the `graph_from_adjacency_matrix()` function of `igraph`library. Here, we choose to declare the graph as undirected (*mode="undirected "*) because for the protein-protein interactions in our table, there is no notion of source and target (*i.e* we don't know whether one activates or represses the other, they just interact...). 
+
+Using the `igraph` library, the graph can be created with the `graph_from_adjacency_matrix()` function. Here, we choose to declare the graph as undirected (*mode="undirected "*) because, here, for protein-protein interactions, there is no particular source and target (*i.e* we don't know whether one activates or represses the other, they just interact...). 
 
 ```{r exo3c, exercise=TRUE , exercise.setup="exo3b"}
 library(igraph)
@@ -371,7 +378,7 @@ We can apply more complex test by using boolean operators. For instance we could
 mat == 1 & lower.tri(mat)
 ```
 
-We could convert specifically values from these cells into integers between 1 and 5. We could imagine that these values would now indicate how many experiments reported an interaction between two proteins and, consequently, whether we are more or less confident with a particular interaction. From a graph theory point of view, we are creating the adjacency matrix of a **weighted graph**. Note that, at this step, the matrix is not symetrical (see below)
+We could convert these cell values into integers (1 to 5) to indicate the number of experiments supporting a protein interaction, reflecting a kind of confidence levels. This creates the adjacency matrix of a **weighted graph** (which is not symmetrical at this stage).
 
 ```{r exo4, exercise=TRUE, exercise.setup="exo3e" }
 set.seed(123)
@@ -382,7 +389,7 @@ print(mat)
 
 Indeed, for an undirected and weighted graph, the adjacency matrix should be symmetrical (if we observed 3 times an interactions between a and b then the same applies to b and a...). This implies that $mat_{i,j} = mat_{j,i}$. This is not the case here. We'll correct using the following code. The instruction isn't totally natural, but google is your friend in this case (for the author of this tutorial too)...
 
-```{r exo3h, exercise=TRUE, exercise.setup="exo3g"}
+```{r exo3h, exercise=TRUE, exercise.setup="exo4"}
 # Don't concentrate too much on this code 
 # (but more on the result)
 mat[upper.tri(mat)] <- t(mat)[upper.tri(mat)]
@@ -636,19 +643,11 @@ We will often work with **numeric matrices** on which we can perform **mathemati
 mat + 10
 ```
 
-```{r matrix8, exercise=TRUE, eval=TRUE, exercise.setup="matrix4"}
-mat * 2
-```
-
 ```{r matrix9, exercise=TRUE, eval=TRUE, exercise.setup="matrix4"}
 mat / 2
 ```
 
 ```{r matrix10, exercise=TRUE, eval=TRUE, exercise.setup="matrix4"}
-mat ^ 2
-```
-
-```{r matrix11, exercise=TRUE, eval=TRUE, exercise.setup="matrix4"}
 mat ^ 1/2
 ```
 
@@ -699,7 +698,6 @@ This principle allows for simulating a random walk in a graph (*random walk*) an
 ### End of the section
 
 Thank you for following this tutorial.
-
 
 <!--```{r end, eval=TRUE, echo=FALSE } 
 htmltools::tags$button("Retour au Menu", 

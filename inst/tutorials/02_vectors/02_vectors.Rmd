@@ -8,6 +8,8 @@
 title: "The 'vector' object."
 output:
   learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     highlight: default
     fig_caption: yes
@@ -147,7 +149,7 @@ gradethis::gradethis_setup()
 
 ## Modes
 
-All elements of a vector are of the same type. In the R language, we speak of 'modes' (or modalities). There are four modes: "numeric", "character", "logical" and "complex". 
+**All elements of a vector are of the same type**. In the R language, we speak of 'modes' (or modalities). There are four modes: **"numeric", "character", "logical" and "complex"**. 
 
 ### Numerical mode
 
@@ -183,27 +185,27 @@ gradethis::grade_result(
 Below is an example of vectors containing *character strings*.
 
 ```{r vector0, exercise=TRUE}
-names <- c("Céline", "Alain", "Fairouz") 
+names <- c("Stephen", "Katia", "Fairouz") 
 print(names)
 class(names) # <=> is(names) 
 ```
 
 <div class="exo">
 
-- Create `this_names`, a vector containing the following strings: “Riad”, “Sabine” and “Nastassja”.
+- Create `this_names`, a vector containing the following strings: “Riad”, “Robert” and “Nastassja”.
 
 ```{r charliste, exercise=TRUE}
 
 ```
 
 ```{r charliste-solution}
-this_names <-  c("Riad", "Sabine", "Nastassja") 
+this_names <-  c("Riad", "Robert", "Nastassja") 
 ```
 
 ```{r charliste-check }
 gradethis::grade_result(
   pass_if(~ this_names[1] == "Riad"),
-  pass_if(~ this_names[2] == "Sabine"),
+  pass_if(~ this_names[2] == "Robert"),
   pass_if(~ this_names[3] == "Nastassja")
 )
 ```
@@ -212,13 +214,22 @@ gradethis::grade_result(
 
 ### Logic mode
 
-Below is an example of vectors containing Booleans (variables with two states, 'true' and 'false' or 0 and 1). Note that true and false are represented by the keywords `TRUE` and `FALSE` (which are reserved terms in the language). TRUE and FALSE can be replaced by `T` and `F` respectively. However, this last solution is not recommended for lisibility reasons and may, in certain contexts (e.g. writing a library) be considered an error.
+Below is an example of vectors containing Booleans (variables with two states, 'true' and 'false' or 0 and 1). Note that true and false are represented by the keywords `TRUE` and `FALSE` (which are reserved terms in the language). 
 
 ```{r vector1, exercise=TRUE}
-logic <- c(TRUE, FALSE, TRUE) # or, possibly: logic <- c(T, F, T)
+logic <- c(TRUE, FALSE, TRUE) 
 print(logic)
 class(logic) # is(logic)
 ```
+
+`TRUE` and `FALSE` can be replaced by `T` and `F` respectively. However, this last solution is not recommended to increase readability.
+
+```{r vector1_1, exercise=TRUE}
+logic <- c(T, F, T)
+print(logic)
+class(logic) # is(logic)
+```
+
 
 <div class="exo">
 
@@ -265,7 +276,7 @@ x > 5
 
 <div class="exo">
 
-- Take the following vector x, test whether the positions are less than 0 and put the result in a variable z. Print z.
+- Take the following vector x, test whether each of positions are less than 0 and put the result in a variable z. Print z.
 
 ```{r logicaltest, exercise=TRUE}
 x <- c(2, -3, -2, 0, 6, 5)
@@ -285,7 +296,7 @@ gradethis::grade_result(
 
 </div>
 
-You can also compare the paired positions of two vectors.
+You may also compare the paired positions of two vectors.
 
 ```{r bool1a,  exercise=TRUE, exercise.setup="bool1" }
 x <- c(1, 7, 10, 11, 3, -2)
@@ -342,7 +353,7 @@ gradethis::grade_result(
 
 ### Logic operators 
 
-Logical vectors support logical operations, including the "&" operator (AND) and the "|" operator (OR). They can be used to test two vectors, **position by position**, to determine whether both positions are true (&) or whether at least one of them is true (|).
+Logical vectors support logical operations, including the `&` operator (AND) and the `|` operator (OR). They can be used to test two vectors, **position by position**, to determine whether both positions are true (`&`) or whether at least one of them is true (`|`).
 
 ```{r vector1b, exercise=TRUE}
 x <- c(TRUE, FALSE, TRUE, FALSE)
@@ -392,8 +403,7 @@ any(x > 0)
 
 ### The which() function
 
-The `which()` function returns the positions of a vector for which a condition holds.
-
+The `which()` function returns **the positions** of a vector for which a condition is `TRUE`.
 
 ```{r exo2, exercise=TRUE}
 x <- c(2, -3, 5, 7, 10, 2, -4, 11)
@@ -401,7 +411,7 @@ which(x < 0)
 ```
 
 <div class="exo">
-- Store in vector `z` all positions for which the values of `x` and `y` are the same
+- Store in `z` all positions for which the values of `x` and `y` are the same
 
 ```{r vector1c, exercise=TRUE}
 x <- c(1, 7, 10, 11, 3, -2, -4, 10)
@@ -487,11 +497,12 @@ print(rep(c("A", "T", "T"), 10))
 ```
 
 ```{r vector3, exercise=TRUE}
-
+x <- c("A", "T", "T")
 ```
 
 ```{r vector3-solution}
-dna <- rep(c("A", "T", "T"), 10)
+x <- c("A", "T", "T")
+dna <- rep(x, 10)
 ```
 
 ```{r vector3-check}
@@ -539,24 +550,27 @@ gradethis::grade_result(
 
 ### Functions for generating random values
 
-R allows you to generate random numbers (*i.e.* **r**andom) from a wide variety of distributions (normal distribution, uniform distribution, Poisson distribution, Binomial distribution...). 
+R allows you to generate random numbers (*i.e.* **r**andom) from a wide variety of distributions (*e.g.* normal distribution, uniform distribution, Poisson distribution...). 
 
-The code below randomly draws 1000 values from a normal distribution with mean 0 and standard deviation 1. The `head()` function displays the first elements of the vector.
+The code below randomly draws 1000 values from a normal distribution with mean 0 and standard deviation 1. 
 
 **NB:** In the computer context, the values appear random, but are in fact calculated from algorithms that attempt to reproduce random processes. The "seed" of the `set.seed()` function (`123` in the example below) allows you to force the algorithm to return the same "random" values (as if you could somehow force randomness...). 
 
-**NB:** The `length()` function is used to find out the size/length of a vector.
 
 ```{r vector4, exercise=TRUE}
 set.seed(123)
 x <- round(rnorm(n=1000, mean=0, sd=1), digit=2) # use print(x) to show x
 length(x)
+```
+
+You can use `head()` to show the first 6 elements of x
+
+```{r vector4_1, exercise=TRUE, exercise.setup="vector4"}
 head(x)
 ```
 
-
 <div class="exo">
-- Store in `z` 500 values drawn from a normal distribution with a mean of 2 and a standard deviation of 3. The values should be rounded (`round()`) to two decimal.
+- Store in `z` 500 values drawn from a normal distribution with a mean of 2 and a standard deviation of 3. The values should be rounded (`round()`) to 2 decimal places (use `round()`).
 
 ```{r rnorm1, exercise=TRUE}
 set.seed(123) # Keep this to ensure everyone has the same results
@@ -576,7 +590,7 @@ gradethis::grade_result(
 ```
 </div>
 
-### Visualize the distributions of the generated values
+### Visualizing the distributions
 
 You can plot the histogram of a distribution with the `hist()` function. The `breaks` argument controls the **number of intervals** in the histogram.
 
@@ -586,41 +600,18 @@ hist(x, breaks = 20, col="blue", border="white")
 ```
 
 <div class="exo">
-Plot the distribution of `x` with `hist()` using increasing values $(30 then 50 then 100) for the breaks parameter. What do you observe?
-
+Plot the distribution of `x` with `hist()` using 5 and 100 for the breaks parameter. What do you observe?
 
 ```{r vector5b, exercise=TRUE, exercise.setup = "vector4"}
 
 ```
 
 ```{r vector5b-solution}
-hist(x, breaks = 30)
-hist(x, breaks = 50)
+hist(x, breaks = 5)
 hist(x, breaks = 100)
 ```
 </div>
 
-### Exercises on generating random numbers
-
-<div class="exo">
-
-- After setting the random number generator (`set.seed(123)`), create 100 values drawn from a normal distribution with parameters `mean=10, sd=2` and store them in a variable named `rnd`.
-
-```{r vector6, exercise=TRUE}
-set.seed(123)
-```
-
-```{r vector6-solution}
-set.seed(123)
-rnd <- rnorm(n=100, mean = 10, sd=2)
-```
-
-```{r vector6-check}
-gradethis::grade_result(
-  pass_if(~identical(sum(round(rnd, 1)), 1018))
-)
-```
-</div>
 
 ## Sorting operations
 
@@ -655,7 +646,7 @@ gradethis::grade_result(
 
 ### The sample() function
 
-The `sample()` function allows you to randomly select `size` elements out of a vector `x` (see argument below). Note that in the following example, when the `replace` argument is set to `TRUE`, each drawn element is replaced in `x`before drawing the next element. 
+The `sample()` function randomly selects `size` elements from a vector `x`. With `replace = TRUE`, each drawn element is replaced in `x` before the next draw.
 
 ```{r vector9, exercise=TRUE}
 sample(x=1:10, size = 5, replace = TRUE)
@@ -664,14 +655,13 @@ sample(x=1:10, size = 5, replace = TRUE)
 ### Exercises around the sample() function
 
 <div class="exo">
-- Perform 3 random selection of 5 elements with replacement from a vector containing all integers from 1 to 10.
+- Perform 2 random selection of 5 elements with replacement from a vector containing all integers from 1 to 10.
 
 ```{r vector10, exercise=TRUE}
 
 ```
 
 ```{r vector10-solution}
-print(sample(x=1:10, size = 5, replace = TRUE))
 print(sample(x=1:10, size = 5, replace = TRUE))
 print(sample(x=1:10, size = 5, replace = TRUE))
 ```
@@ -686,7 +676,7 @@ learnr::question("Do the returned values change from one call to another?",
 ```
 
 ```{r vector10a2, echo=FALSE }
-learnr::question("In the generated vectors, do you observe any duplicate values?",
+learnr::question("In the generated vectors, could you observe any duplicate values?",
   answer("No"),
   answer("Yes", correct = TRUE),
   allow_retry = TRUE 
@@ -694,7 +684,7 @@ learnr::question("In the generated vectors, do you observe any duplicate values?
 ```
 
 <div class="exo">
-- Perform 3 random draws of 5 elements **without replacement** from a vector containing all integers from 0 to 10.
+- Perform 2 random draws of 5 elements **without replacement** from a vector containing all integers from 0 to 10.
 
 ```{r vector11, exercise=TRUE}
 
@@ -703,25 +693,23 @@ learnr::question("In the generated vectors, do you observe any duplicate values?
 ```{r vector11-solution}
 print(sample(x=1:10, size = 5, replace = FALSE))
 print(sample(x=1:10, size = 5, replace = FALSE))
-print(sample(x=1:10, size = 5, replace = FALSE))
 ```
+
 </div>
 
 ```{r vector11q, echo=FALSE }
-learnr::question("In each of the generated vectors, do you observe any identical values?",
+learnr::question("In each of the generated vectors, could you observe any identical values?",
   answer("Yes"),
   answer("No", correct = TRUE),
   allow_retry = TRUE 
 )
 ```
 
-## Mathematical operations on vectors
+## Mathematical operations
 
 ### Mathematical operators
 
-Mathematical operations can be performed on vectors using standard operators: +, -, \*, \\\ ... To raise to a power, the hat operator (^) is used. These operations will be 'vectorized' (*i.e*. applied successively to all elements of the vector(s)). For those familiar with other languages, this substitutes for 'for' loops and significantly simplifies the syntax.
-
-The vector structure of the language makes iterations over the elements of the vector implicit. The advantage of this vectorization is that it allows you to perform very complex operations in just a few lines of code.
+**Mathematical operations** on vectors use standard operators (+, -, \*, /, ^ for raising to a power) and are **vectorized**, meaning they apply to all elements automatically, eliminating the need for explicit loops. This simplifies syntax and enables complex operations in just a few lines.
 
 To add 10 to all elements of a numeric vector, you would thus write:
 
@@ -740,7 +728,7 @@ print(x + y)
 
 The same principle will apply to other operations:
 
-```{r vector23, exercise=TRUE, eval=FALSE, exercise.setup="vector22"}
+```{r vector23, exercise=TRUE, eval=FALSE, exercise.setup="vector22b"}
 x ^ 2
 x * 3
 x / 4
@@ -766,26 +754,6 @@ z <- x + y
 gradethis::grade_result(
   pass_if(~ sum(z)==30)
 )
-```
-</div>
-
-<div class="exo">
-- Calculate the sum of the squares of the values of `x` and `y` for each position. Store the result in `z`.
-
-```{r vector23b, exercise=TRUE}
-x <- 1:10
-y <- 11:20
-```
-
-```{r vector23b-solution}
-z <- x^2 + y^2
-```
-
-```{r vector23b-check}
-gradethis::grade_result(
-  pass_if(~identical(sum(z), 2870))
-)
-
 ```
 </div>
 
@@ -831,7 +799,7 @@ learnr::question("What happens in the previous example?",
 
 ## Missing values
 
-A vector can contain missing values. In R, they are denoted as `NA` (Not Available).
+A vector can contain missing values. In R, they are denoted as `NA` (**Not Available**).
 
 ```{r vector23c, exercise=TRUE, eval=TRUE}
 x <- c(NA, 40, 2, NA, 7, 8, 30)
@@ -878,38 +846,6 @@ gradethis::grade_result(
 ```
 </div>
 
-<div class="exo">
-- Given the vector below, store in `z` the number of position that are `-Inf/Inf` (use `is.infinite()`).
-
-
-```{r vector23f, exercise=TRUE}
-set.seed(123)
-x <- sample(c(1:10, NA, -Inf, Inf), size = 1000, replace = TRUE)
-```
-
-```{r vector23f-solution}
-set.seed(123)
-x <- sample(c(1:10, NA, -Inf, Inf), size = 1000, replace = TRUE)
-z <- sum(is.infinite(x))
-```
-
-```{r vector23f-check}
-gradethis::grade_result(
-  pass_if(~ z == 145 ))
-```
-</div>
-
-
-## Looping through a vector
-
-You can browse all the positions of a vector and apply a function with the `sapply()` function. The function is used by passing a vector as the first argument and the name of a function as the second argument.
-
-For example, you can use the function `class()` (or `is()`) to find out the type of each object in memory. We'll come back to the **apply** family of functions later.
-
-```{r sapply, exercise=TRUE}
-x <- ls()
-sapply(x, class)
-```
 
 ## Quizz
 

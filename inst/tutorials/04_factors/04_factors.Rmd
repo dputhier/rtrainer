@@ -8,6 +8,8 @@
 title: "The 'factor' object"
 output:
   learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     highlight: default
     fig_caption: yes
@@ -148,17 +150,17 @@ gradethis::gradethis_setup()
 
 ## Factors
 
-In R, **factors** are categorical variables that can be created from character strings or numerical vectors. The **factor** is a central object in R as it will allow, for instance, to:
+In R, **factors** represent **categorical variables** created from character strings or numerical vectors. They are essential for tasks like:
 
-- Create diagrams (*e.g* distributions, boxplot...)
 - Compute statistics (*e.g* mean, variance, t-test...) according to categories
+- Create diagrams (*e.g* distributions, boxplot...) according to categories
 - ...
 
-As an example, you may be interested to analyze values according to any membership. For example, below, we create an ordered vector containing the treatments received by 500 patients. 
+As an example, you may be interested to analyze values according to any membership. For example, below, we create an ordered vector containing the treatments received by 60 patients. 
 
 ```{r fact1, exercise=TRUE}
 # ttmt is, for the moment, a simple vector of character strings.
-ttmt <- sort(sample(c("Placebo", "hydroxychloroquine", "dexamethasone"), size=500, replace = TRUE))
+ttmt <- sort(sample(c("Placebo", "hydroxychloroquine", "dexamethasone"), size=60, replace = TRUE))
 class(ttmt)
 print(head(ttmt))
 ```
@@ -206,9 +208,9 @@ The `table()` function returns the size of each category. For instance, let say 
 
 ```{r exo4, exercise=TRUE, exercise.setup="exo3b" }
 set.seed(123)
-gender <- sample(c("Male", "Female"), size = 500, replace = T)
+gender <- sample(c("Male", "Female"), size = 60, replace = T)
 gender <- as.factor(gender)
-print(head(gender))
+head(gender)
 ```
 
 The `table()` function can be used to count the number of men and women.
@@ -224,14 +226,6 @@ Now that we have two variables (`ttmt`and `gender`) we can also easily cross the
 table(ttmt, gender)
 ```
 
-The contingency table can also be represented graphically with basic R commands. The areas then correspond to the numbers.
-
-```{r exo6b, exercise=TRUE, exercise.setup="exo5" }
-mosaicplot(table(ttmt, gender), color = c("salmon", "olivedrab"), main="Mosaic plot")
-```
-
-The areas then correspond to the size of each category.
-
 ### Exercise with the table() function
 
 <div class="exo">
@@ -242,12 +236,12 @@ The areas then correspond to the size of each category.
 
 ```{r exo5c, exercise=TRUE , exercise.setup="exo5"}
 set.seed(456)
-age <- sample(c("<10", "10-30", "30-50", ">50"), size = 500, replace = T)
+age <- sample(c("<10", "10-30", "30-50", ">50"), size = 60, replace = T)
 ```
 
 ```{r exo5c-solution}
 set.seed(456)
-age <- sample(c("<10", "10-30", "30-50", ">50"), size = 500, replace = T)
+age <- sample(c("<10", "10-30", "30-50", ">50"), size = 60, replace = T)
 table(ttmt,  gender, age)
 ```
 
@@ -256,11 +250,11 @@ table(ttmt,  gender, age)
 
 ## Ordinal variables
 
-An ordinal variable is rather close to a categorical variable. The only difference is that ordinal variables are ordered (e.g. education level: "high school", "BS","MS","PhD"; rating: "like", "neutral", "dislike"...).
+An **ordinal variable** is similar to a **categorical variable but has a defined order** (e.g., education level: "high school," "BS," "MS," "PhD"; or rating: "like," "neutral," "dislike").
 
 ### Creating ordinal variables
 
-For example, `age` could be naturally converted to an ordinal variable using the `factor()` function (which contains additional arguments compared to `as.factor()`). 
+For example, `age` could be naturally converted to an ordinal variable using the `factor()` function (which contains `ordered` arguments compared to `as.factor()`). 
 
 ```{r exo6, exercise=TRUE, exercise.setup="exo5c" }
 age <- factor(age, levels = c("<10", "10-30", "30-50", ">50"), ordered = TRUE)
@@ -288,14 +282,14 @@ learnr::question("What does the '<' in 'Levels: cont < hcq < dex' stand for?",
 
 ### The tapply() function
 
-A factor can be used to perform operations on a vector according to categories. For example, you can apply functions in each category with `tapply()`. Here we give the example of calculating the mean (`mean()`) and visualizing the distributions of responses (*infection*) in the 3 classes of patients (*i.e.* having received the three treatments). 
+Factors enable operations on vectors by category. For example, `tapply()` applies functions like `mean()` to each category. Below, it calculates the mean and visualizes infection distributions across three patient treatment groups.
 
 ```{r exo7, exercise=TRUE, exercise.setup="exo6" } 
 # infection is a vector containing the infection levels
 # infection levels of each patient
-infection <- round(c(rnorm(150, mean = 3, sd=1), 
-                      rnorm(150, mean = 10, sd=2), 
-                      rnorm(200, mean = 10, sd=1)), 
+infection <- round(c(rnorm(20, mean = 3, sd=1), 
+                      rnorm(20, mean = 10, sd=2), 
+                      rnorm(20, mean = 10, sd=1)), 
                     2)
 tapply(infection, ttmt, mean)
 ```
@@ -312,28 +306,15 @@ These factors are also extremely useful for graphical operations. Below, for exa
 boxplot(infection ~ ttmt)
 ```
 
-But we can also analyze the effect (`~`) of treatment and (`+`) gender.  
-
-```{r exo9b, exercise=TRUE, exercise.setup="exo7" } 
-# We change the graphic parameters (par())
-# to increase the size of my margin (mar) on the left, 
-# because the class names are long.
-par(mar=c(1,7,1,1))
-boxplot(infection ~ ttmt + gender, horizontal = TRUE, las=1, ylab="")
-# We add a grid for readability.
-grid()
-```
-
 ## Creating factors with the cut() function
 
-The *cut()* function divides the input numeric vector into intervals and encodes the values of the input vector according to the intervals to which they belong. This allows, when needed, to transform a numerical variable into a set of categories.
+The `cut()` function splits a numeric vector into intervals, encoding values based on their intervals, effectively converting a numeric variable into categories.
 
 ```{r exo10_0, exercise=TRUE, exercise.setup="exo7" }
 infection_class <- cut(infection, breaks = 4)
 is(infection_class)
 print(levels(infection_class))
 ```
-
 
 Now that we've created infection level classes, we could create the corresponding contingency table:
 

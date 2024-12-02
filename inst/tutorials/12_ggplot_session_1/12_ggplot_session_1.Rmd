@@ -8,8 +8,9 @@
 title: "La librairie ggplot2 (session 1)"
 output:
   learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
-    highlight: default
     fig_caption: yes
     self_contained: true
     toc: yes
@@ -248,7 +249,7 @@ For the **geom_points** geometry, the following **aesthetics** are accepted:
 | **Aesthetic**  |                                   **Purpose**                                   |              **Value**              |
 |:--------------:|:-------------------------------------------------------------------------------:|:-----------------------------------:|
 |       x        |                                Values for the x-axis                           |         Numeric or factor           |
-|        y       |                                Values for the y-axis                           |         Numeric or factor           |
+|       y        |                                Values for the y-axis                           |         Numeric or factor           |
 |     alpha      |                                Opacity of points                               |         Numeric between 0 and 1     |
 | colour or color| Color of points or borders (if points have borders)                            |         A color                     |
 |      fill      | Filling, if the point has a fill                                               |         A color                     |
@@ -399,8 +400,7 @@ gradethis::grade_result_strict(
 </div>
 
 
-ggplot2 offre une **grande souplesse** dans le **contrôle des esthétiques de vos graphiques**. Vous pouvez utiliser des **valeurs fixes** pour obtenir des graphiques statiques, mais l'utilisation de **variables permet une personnalisation** encore plus dynamique et adaptée aux données. 
-
+ggplot2 offers **great flexibility** in **controlling the aesthetics of your graphs**. You can use **fixed values** to create static graphs, but using **variables allows even more dynamic, data-driven customization**. 
 
 ### End of the section
 

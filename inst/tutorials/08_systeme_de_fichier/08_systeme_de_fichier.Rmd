@@ -8,6 +8,8 @@
 title: "Entrées/Sorties et système de fichiers."
 output:
   learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     highlight: default
     fig_caption: yes

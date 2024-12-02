@@ -8,6 +8,8 @@
 title: "Object-Oriented Programming in R"
 output:
   learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     highlight: default
     fig_caption: yes
@@ -76,6 +78,8 @@ font-family: Garamond
 transition: linear
 runtime: shiny_prerendered
 ---
+
+
 
 <!--  
 Here the parameters about the documents.
@@ -488,7 +492,6 @@ setMethod("gene_name",
 )
 
 ```
-
 
 ## End of the section
 
