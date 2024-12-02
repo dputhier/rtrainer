@@ -5,7 +5,7 @@
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 
-title: "La librairie ggplot2 (session 4)"
+title: "The ggplot2 library (session 4)"
 output:
   learnr::tutorial:
     includes:

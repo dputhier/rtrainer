@@ -5,7 +5,7 @@
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 
-title: "Structures conditionnelles"
+title: "Conditional statements"
 output:
   learnr::tutorial:
     includes:
