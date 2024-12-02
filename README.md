@@ -11,6 +11,10 @@ Currently use the following command:
 	  install.packages("devtools")
    	  devtools::install_github("dputhier/rtrainer")
 
+	  # Currently for the english version
+	  devtools::install_github("dputhier/rtrainer@english_version")
+
+
 # Running the tutorials 
 
 The tutorials can be found in `inst/tutorials/`. Only french versions
@@ -23,5 +27,5 @@ The list of available tutorials can be obtained using:
 
 Run a tutorial using the following command:
 
-    learnr::run_tutorial("03_indexations_des_vecteurs", "rtrainer")
+    learnr::run_tutorial("04_factors", "rtrainer")
     
