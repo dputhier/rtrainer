@@ -1,5 +1,5 @@
 ---
-title: "Exercices autour des fonctions"
+title: "Functions: exercises"
 output:
   learnr::tutorial:
     includes:
