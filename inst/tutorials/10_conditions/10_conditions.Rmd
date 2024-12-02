@@ -142,7 +142,7 @@ knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=
 gradethis::gradethis_setup()
 ```
 
-When developing **computer code**, we often need to **ask the system questions** about the **contents of a variable** or multiple variables (e.g., has the user submitted an existing file, provided a valid response, or entered a password?). This is the **purpose of conditional structures**.
+When developing **computer code**, we often need to **ask the system questions** about the **contents of a variable** or multiple variables (*e.g*., has the user submitted an existing file, provided a valid response, or entered a password?). This is the **purpose of conditional structures**.
 
 A conditional structure **allows testing whether a condition is true or false**. These conditional structures generally **evaluate** a test that returns a **logical variable** (true/false):
 

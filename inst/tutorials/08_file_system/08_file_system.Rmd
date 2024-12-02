@@ -211,33 +211,32 @@ dir.create(fp, recursive=TRUE, showWarnings=FALSE)
 - Create a folder `input` inside **the folder project_1**.
 
 ```{r exomkdir, exercise=TRUE, exercise.setup="sapply"}
-
+fp
 ```
 
 ```{r exomkdir-solution}
-dir.create(file.path(tmp_dir_path, "all_projects", "project_1", 'input'))
+dir.create(file.path(fp, 'input'))
 ```
 
 ```{r exorecap, echo=FALSE, exercise.setup="sapply"}
-fp <- file.path(tmp_dir_path, "all_projects", "project_1", "input")
-dir.create(fp, recursive=TRUE, showWarnings=FALSE)
+dir.create(file.path(fp, 'input'), recursive=TRUE, showWarnings=FALSE)
 ```
 
 <div class="exo">
 
-- Check that the folder exists by listing the contents of `all_projects` using `dir()`.
+- Check that the 'input' folder exists by listing the contents of `all_projects` subdirectory using `dir()`.
 
 ```{r dir_test, exercise=TRUE, exercise.setup="exorecap"}
 
 ```
 
 ```{r dir_test-solution}
-dir(file.path(tmp_dir_path, "all_projects"))
+dir(fp)
 ```
 
 ```{r dir_test-check }
 gradethis::grade_result(
-  pass_if(~ "project_1" %in% .result)
+  pass_if(~ "input" %in% .result)
 )
 ```
 </div>
@@ -245,7 +244,7 @@ gradethis::grade_result(
 ```{r exomkdir-check }
 gradethis::grade_result(
   pass_if(~ all(dir.exists(fp))),
-  pass_if(~ all(dir.exists(fp_2)))
+  pass_if(~ all(file.path(fp, 'input')))
 )
 ```
 </div>
@@ -287,7 +286,7 @@ cat("1\t2\t3")
 
 ```{r q1, echo=FALSE }
 learnr::question("What do you see when R interprets the code?",
-  answer("2\t3\t4", correct = TRUE),
+  answer("1\t2\t3", correct = TRUE),
   answer("2\\t3\\t4"),
   allow_retry = TRUE 
 )
@@ -318,13 +317,13 @@ learnr::question("What do you see?",
 Consider the following matrix (in tab-delimited format):
 
 ```{r newline_1, exercise=TRUE }
-cat("Gene\tA\tB\tC\ngene_1\t1\t2\t3\ngene_2\t4\t5\t6\ngene_3\t8\t9\t10")
+cat("Gene\tA\tB\tC\ngene_1\t1\t2\t3\ngene_2\t4\t5\t6\n")
 ```
 
 We can therefore create a tab-delimited file with the following code (`cat()`can print to a file...): 
 
-```{r newline_2, exercise=TRUE, exercise.setup="exocat" }
-cat("Gene\tA\tB\tC\ngene_1\t1\t2\t3\ngene_2\t4\t5\t6\ngene_3\t8\t9\t10\n", 
+```{r newline_2, exercise=TRUE, exercise.setup="setwd" }
+cat("Gene\tA\tB\tC\ngene_1\t1\t2\t3\ngene_2\t4\t5\t6\n", 
     file=file.path(tmp_dir_path, "all_projects", "project_1", "file_1.tab"))
 ```
 
@@ -361,7 +360,7 @@ print(df)
 
 ```{r readtable_2-check }
 gradethis::grade_result(
-  pass_if(~ sum(df) == 48)
+  pass_if(~ sum(df) == 21)
 )
 ```
 </div>
