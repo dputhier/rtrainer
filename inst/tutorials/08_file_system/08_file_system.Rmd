@@ -156,34 +156,38 @@ It is important to be able to **interact with the file system** in order to **im
 
 The `getwd()` (*get working directory*) function displays **the current working directory**. This directory is where R is working at a given time $t$ and from which it will read or write **by default** (*i.e.*, if no other working directory is specified).
 
-```{r getwd, exercise=TRUE}
+```{r rmfile, echo=FALSE}
+unlink("rtrainer_projects", recursive = TRUE, force = TRUE)
+```
+
+```{r getwd, exercise=TRUE, exercise.setup="rmfile"}
 getwd()
 ```
 
+**NB:** The starting working directory is generally located in user home directory. Here this tutorial is launched inside a **shiny application**. Thus R is located in a temporary folder.
+
+
 ## Creating Directories: dir.create()
 
-The `dir.create()` function is used to create directories. Here, we will create a directory in a temporary system folder to avoid cluttering your workspace.
+The `dir.create()` function is used to create directories. Here we will create a directory called "rtrainer_projects". 
 
-The `tempdir()` function creates **a path to a temporary directory** (without creating the corresponding folder). This function works **on all operating systems (Windows, OSX, Linux, etc.)**. It defines a path **within the parent directory dedicated to temporary files/folders** (*e.g.*, the /tmp folder on Linux or something like C:\\Users\\username\\AppData\\Local\\Temp on Windows).
-
-```{r tempdir_0, exercise=TRUE}
-tmp_dir_path <- tempdir()
-print(tmp_dir_path)
+```{r dircreate_1, exercise=TRUE}
+dir.create("rtrainer_projects", showWarnings = FALSE)
 ```
 
-You can **then create the corresponding directory** with the `dir.create()` function. This is the standard function for creating a folder given a specified path as input. Here we specify `showWarnings=FALSE` to avoid any error in case the folder already exists (if you repeat the operation multiple times).
-
-```{r tempdir, exercise=TRUE, exercise.setup="tempdir_0" }
-dir.create(tmp_dir_path, showWarnings = FALSE)
-```
+**NB**: The `showWarnings = FALSE` argument is used in case the folder was previously created (e.g. re-running this tutorial).
 
 ## The dir() Function
 
-You can list the files in a directory using the `dir()` function. The value returned by `dir()` is a character vector. **At this stage, our folder should be empty.** However, since we are working **in a web application**, this might be **slightly different**; you might find files prefixed with *lrn-exa* (these are related to libraries used for this tutorial). **Ignore them.**
+You can list the files in a directory using the `dir()` function. The value returned by `dir()` is a character vector. 
 
-```{r exodir, exercise=TRUE, exercise.setup="tempdir"}
-dir(tmp_dir_path)
+
+```{r exodir, exercise=TRUE, exercise.setup="dircreate_1"}
+dir()
 ```
+
+**NB**: Since we are working **in a Shinny application** you might find additional files/directories in the current working directory. **Ignore them.**
+
 
 ## The file.path() Function 
 
@@ -191,74 +195,49 @@ dir(tmp_dir_path)
 
 You can use the `file.path()` function to create a path to an object (folder or file). Since the format of paths differs between operating systems (Linux, Windows, OSX...), using `file.path` ensures that the generated path will be adapted to the platform where R is installed. Using `file.path()` allows for writing code that is compatible across different operating systems.
 
-```{r filepath, exercise=TRUE, exercise.setup="tempdir" }
-# Ici on crée 2 chemins différents
-fp <- file.path(tmp_dir_path, "all_projects", "project_1")
+```{r filepath, exercise=TRUE, exercise.setup="dircreate_1" }
+fp <- file.path("rtrainer_projects", "project_1", "input")
 fp
 ```
 
-You can then create the corresponding folders using `dir.create()`. By default, `dir.create()` does not allow creating a child folder if the parent folder does not exist (e.g., "all_projects"). You can force it to do so by specifying `recursive=TRUE`.
+You can then create the corresponding folders using `dir.create()`. 
 
 
-```{r sapply, exercise=TRUE, exercise.setup="filepath" }
-dir.create(fp, recursive=TRUE, showWarnings=FALSE)
+```{r exo_dir, exercise=TRUE, exercise.setup="filepath" }
+dir.create(fp, showWarnings=FALSE)
 ```
 
 ### Exercise 
 
 <div class="exo">
 
-- Create a folder `input` inside **the folder project_1**.
+- Using `dir()` check the content of "rtrainer_projects" and "rtrainer_projects/project_1"
 
-```{r exomkdir, exercise=TRUE, exercise.setup="sapply"}
-fp
+```{r exomkdir, exercise=TRUE, exercise.setup="exo_dir"}
+
 ```
 
 ```{r exomkdir-solution}
-dir.create(file.path(fp, 'input'))
-```
-
-```{r exorecap, echo=FALSE, exercise.setup="sapply"}
-dir.create(file.path(fp, 'input'), recursive=TRUE, showWarnings=FALSE)
-```
-
-<div class="exo">
-
-- Check that the 'input' folder exists by listing the contents of `all_projects` subdirectory using `dir()`.
-
-```{r dir_test, exercise=TRUE, exercise.setup="exorecap"}
-
-```
-
-```{r dir_test-solution}
-dir(fp)
-```
-
-```{r dir_test-check }
-gradethis::grade_result(
-  pass_if(~ "input" %in% .result)
-)
+dir("rtrainer_projects")
+dir(file.path('rtrainer_projects', 'project_1'))
 ```
 </div>
 
-```{r exomkdir-check }
-gradethis::grade_result(
-  pass_if(~ all(dir.exists(fp))),
-  pass_if(~ all(file.path(fp, 'input')))
-)
-```
-</div>
 
 ## Changing Directories
 
 The `setwd()` (*set working directory*) function allows you to **navigate the file structure** and move from one directory to another (thus setting a **new working directory**). This new directory will become the default location where R searches for documents (files and folders). You simply pass the name of the target directory to `setwd()`. After using `setwd()`, you can verify your position in the file structure with `getwd()`.
 
-Let’s move into the *project/project_1* directory.
+Let’s move into the *rtrainer_projects/project_1/input* directory.
 
-```{r setwd, exercise=TRUE, exercise.setup="exorecap" }
-setwd(file.path(tmp_dir_path, "all_projects", "project_1"))
+```{r setwd, exercise=TRUE, exercise.setup="exomkdir" }
+getwd()
+fp
+setwd(filepath)
 getwd()
 ```
+
+**NB:** In Rstudio you may use the menu **Session > Set working directory > Choose Directory** to change directory.
 
 ## The read.table() Function
 
@@ -324,7 +303,8 @@ We can therefore create a tab-delimited file with the following code (`cat()`can
 
 ```{r newline_2, exercise=TRUE, exercise.setup="setwd" }
 cat("Gene\tA\tB\tC\ngene_1\t1\t2\t3\ngene_2\t4\t5\t6\n", 
-    file=file.path(tmp_dir_path, "all_projects", "project_1", "file_1.tab"))
+    file="file_1.tab")
+dir()
 ```
 
 **NB:** It is extremely rare to write an entire matrix character by character as shown here. However, this exercise is presented for educational purposes.
@@ -348,13 +328,12 @@ Les principaux arguments de **read.table** sont:
   - Pensez à positionner: `file`, `header`, et `row.names` (les autres arguments peuvent conserver leurs valeurs par défaut).
   - Stockez le résultat dans l'objet `df` et imprimez le contenu de la variable.
 
-```{r readtable_2, exercise=TRUE, exercise.setup="exorecap"}
+```{r readtable_2, exercise=TRUE, exercise.setup="setwd"}
 
 ```
 
 ```{r readtable_2-solution}
-fp <- file.path(tmp_dir_path, "all_projects", "project_1", "file_1.tab")
-df <- read.table(file=fp, header=TRUE, row.names=1)
+df <- read.table("file_1.tab"=fp, header=TRUE, row.names=1)
 print(df)
 ```
 

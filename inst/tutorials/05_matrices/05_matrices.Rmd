@@ -158,37 +158,12 @@ In R, matrices (**matrix** objects) are two-dimensional arrays. They generally c
 As an example, a matrix can be created as follows.
 
 ```{r exo1, exercise=TRUE }
-x <- round(rnorm(25), 2)
+x <- round(runif(25), 2)
 mat <- matrix(data=x, 
               ncol = 5, 
               byrow = TRUE)
 print(mat)
 ```
-
-
-<div class="exo">
-
-- Create a matrix named *mat* with 10 columns containing 200 random values from a uniform distribution (*runif()*) of minimum 0 and maximum 10 and rounded to two decimal digits (*round()*). Vector values are entered per row (*byrow = TRUE*) in the matrix.
-
-```{r mat1, exercise=TRUE }
-set.seed(123)
-
-```
-
-```{r mat1-solution}
-set.seed(123)
-my_data <- round(runif(200, min=0, max=10), 2)
-mat <- matrix(data=my_data, 
-              ncol = 10, 
-              byrow = TRUE)
-```
-
-```{r mat1-check }
-gradethis::grade_result(
-  pass_if(~identical( round(sum(mat), 0), 1013))
-)
-```
-</div>
 
 You can also create a matrix by grouping vectors of the same size using the functions *cbind()* (*column bind*) or *rbind()* (*row bind*).
 
@@ -209,6 +184,7 @@ mat
 Column/row names can be changed as follows:
 
 ```{r exo2, exercise=TRUE }
+set.seed(1)
 mat <- matrix(data=round(rnorm(20), 2), 
             ncol = 4, 
             byrow = TRUE)
@@ -282,7 +258,8 @@ coln <- paste0("sample_", 1:ncol(mat))
 colnames(mat) <- coln
 ```
 
-```{r exo3aa, exercise=TRUE, exercise.setup="exo3aasetup" }
+```{r exo3aa, exercise=TRUE, exercise.setup="exo2" }
+mat
 t(mat)
 ```
 
@@ -308,7 +285,6 @@ cr_names <- LETTERS[1:8]
 colnames(mat) <- rownames(mat) <- cr_names
 print(mat)
 ```
-
 
 
 Using the `igraph` library, the graph can be created with the `graph_from_adjacency_matrix()` function. Here, we choose to declare the graph as undirected (*mode="undirected "*) because, here, for protein-protein interactions, there is no particular source and target (*i.e* we don't know whether one activates or represses the other, they just interact...). 
@@ -350,15 +326,29 @@ plot(my_graph)
 
 </div>
 
+<!-- **Note:** Let's consider a novel graph in which the adjacency matrix indicates the number of experiments supporting a protein interaction (reflecting a kind of confidence levels). This is a what is called a **weighted graph**. We may create such a graph using `weighted=TRUE` when calling `graph_from_adjacency_matrix()` function: -->
+
+<!-- ```{r exo2, exercise=TRUE, exercise.setup="exo3e"} -->
+<!-- mat <- matrix(c(0, 0, 0, 3, 3, 0, 0, 0,  -->
+<!--                 0, 0, 0, 2, 2, 3, 0, 0,  -->
+<!--                 0, 0, 0, 0, 5, 0, 0, 0,  -->
+<!--                 3, 2, 0, 0, 0, 0, 0, 4,  -->
+<!--                 3, 2, 5, 0, 0, 1, 0, 2,  -->
+<!--                 0, 3, 0, 0, 1, 0, 0, 3,  -->
+<!--                 0, 0, 0, 0, 0, 0, 0, 0,  -->
+<!--                 0, 0, 0, 4, 2, 3, 0, 0),  -->
+<!--               ncol=8, byrow = TRUE) -->
+<!-- colnames(mat) <- rownames(mat) <- c("A", "B", "C", "D", "E", "F", "G", "H") -->
+<!-- my_graph <- igraph::graph_from_adjacency_matrix(mat, mode="undirected",  -->
+<!--                                                 weighted=TRUE) -->
+<!-- plot(my_graph, edge.width=E(my_graph)$weight) -->
+<!-- ``` -->
+
 ### The lower.tri() function
 
-The functions `upper.tri()` or `lower.tri()` return a logical matrix indicating if a cell from the matrix is part of the lower or upper triangle. 
+The functions `upper.tri()` or `lower.tri()` return a logical matrix indicating if a cell from the matrix is part of the upper or lower  triangle respectively. 
 
-```{r exo3g, exercise=TRUE, exercise.setup="exo3e" }
-lower.tri(mat)
-```
-
-```{r exo3gb, exercise=TRUE, exercise.setup="exo3e" }
+```{r exo3gb, exercise=TRUE, exercise.setup="exo3" }
 upper.tri(mat)
 ```
 
@@ -366,45 +356,16 @@ upper.tri(mat)
 
 ### Indexing by a matrix
 
-A test can be applied to all cells of the matrix. For example we can test whther the value is 1.
+A test can be applied to all cells of the matrix. For example we can test whether the value is 1.
 
-```{r indexing, exercise=TRUE, exercise.setup="exo3e" }
-mat == 1
+```{r indexing, exercise=TRUE, exercise.setup="exo3" }
+mat == 3
 ```
 
-We can apply more complex test by using boolean operators. For instance we could test whether a cell value is equal to one andpart of the lower triangle.
+We can apply more complex tests by using boolean operators. For instance we could test whether a cell value is equal to 1 and part of the lower triangle.
 
-```{r indexing_2, exercise=TRUE, exercise.setup="exo3e" }
-mat == 1 & lower.tri(mat)
-```
-
-We could convert these cell values into integers (1 to 5) to indicate the number of experiments supporting a protein interaction, reflecting a kind of confidence levels. This creates the adjacency matrix of a **weighted graph** (which is not symmetrical at this stage).
-
-```{r exo4, exercise=TRUE, exercise.setup="exo3e" }
-set.seed(123)
-values <- sample(x=1:5, size = 10, replace = TRUE)
-mat[mat == 1 & lower.tri(mat)] <- values
-print(mat)
-```
-
-Indeed, for an undirected and weighted graph, the adjacency matrix should be symmetrical (if we observed 3 times an interactions between a and b then the same applies to b and a...). This implies that $mat_{i,j} = mat_{j,i}$. This is not the case here. We'll correct using the following code. The instruction isn't totally natural, but google is your friend in this case (for the author of this tutorial too)...
-
-```{r exo3h, exercise=TRUE, exercise.setup="exo4"}
-# Don't concentrate too much on this code 
-# (but more on the result)
-mat[upper.tri(mat)] <- t(mat)[upper.tri(mat)]
-isSymmetric(mat)
-mat
-```
-
-We can now display this weighted graph, again using the `igraph` library. As you can see, the thickness of the edges is displayed according to the confidence we have in the interaction between two proteins.
-
-```{r exo3i, exercise=TRUE , exercise.setup="exo3h"}
-library(igraph)
-my_graph <- graph_from_adjacency_matrix(mat, mode="undirected", weighted=TRUE)
-# Don't concentrate too much on this last command line.
-# It's necessary but a bit advanced for beginners.
-plot(my_graph, edge.width=as.integer(cut(abs(E(my_graph)$weight ), breaks = 5)))
+```{r indexing_2, exercise=TRUE, exercise.setup="exo2" }
+mat == 3 & lower.tri(mat)
 ```
 
 ### Two-dimensional indexing
@@ -529,10 +490,10 @@ Using the `apply()` function, we can **apply** functions, that take a vector as 
 
 The syntax and arguments of the apply function are as follows: **apply(X, MARGIN, FUN,...)**.
 
-- X is a matrix or a data.frame
-- MARGIN **indicates whether the function should be applied to**:
-  - **the rows (MARGIN=1)**
-  - **or the columns (MARGIN=2)**
+- **X** is a matrix or a data.frame
+- **MARGIN** indicates whether the function should be applied to:
+  - **the rows** (MARGIN=1)
+  - **or the columns** (MARGIN=2)
 - **FUN** is the function to be applied
 - **... additional arguments** for FUN
 
@@ -546,11 +507,6 @@ Given the matrix $mat$, use **apply()** to:
 - Calculate the variance (**var()**) of each row and store the result in the variable b.
 - Calculate the standard deviation (**sd()**) of each row and store the result in the variable c.
 - Calculate the interquartile range (**IQR()**) of each row and store the result in the variable d.
-- Calculate the median absolute deviation (**mad()**) of each row and store the result in the variable e.
-- Calculate the minimum value (**min()**) of each row and store the result in the variable f.
-- Calculate the maximum value (**max()**) of each row and store the result in the variable g.
-- Calculate the median value (**median()**) of each row and store the result in the variable h.
-- Call the **summary()** function on each row and store the result in the variable i.
 
 ```{r matrix5, exercise=TRUE}
 set.seed(123)
@@ -573,11 +529,6 @@ a <- apply(mat, 1, mean)
 b <- apply(mat, 1, var)
 c <- apply(mat, 1, sd)
 d <- apply(mat, 1, IQR)
-e <- apply(mat, 1, mad)
-f <- apply(mat, 1, min)
-g <- apply(mat, 1, max)
-h <- apply(mat, 1, median)
-i <- apply(mat, 1, summary)
 ```
 
 ```{r matrix5-check}
@@ -585,16 +536,10 @@ gradethis::grade_result_strict(
   fail_if(~ round(sum(a),0) != 107, encourage = TRUE),  
   fail_if(~ round(sum(b),0) != 214, encourage = TRUE),  
   fail_if(~ round(sum(c),0) != 42, encourage = TRUE),
-  fail_if(~ round(sum(d),0) != 36, encourage = TRUE),
-  fail_if(~ round(sum(e),0) != 31, encourage = TRUE),  
-  fail_if(~ round(sum(f),0) != 54, encourage = TRUE),  
-  fail_if(~ round(sum(g),0) != 152, encourage = TRUE),
-  fail_if(~ round(sum(h),0) != 110, encourage = TRUE),
-  fail_if(~ round(sum(i),0) != 640, encourage = TRUE)
+  fail_if(~ round(sum(d),0) != 36, encourage = TRUE)
 )
 ```
 </div>
-
 
 When the function being called has multiple arguments that need to be specified, the arguments can be passed after the apply function:
 
@@ -639,19 +584,20 @@ gradethis::grade_result(
 We will often work with **numeric matrices** on which we can perform **mathematical operations**. As with vectors, these operations are generally greatly simplified because **they implicitly apply to all elements of the matrix**. Thus, we can write the following instructions:
 
 
-```{r matrix7, exercise=TRUE, eval=TRUE, exercise.setup="matrix4"}
+```{r matrix7, exercise=TRUE, eval=TRUE, exercise.setup="exo2"}
+mat
 mat + 10
 ```
 
-```{r matrix9, exercise=TRUE, eval=TRUE, exercise.setup="matrix4"}
+```{r matrix9, exercise=TRUE, eval=TRUE, exercise.setup="exo2"}
 mat / 2
 ```
 
-```{r matrix10, exercise=TRUE, eval=TRUE, exercise.setup="matrix4"}
-mat ^ 1/2
+```{r matrix10, exercise=TRUE, eval=TRUE, exercise.setup="exo2"}
+abs(mat)^0.5
 ```
 
-```{r matrix12, exercise=TRUE, eval=TRUE, exercise.setup="matrix4"}
+```{r matrix12, exercise=TRUE, eval=TRUE, exercise.setup="exo2"}
 mat + mat ^ 2
 ```
 

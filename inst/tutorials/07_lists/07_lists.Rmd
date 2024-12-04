@@ -152,7 +152,7 @@ gradethis::gradethis_setup()
 
 ### What are Lists?
 
-The `list` object is **the most flexible** of R's basic objects. It has **no size constraints**, meaning you can store **objects of different sizes** within it. Similarly, it has **no type constraints**, allowing you to **store a wide variety of objects**. Due to this flexibility, functions can return results as lists (e.g., a list containing vectors, matrices, and other various objects resulting from a calculation). Each element in the list can have a name. These names can be accessed using the `names()` function, just like with vectors.
+The `list` object is **the most flexible** of R's basic objects. It has **no size constraints**, meaning you can store **objects of different sizes** within it. Similarly, it has **no type constraints**, allowing you to **store a wide variety of objects**. Each element in the list can have a name. These names can be accessed using the `names()` function, just like with vectors.
 
 
 ```{r exo1, exercise=TRUE}
@@ -186,11 +186,11 @@ sub_list
 ```
 
 
-```{r exo2_1, exercise=TRUE, exercise.setup="exo1" }
-sub_list <- my_list[1]
-is(sub_list)
-sub_list
-```
+<!-- ```{r exo2_1, exercise=TRUE, exercise.setup="exo1" } -->
+<!-- sub_list <- my_list[1] -->
+<!-- is(sub_list) -->
+<!-- sub_list -->
+<!-- ``` -->
 
 ### The Indexing Function '[['
 
@@ -225,6 +225,11 @@ my_list <- list(a_vector = 1:5,
 ```
 
 ```{r exolist1-solution}
+my_list <- list(a_vector = 1:5, 
+                a_matrix = matrix(8:13, nr = 2), 
+                some_letters = LETTERS[10:15])
+
+
 # Exo a: solution 1
 a <- my_list[['a_vector']][5]
 # Exo a: solution 2
@@ -265,6 +270,12 @@ my_list <- list(A=list(a_vector = 1:5,
 ```
 
 ```{r exolist2-solution}
+my_list <- list(A=list(a_vector = 1:5, 
+                       a_matrix = matrix(8:13, nr = 2)),
+                B=list(some_letters = LETTERS[10:15],
+                       other_letters = LETTERS[18:26])
+               )
+
 a <- my_list$A$a_vector[5]
 b <- my_list$A$a_matrix[2, 2]
 ```

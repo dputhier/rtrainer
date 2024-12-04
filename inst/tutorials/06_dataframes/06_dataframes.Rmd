@@ -206,11 +206,14 @@ gradethis::grade_result(
 
 ### The as.data.frame() and as.matrix() Functions
 
-You can **convert a `matrix` object into a `data.frame` object using the `as.data.frame()` function**. This allows you to present an object in the correct format for a function that requires a `data.frame` instead of a matrix.
+You can **convert a `matrix` object into a `data.frame` object using the `as.data.frame()` function**. This allows you to present an object in the correct format for a function that requires a `data.frame` instead of a `matrix`.
 
 ```{r dataframe02,  exercise=TRUE}
+set.seed(1)
 mat <- matrix(data=round(rnorm(20), 2), 
             ncol = 5)
+colnames(mat) <- LETTERS[1:ncol(mat)]
+rownames(mat) <- letters[1:nrow(mat)]
 df_2 <- as.data.frame(mat)
 print(df_2)
 ```
@@ -284,7 +287,6 @@ head(ChickWeight)
 ```
 
 
-
 ## Row and Column Names
 
 As with matrices, **the column names of a `data.frame` can be obtained with `colnames()`** (and row names with `rownames()`).
@@ -293,29 +295,6 @@ As with matrices, **the column names of a `data.frame` can be obtained with `col
 colnames(ChickWeight)
 head(rownames(ChickWeight))
 ```
-
-As with matrices, you can change the names of the columns or rows.
-
-<div class="exo">
-
-- Use the `paste0()` function to change the row names of `ChickWeight` and rename them "line_1", "line_2", "line_3", ...
-
-
-```{r linedf, exercise=TRUE, exercise.setup="dataframe1" }
-ChickWeight
-```
-
-```{r linedf-solution }
-rownames(ChickWeight) <- paste0("line_", 1:nrow(ChickWeight))
-```
-
-```{r linedf-check }
-gradethis::grade_result(
-  pass_if(~ all(head(rownames(ChickWeight)) == c("line_1", "line_2", "line_3", "line_4", "line_5", "line_6")))
-)
-```
-
-</div>
 
 ## Indexing
 
@@ -330,45 +309,45 @@ Type `ChickWeight$` and press the [<TAB> key](https://www.computerhope.com/jargo
 ChickWeight
 ```
 
-Using logical indexing as we have seen with vectors and matrices, we can write the following to select rows in the `data.frame`:
+<!-- Using logical indexing as we have seen with vectors and matrices, we can write the following to select rows in the `data.frame`: -->
 
 
-```{r idx1, exercise=TRUE, setup.exercise="dataframe1"}
-ChickWeight[ChickWeight$weight > 300, ]
-```
+<!-- ```{r idx1, exercise=TRUE, setup.exercise="dataframe1"} -->
+<!-- ChickWeight[ChickWeight$weight > 300, ] -->
+<!-- ``` -->
 
-Or even:
+<!-- Or even: -->
 
-```{r idx2, exercise=TRUE, setup.exercise="dataframe1"}
-ChickWeight[ChickWeight$weight > 300 & ChickWeight$Diet == 2,  ]
-```
+<!-- ```{r idx2, exercise=TRUE, setup.exercise="dataframe1"} -->
+<!-- ChickWeight[ChickWeight$weight > 300 & ChickWeight$Diet == 2,  ] -->
+<!-- ``` -->
 
-<div class="exo">
+<!-- <div class="exo"> -->
 
-Using the **$** operator and indexing, extract the rows of `ChickWeight` where:
+<!-- Using the **$** operator and indexing, extract the rows of `ChickWeight` where: -->
 
-- The type of food (`Diet`) is 1 or 2. Store the result in `a`.
-- The weight of the chicken is between 300 and 350 (inclusive). Store the result in `b`.
-- The type of food (`Diet`) is 1 or 2 for an age (`Time` column) of 16 days. Store the result in `c`.
+<!-- - The type of food (`Diet`) is 1 or 2. Store the result in `a`. -->
+<!-- - The weight of the chicken is between 300 and 350 (inclusive). Store the result in `b`. -->
+<!-- - The type of food (`Diet`) is 1 or 2 for an age (`Time` column) of 16 days. Store the result in `c`. -->
 
-```{r chickindex, exercise=TRUE, setup.exercise="dataframe1"}
-ChickWeight
-```
+<!-- ```{r chickindex, exercise=TRUE, setup.exercise="dataframe1"} -->
+<!-- ChickWeight -->
+<!-- ``` -->
 
-```{r chickindex-solution}
-a <- ChickWeight[ChickWeight$Diet == 1 | ChickWeight$Diet == 2, ]
-b <- ChickWeight[ChickWeight$weight >= 300 & ChickWeight$weight <= 350, ]
-c <- ChickWeight[(ChickWeight$Diet == 1 | ChickWeight$Diet == 2) & ChickWeight$Time == 16, ]
-```
+<!-- ```{r chickindex-solution} -->
+<!-- a <- ChickWeight[ChickWeight$Diet == 1 | ChickWeight$Diet == 2, ] -->
+<!-- b <- ChickWeight[ChickWeight$weight >= 300 & ChickWeight$weight <= 350, ] -->
+<!-- c <- ChickWeight[(ChickWeight$Diet == 1 | ChickWeight$Diet == 2) & ChickWeight$Time == 16, ] -->
+<!-- ``` -->
 
-```{r chickindex-check }
-gradethis::grade_result_strict(
-  pass_if(~ nrow(a) == 340),
-  pass_if(~ nrow(b) == 12),
-  pass_if(~ nrow(c) == 27)
-)
-```
-</div>
+<!-- ```{r chickindex-check } -->
+<!-- gradethis::grade_result_strict( -->
+<!--   pass_if(~ nrow(a) == 340), -->
+<!--   pass_if(~ nrow(b) == 12), -->
+<!--   pass_if(~ nrow(c) == 27) -->
+<!-- ) -->
+<!-- ``` -->
+<!-- </div> -->
 
 ## Adding Columns
 
@@ -378,7 +357,6 @@ You can easily add a column to a **data.frame**, especially by using the *$* ope
 ChickWeight$genotype <- sample(c("wild_type", "transgenic"), size=nrow(ChickWeight), replace=TRUE)
 head(ChickWeight)                        
 ```
-
 
 <div class="exo">
 
@@ -414,45 +392,31 @@ gradethis::grade_result_strict(
 Let’s take the following matrix. It is initially in the so-called **"wide" format**. At this stage, there is no formal way to identify this (you will see the difference with the **long** format shortly).
 
 
-```{r longlarge0, exercise=TRUE, eval=TRUE}
-# We populate a matrix with data
-# generated from a normal distribution (n=20). 
-# The matrix will contain 5 columns.
-set.seed(123)
-m <- matrix(data=round(rnorm(20), 2), 
-            ncol = 5)
-colnames(m) <- LETTERS[1:5]
-rownames(m) <- letters[1:4]
-print(m)
+```{r longlarge0, exercise=TRUE, exercise.setup="dataframe02", eval=TRUE}
+mat
 ```
 
-The `melt()` function from the `reshape2` library allows transforming (or "melting") it into the **long** format. The number of rows is now the product of the number of rows and columns of the input object.
+The `melt()` function from the `reshape2` library allows transforming (or "melting") it into the **long** format. The row names now appear in the first column, the column name in the second column and the values in the third.
 
-
-```{r largelong1, exercise=TRUE, eval=TRUE, exercise.setup="longlarge0"}
+```{r largelong1, exercise=TRUE, eval=TRUE, exercise.setup="dataframe02"}
 library(reshape2)
-m_melted <- melt(m)
-dim(m_melted)
+m_melted <- melt(mat)
 head(m_melted)
 ```
 
-Note that the **result is different if the `matrix` is first converted into a `data.frame`** using `as.data.frame()`. 
+<!-- Note that the **result is different if the `matrix` is first converted into a `data.frame`** using `as.data.frame()`.  -->
 
 
-```{r largelong2, exercise=TRUE, eval=TRUE, exercise.setup="longlarge0"}
-library(reshape2)
-df_melted <- melt(as.data.frame(m))
-dim(df_melted)
-head(df_melted)
-```
+<!-- ```{r largelong2, exercise=TRUE, eval=TRUE, exercise.setup="longlarge0"} -->
+<!-- library(reshape2) -->
+<!-- df_melted <- melt(as.data.frame(m)) -->
+<!-- dim(df_melted) -->
+<!-- head(df_melted) -->
+<!-- ``` -->
 
 ## Applying Functions
 
 As with matrices, you can apply functions to the rows and columns of a `data.frame` using the `apply()` function (*see* the chapter on matrices). 
-
-```{r lapply2, exercise=TRUE, exercise.setup="largelong2" }
-apply(df_melted, 2, length)
-```
 
 ### End of the section
 
