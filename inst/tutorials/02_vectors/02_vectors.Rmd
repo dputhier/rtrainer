@@ -459,12 +459,13 @@ y <- c(2, 3, 10, 11, 4, -5, -4, 12)
 ```{r vector1c-solution}
 x <- c(1, 7, 10, 11, 3, -2, -4, 10)
 y <- c(2, 3, 10, 11, 4, -5, -4, 12)
-z <- x == y
+z <- which(x == y)
 ```
 
 ```{r vector1c-check}
 gradethis::grade_result(
-  pass_if(~identical(z, c(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE)))
+  pass_if(~ sum(z) == 14),
+  pass_if(~ length(z) == 3)
 )
 ```
 </div>
@@ -480,12 +481,13 @@ y <- c(2, 3, 10, 11, 4, -5, -4, 12)
 ```{r vector1c2-solution}
 x <- c(1, 7, 10, 11, 3, -2, -4, 10)
 y <- c(2, 3, 10, 11, 4, -5, -4, 12)
-z <- x != y
+z <- which(x != y)
 ```
 
 ```{r vector1c2-check}
-gradethis::grade_result(
-  pass_if(~identical(z, c(TRUE, TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE)))
+gradethis::grade_result_strict(
+  pass_if(~ sum(z) == 22),
+  pass_if(~ length(z) == 5)
 )
 ```
 </div>
@@ -503,12 +505,14 @@ y <- c(2, 3, 10, 11, 4, -5, -4, 12)
 ```{r vector1c3-solution}
 x <- c(1, 7, 10, 11, 3, -2, -4, 10)
 y <- c(2, 3, 10, 11, 4, -5, -4, 12)
-z <- y >= 2 * x 
+z <- which(y >= 2 * x)
 ```
 
 ```{r vector1c3-check}
-gradethis::grade_result(
-  pass_if(~identical(z, c(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE)))
+gradethis::grade_result_strict(
+  pass_if(~ sum(z) == 8), 
+  pass_if(~ length(z) == 2)
+  
 )
 ```
 </div>
