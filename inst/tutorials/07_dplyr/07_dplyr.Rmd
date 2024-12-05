@@ -5,7 +5,7 @@
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 
-title: "For loops"
+title: "Manipulating data.frames with the dplyr library"
 output:
   learnr::tutorial:
     includes:
@@ -142,65 +142,96 @@ knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=
 gradethis::gradethis_setup()
 ```
 
-## Principle and Syntax
+## Overview of Pipes (|>)
 
-### Introduction
+Pipes allow function calls to be chained together, making the code more readable. It can be read as a sequence of steps in which the result of the preceding function is sent, implicitly, to the first argument of the following function:
 
-When developing **computer code**, we often need to **iterate over elements stored in objects** that are themselves stored in memory (*e.g.*, vectors, matrices...). Depending on the problem, we might want to iterate over users, prices, products, chromosomes, genes... We have already seen that:
-
-- **apply** family functions are a solution for applying functions to the elements of an object.
-
-- Similarly, **vectorization** allows for implicitly iterating over objects to perform operations (e.g., `x + 1` to iterate over all elements of a vector $x$ and add `1` to them).
-
-R also offers the **classic for loop structure** found in many programming languages. The syntax of the for loop is given below.
-
-
-```
-for(element in my_object){ 
-    instruction 1
-    instruction 2
-    ...
-    instruction n
-    }
+```{r example_pipe, exercise=TRUE}
+rnorm(100, mean=10) |> 
+  mean() |> 
+  round(digit=2) |> 
+  as.character()
 ```
 
-  - `element` is a variable whose **name is freely chosen** but should be explicit. The object `element` will be **instantiated (defined in memory) when the loop starts**. Therefore, it does not need to be declared/created beforehand.
-  - `my_object` is a **pre-existing object**. It must have been declared earlier in the code.
-  - `my_object` must be **an iterable object**. It should be designed to be iterated over. This includes vectors, matrices, data.frames, lists, etc.
 
+## The dplyr library
 
+The `dplyr` library is part of the tidyverse package. It is designed for fast, readable, and concise data manipulation. It simplifies common data manipulation tasks. It focuses on a set of function to make data transformations intuitive. The input to `dplyr` functions are always a `data.frame` (or `tibble` which is very close) and the output is always a `data.frame`. Functions (e.g. `select()`, `mutate()`, `filter()`) will typically receive the names of the columns (without quotes) to operate on.
 
-## Exercices
+We will illustrate the use of dplyr with the iris dataset that provide various flower measurement over 3 species of iris. 
 
-```{r createfile, echo=FALSE, eval=TRUE, include=FALSE }
-tmp_path <- rtrainer::write_fasta_fragilaria()
+```{r loadiris, exercise=TRUE,}
+library(dplyr)
+data(iris) 
+head(iris)
 ```
 
-<div class="exo">
 
-- Given the following path (`tmp_path`), list (`dir()`) all the files in this folder. Check the content of one of them with `file.show()`.
-- Using a **for loop**, read them with `scan()` (`what="character"`, `sep = "\n"`) and iteratively store their content (*i.e.*, the object returned by `scan()`) in a list named `my_seq`.
+## The select() function
 
-```{r createfile_exo, exercise=TRUE , exercise.setup="createfile"}
-tmp_path
+Select a set of columns. This is an alternative to the indexing function.
+
+```{r select, exercise=TRUE, exercise.setup="loadiris"}
+iris |> 
+  select(Sepal.Length, Sepal.Width, Species) |> 
+  head()
 ```
 
-```{r createfile_exo-solution}
-my_seq <- list()
-for(i in file.path(tmp_path, dir(tmp_path))){
-  my_seq[[basename(i)]] <- scan(file=i, what="character", sep = "\n")
-}
+Or `select()` a column that `matches` a regular expression (here something that ends with and "h"). 
+
+```{r match, exercise=TRUE, exercise.setup="select"}
+iris |> 
+  select(matches("h$")) |> 
+  head()
 ```
 
-```{r createfile_exo-check }
-gradethis::grade_result(
-  pass_if(~ length(my_seq) > 10),
-  pass_if(~ "AGTGACCGTTACGAATCTGGTGTAATTCCTTACGCTAAAATGGGTTACTGGGATGCTTCATACGCTGTAAAAACTACTGA" %in% unlist(lapply(my_seq, "[", 2)))
-)
-```
-</div>
+## The filter() function
 
+Select a set of rows. This is an alternative to the indexing function.
+
+```{r filter, exercise=TRUE, exercise.setup="select"}
+iris |> 
+  filter(Sepal.Length > 6 & Sepal.Width > 3.5)
+```
+
+## The mutate() function
+
+This allow to create new columns that are functions of existing variables/columns:
+
+```{r mutate, exercise=TRUE, exercise.setup="select"}
+iris |> 
+  select(matches("al")) |> 
+  mutate(Sepal.diff=Sepal.Length - Sepal.Width,
+         Petal.diff=Petal.Length - Petal.Width) |>
+  head()
+```
+
+
+## The summarise() function
+
+It can be viewed as an alternative to the apply (with MARGIN=2). It will return a data.frame after applying an operation over all rows of user-defined columns:
+
+```{r summarise, exercise=TRUE, exercise.setup="select"}
+iris |> summarise(mean.Sepal.Length=mean(Sepal.Length), 
+                  mean.Sepal.Width=mean(Sepal.Width))
+```
+
+## The groupby() function
+
+All this functions naturally combine with the `group_by()`function allowing to group rows by a set of categories. This may be particularly interesting to compute a statistic by category.
+
+```{r group_by, exercise=TRUE, exercise.setup="select"}
+iris |> 
+  group_by(Species) |> 
+  summarise(mean.Sepal.Length=mean(Sepal.Length), 
+            mean.Sepal.Width=mean(Sepal.Width))
+```
+
+## Note
+
+The `dplyr` library is quite a vast subject. We provide only a few basics in this tutorial. We encourage users to consult the [Data Transformation](https://r4ds.hadley.nz/data-transform) section of the “R for Data Science” book for more information.
 
 ### End of the section
 
 Thank you for following this tutorial.
+

@@ -168,8 +168,6 @@ my_list <- list(A=1:5, B=letters[1:5])
 unlist(my_list)
 ```
 
-
-
 ### Convert to Modify a Result
 
 This exercise aims to demonstrate one of the key advantages of conversion. This is one of R's strengths. Some **functions are polymorphic**, meaning their behavior **depends on the type of argument provided to the function**.

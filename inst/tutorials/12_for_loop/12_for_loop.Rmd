@@ -1,0 +1,205 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "For loops"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+## Principle and Syntax
+
+### Introduction
+
+When developing **computer code**, we often need to **iterate over elements stored in objects** that are themselves stored in memory (*e.g.*, vectors, matrices...). Depending on the problem, we might want to iterate over users, prices, products, chromosomes, genes... We have already seen that:
+
+- **apply** family functions are a solution for applying functions to the elements of an object.
+
+- Similarly, **vectorization** allows for implicitly iterating over objects to perform operations (e.g., `x + 1` to iterate over all elements of a vector $x$ and add `1` to them).
+
+R also offers the **classic for loop structure** found in many programming languages. The syntax of the for loop is given below.
+
+
+```
+for(element in my_object){ 
+    instruction 1
+    instruction 2
+    ...
+    instruction n
+    }
+```
+
+  - `element` is a variable whose **name is freely chosen** but should be explicit. The object `element` will be **instantiated (defined in memory) when the loop starts**. Therefore, it does not need to be declared/created beforehand.
+  - `my_object` is a **pre-existing object**. It must have been declared earlier in the code.
+  - `my_object` must be **an iterable object**. It should be designed to be iterated over. This includes vectors, matrices, data.frames, lists, etc.
+
+
+## Exercices
+
+```{r createfile, echo=FALSE, eval=TRUE, include=FALSE }
+tmp_path <- rtrainer::write_fasta_fragilaria()
+```
+
+<div class="exo">
+
+- Given the following path (`tmp_path`), list (`dir()`) all the files in this folder. Check the content of one of them with `file.show()`.
+- Using a **for loop**, read them with `scan()` (`what="character"`, `sep = "\n"`) and iteratively store their content (*i.e.*, the object returned by `scan()`) in a list named `my_seq`.
+
+```{r createfile_exo, exercise=TRUE , exercise.setup="createfile"}
+tmp_path
+```
+
+```{r createfile_exo-solution}
+my_seq <- list()
+for(i in file.path(tmp_path, dir(tmp_path))){
+  my_seq[[basename(i)]] <- scan(file=i, what="character", sep = "\n")
+}
+```
+
+```{r createfile_exo-check }
+gradethis::grade_result(
+  pass_if(~ length(my_seq) > 10),
+  pass_if(~ "AGTGACCGTTACGAATCTGGTGTAATTCCTTACGCTAAAATGGGTTACTGGGATGCTTCATACGCTGTAAAAACTACTGA" %in% unlist(lapply(my_seq, "[", 2)))
+)
+```
+</div>
+
+
+### End of the section
+
+Thank you for following this tutorial.
