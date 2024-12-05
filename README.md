@@ -14,6 +14,9 @@ Currently use the following command:
 	  # Currently for the english version
 	  devtools::install_github("dputhier/rtrainer@english_version")
 
+	  # Currently for the french (old) version
+	  devtools::install_github("dputhier/rtrainer@french_ver")
+
 
 # Running the tutorials 
 
