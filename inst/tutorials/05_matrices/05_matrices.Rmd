@@ -359,13 +359,13 @@ upper.tri(mat)
 A test can be applied to all cells of the matrix. For example we can test whether the value is 1.
 
 ```{r indexing, exercise=TRUE, exercise.setup="exo3" }
-mat == 3
+mat > 0.5
 ```
 
 We can apply more complex tests by using boolean operators. For instance we could test whether a cell value is equal to 1 and part of the lower triangle.
 
 ```{r indexing_2, exercise=TRUE, exercise.setup="exo2" }
-mat == 3 & lower.tri(mat)
+mat > 0.5 & lower.tri(mat)
 ```
 
 ### Two-dimensional indexing
@@ -552,7 +552,7 @@ apply(mat, 1, mean, trim = 0.2)
 
 <div class="exo">
 
-- Check the help for the **quantiles()** function. Calculate the values of the $1^{st}$ and $3^{rd}$ quartiles for **each column**.
+- Check the help for the **quantile()** function. Calculate the values of the $1^{st}$ and $3^{rd}$ quartiles for **each column**. Store the results in `q_25`and `q_75` respectively.
 
 ```{r matrix6d, exercise=TRUE }
 set.seed(123)
@@ -567,14 +567,14 @@ mat <- matrix(data=sample(1:20, size=40, replace = TRUE),
             ncol = 4, 
             byrow = TRUE)
 
-q_25 <- apply(mat, MARGIN = 1, quantile, 0.25)
-q_75 <- apply(mat, MARGIN = 1, quantile, 0.75)
+q_25 <- apply(mat, MARGIN = 2, quantile, 0.25)
+q_75 <- apply(mat, MARGIN = 2, quantile, 0.75)
 ```
 
 ```{r matrix6d-check }
 gradethis::grade_result(
-  pass_if(~ round(sum(q_25),0) == 91),
-  pass_if(~ round(sum(q_75),0) == 126)  
+  pass_if(~ round(sum(q_25),0) == 30),
+  pass_if(~ round(sum(q_75),0) == 55)  
 )
 ```
 </div>

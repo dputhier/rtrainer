@@ -300,7 +300,7 @@ head(rownames(ChickWeight))
 
 A `data.frame` can be indexed by querying rows and columns, just like a matrix. As with a matrix, you can use **position indexing, logical indexing, and name-based indexing**. However, the `data.frame` also has an additional indexing operator, the dollar sign `$`.
 
-Type `ChickWeight$` and press the [<TAB> key](https://www.computerhope.com/jargon/t/tab-key.htm) to display the contents of the `feed` column. Do the same for the `weight` column.
+Type `ChickWeight$` and press the [<TAB> key](https://www.computerhope.com/jargon/t/tab-key.htm) to display the contents of the `Diet` column. Do the same for the `weight` column.
 
 
 ```{r dataframe3, exercise=TRUE, setup.exercise="dataframe1"}

@@ -270,7 +270,7 @@ learnr::question("When printing the age object, how does R indicate that it's an
 ```
 
 ```{r exo6b0, echo=FALSE }
-learnr::question("What does the '<' in 'Levels: cont < hcq < dex' stand for?",
+learnr::question("What does the '<' in 'Levels: <10 < 10-30 < 30-50 < >50' stand for?",
   answer("It indicates that the modalities can be classified in a certain natural order to enable comparison.", correct = TRUE),
   answer("It allows to separate doesn't make sense."),
   answer("It indicates that the modalities cannot be sorted."),
