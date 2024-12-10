@@ -168,7 +168,7 @@ It is the combination of these independent components that forms a graphic. In g
 ```{r, echo=FALSE, fig.height=6, fig.width=6}
 library("png")
 path <- file.path(system.file(package="rtrainer"), "tutorials", 
-                  "12_ggplot_session_1", "img", "ggbasics.png")
+                  "13_ggplot_session_1", "img", "ggbasics.png")
 pp <- readPNG(path)
 plot.new() 
 rasterImage(pp,0,0,1,1)
