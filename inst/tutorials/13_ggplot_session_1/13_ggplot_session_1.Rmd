@@ -184,7 +184,7 @@ To start, we will use the "diamonds" dataset from the **ggplot2** library. The *
 
 ```{r, echo=FALSE, fig.height=5}
 library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", "12_ggplot_session_1", "img", "diamonds.png")
+path <- file.path(system.file(package="rtrainer"), "tutorials", "13_ggplot_session_1", "img", "diamonds.png")
 pp <- readPNG(path)
 plot.new() 
 rasterImage(pp,0,0,1,1)
@@ -273,7 +273,7 @@ The correspondences between point shapes and the numeric variables passed are sh
 
 ```{r, echo=FALSE, fig.height=5}
 library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", "12_ggplot_session_1", "img", "point.png")
+path <- file.path(system.file(package="rtrainer"), "tutorials", "13_ggplot_session_1", "img", "point.png")
 pp <- readPNG(path)
 plot.new() 
 rasterImage(pp,0,0,1,1)
@@ -283,7 +283,7 @@ Other point shapes are possible, for example, by using the [ggstar](https://cran
 
 ```{r, echo=FALSE, fig.height=5}
 library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", "12_ggplot_session_1", "img", "ggstar.png")
+path <- file.path(system.file(package="rtrainer"), "tutorials", "13_ggplot_session_1", "img", "ggstar.png")
 pp <- readPNG(path)
 plot.new() 
 rasterImage(pp,0,0,1,1)
