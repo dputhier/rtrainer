@@ -4,6 +4,13 @@ This software is still in development.
 
 The rtrainer package aims at providing a set of tutorials for learning R.
 
+# Note for dev
+
+To deploy on ShinyApp these lines should be discarded from tutorials:
+
+               includes:
+                   before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+
 # Installation
 
 Currently use the following command:
