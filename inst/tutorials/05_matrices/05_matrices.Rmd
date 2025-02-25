@@ -1,0 +1,654 @@
+---
+# theme
+# "bootstrap", "cerulean", "cosmo", "darkly", "flatly", "journal", "lumen", "paper", 
+# "readable", "sandstone", "simplex", "spacelab", "united", "yeti"
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "The 'matrix' object"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup(fail.encourage = TRUE)
+```
+
+
+<!--  
+<img src="img/graph_with_r.jpeg"> 
+![](img/graph_with_r.jpeg)
+--> 
+
+
+## Definitions
+
+### Matrices 
+
+In R, matrices (**matrix** objects) are two-dimensional arrays. They generally contain row and column names. A matrix **must contain elements of the same mode** (*numeric, character, boolean...*).
+
+As an example, a matrix can be created as follows.
+
+```{r exo1, exercise=TRUE }
+x <- round(runif(25), 2)
+mat <- matrix(data=x, 
+              ncol = 5, 
+              byrow = TRUE)
+print(mat)
+```
+
+You can also create a matrix by grouping vectors of the same size using the functions *cbind()* (*column bind*) or *rbind()* (*row bind*).
+
+```{r exo1b, exercise=TRUE }
+mat <- cbind(0:5, 20:25, 30:35)
+mat
+```
+
+```{r exo1c, exercise=TRUE }
+mat <- rbind(0:5, 20:25, 30:35)
+mat
+```
+
+## Functions for *matrix* object
+
+### Row and column names
+
+Column/row names can be changed as follows:
+
+```{r exo2, exercise=TRUE }
+set.seed(1)
+mat <- matrix(data=round(rnorm(20), 2), 
+            ncol = 4, 
+            byrow = TRUE)
+
+colnames(mat) <- LETTERS[1:4]
+rownames(mat) <- letters[1:5]
+print(mat)
+```
+
+
+### Matrix dimensions
+
+We can find out the **number of rows, columns and dimensions of the matrix** with the **nrow(), ncol()** and **dim()** functions respectively.
+
+```{r exo3, exercise=TRUE, exercise.setup="exo2" }
+nrow(mat)
+ncol(mat)
+dim(mat)
+```
+
+### Exercise
+
+<div class="exo">
+
+- Given the following matrix, use the `paste0()` function to create row names of the form *gene_1, gene_2, gene3...* and column names of the form *sample_1, sample_2, sample_3...*. Associate these column and row names with the matrix *mat*. 
+
+```{r colrow, exercise=TRUE}
+set.seed(123)
+mat <- matrix(data=round(runif(200, 0, 100), 0), 
+            ncol = 10, 
+            byrow = TRUE)
+```
+
+```{r colrow-solution}
+set.seed(123)
+mat <- matrix(data=round(runif(200, 0, 100), 0), 
+            ncol = 10, 
+            byrow = TRUE)
+
+rown <- paste0("gene_", 1:nrow(mat))
+rownames(mat) <- rown
+coln <- paste0("sample_", 1:ncol(mat))
+colnames(mat) <- coln
+```
+
+```{r colrow-check }
+gradethis::grade_result(
+  pass_if(~identical( rownames(mat),  c("gene_1", "gene_2", "gene_3", "gene_4", "gene_5", "gene_6", 
+"gene_7", "gene_8", "gene_9", "gene_10", "gene_11", "gene_12", 
+"gene_13", "gene_14", "gene_15", "gene_16", "gene_17", "gene_18", 
+"gene_19", "gene_20"))),
+  pass_if(~identical( colnames(mat),  c("sample_1", "sample_2", "sample_3", "sample_4", "sample_5", 
+"sample_6", "sample_7", "sample_8", "sample_9", "sample_10")))
+)
+```
+</div>
+
+### The transposition function
+
+To transpose a matrix ($mat^{T}$), rows and columns are swapped. In machine learning, features (*e.g.*, genes) often appear in columns, while samples are rows. Use the `t()` function to perform the transposition.
+
+```{r exo3aasetup, echo=FALSE}
+set.seed(123)
+mat <- matrix(data=round(runif(200, 0, 100), 0), 
+            ncol = 10, 
+            byrow = TRUE)
+
+rown <- paste0("gene_", 1:nrow(mat))
+rownames(mat) <- rown
+coln <- paste0("sample_", 1:ncol(mat))
+colnames(mat) <- coln
+```
+
+```{r exo3aa, exercise=TRUE, exercise.setup="exo2" }
+mat
+t(mat)
+```
+
+### The diag() function
+
+You can easily manipulate the **matrix** object with various specific functions. For example, getting and modifying **the diagonal** values can be performed by the **diag()** function.
+
+Let's imagine that a matrix represents the **adjacency matrix of a graph** which for any **protein**, A to H, indicates with a *1* whether it **interacts** with another (0 otherwise). Proteins will be the **nodes** (*nodes/vertices*) of the graph and interactions will constitute the edges (*edges*).
+
+Let's create such a matrix (we will see just later the graph representation).
+
+```{r exo3b, exercise=TRUE }
+mat <- matrix(c(0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 
+                0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 
+                1, 0, 0, 0, 1, 1, 0, 1, 0, 0, 
+                0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 
+                0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+                1, 1, 0, 0),
+            ncol = 8, 
+            byrow = TRUE)
+cr_names <- LETTERS[1:8]
+colnames(mat) <- rownames(mat) <- cr_names
+print(mat)
+```
+
+
+Using the `igraph` library, the graph can be created with the `graph_from_adjacency_matrix()` function. Here, we choose to declare the graph as undirected (*mode="undirected "*) because, here, for protein-protein interactions, there is no particular source and target (*i.e* we don't know whether one activates or represses the other, they just interact...). 
+
+```{r exo3c, exercise=TRUE , exercise.setup="exo3b"}
+library(igraph)
+my_graph <- igraph::graph_from_adjacency_matrix(mat, mode="undirected")
+plot(my_graph)
+```
+
+From the diagram, and by extracting the values from the matrix diagonal, we can see that B interacts with itself, as does D. This proteins may create homodimers. To check all the proteins that can create homodimers, we can just ask for the matrix diagonal.
+
+```{r exo3d, exercise=TRUE , exercise.setup="exo3b"}
+diag(mat)
+```
+
+If we do not want to focus on these homodimeric interactions we may simply set the diagonal values to 0.
+
+```{r exo3e, exercise=TRUE , exercise.setup="exo3c"}
+diag(mat) <- 0
+all(diag(mat) == 0) # TRUE
+print(mat) # 
+```
+
+<div class="exo">
+
+- By creating a graph using the `graph_from_adjacency_matrix()` from the `igraph` library, check graphically that homodimeric interaction are no more present in the graph.
+
+
+```{r exograph, exercise=TRUE, exercise.setup="exo3e"}
+mat
+```
+
+```{r exograph-solution}
+library(igraph)
+my_graph <- igraph::graph_from_adjacency_matrix(mat, mode="undirected")
+plot(my_graph)
+```
+
+</div>
+
+<!-- **Note:** Let's consider a novel graph in which the adjacency matrix indicates the number of experiments supporting a protein interaction (reflecting a kind of confidence levels). This is a what is called a **weighted graph**. We may create such a graph using `weighted=TRUE` when calling `graph_from_adjacency_matrix()` function: -->
+
+<!-- ```{r exo2, exercise=TRUE, exercise.setup="exo3e"} -->
+<!-- mat <- matrix(c(0, 0, 0, 3, 3, 0, 0, 0,  -->
+<!--                 0, 0, 0, 2, 2, 3, 0, 0,  -->
+<!--                 0, 0, 0, 0, 5, 0, 0, 0,  -->
+<!--                 3, 2, 0, 0, 0, 0, 0, 4,  -->
+<!--                 3, 2, 5, 0, 0, 1, 0, 2,  -->
+<!--                 0, 3, 0, 0, 1, 0, 0, 3,  -->
+<!--                 0, 0, 0, 0, 0, 0, 0, 0,  -->
+<!--                 0, 0, 0, 4, 2, 3, 0, 0),  -->
+<!--               ncol=8, byrow = TRUE) -->
+<!-- colnames(mat) <- rownames(mat) <- c("A", "B", "C", "D", "E", "F", "G", "H") -->
+<!-- my_graph <- igraph::graph_from_adjacency_matrix(mat, mode="undirected",  -->
+<!--                                                 weighted=TRUE) -->
+<!-- plot(my_graph, edge.width=E(my_graph)$weight) -->
+<!-- ``` -->
+
+### The lower.tri() function
+
+The functions `upper.tri()` or `lower.tri()` return a logical matrix indicating if a cell from the matrix is part of the upper or lower  triangle respectively. 
+
+```{r exo3gb, exercise=TRUE, exercise.setup="exo3" }
+upper.tri(mat)
+```
+
+## Indexing
+
+### Indexing by a matrix
+
+A test can be applied to all cells of the matrix. For example we can test whether the value is 1.
+
+```{r indexing, exercise=TRUE, exercise.setup="exo3" }
+mat > 0.5
+```
+
+We can apply more complex tests by using boolean operators. For instance we could test whether a cell value is equal to 1 and part of the lower triangle.
+
+```{r indexing_2, exercise=TRUE, exercise.setup="exo2" }
+mat > 0.5 & lower.tri(mat)
+```
+
+### Two-dimensional indexing
+
+Since a matrix contains rows and columns, we'll (most of the time) use two-dimensional indexing. Two pieces of information are passed to the indexing operator in the form **[lines, columns]** (where *lines* and *columns* are vectors for the size of rows and columns respectively). If *lines* is not defined (*e.g.* [, columns]), all rows are extracted. Same principle for **columns**.
+
+<div class="exo">
+
+Given the matrix declared below:
+
+- Extract the value of the cell at position 1,1 and store the result in a variable a. 
+- Extract the values of the cells at position 1,1 and 1,2 and store the result in a variable b. 
+- Extract cell values from row 1 and store the result in a variable c. 
+- Extract cell values from rows 1 and 3 and store the result in a variable d. 
+- Extract cell values from column 1 and store the result in a variable e. 
+- Extract cell values from columns 1 and 3 and store the result in a variable f. 
+
+```{r matrix4, exercise=TRUE, eval=TRUE}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+colnames(mat) <- LETTERS[1:4]
+rownames(mat) <- letters[1:10]
+```
+
+```{r matrix4-solution}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+colnames(mat) <- LETTERS[1:4]
+rownames(mat) <- letters[1:10]
+
+a <- mat[1, 1]
+b <- mat[1, c(1, 2)]
+c <- mat[1, ]
+d <- mat[c(1,3), ]
+e <- mat[, 1]
+f <- mat[ ,c(1, 3)]
+```
+
+```{r matrix4-check}
+gradethis::grade_result_strict(
+  fail_if(~ a != 15L, encourage = TRUE),
+  fail_if(~ all(b != c(A = 15L, B = 19L)), encourage = TRUE), 
+  fail_if(~ all(c != c(A = 15L, B = 19L, C = 14L, D = 3L)), encourage = TRUE),
+  fail_if(~ sum(d) != 109, encourage = TRUE),
+  fail_if(~ sum(e) != 112, encourage = TRUE),
+  fail_if(~ sum(f) != 214, encourage = TRUE)
+)
+```
+</div>
+
+
+<div class="exo">
+
+Given the matrix declared below:
+
+- Extract the values from the cells in columns 1 and 3 for rows 1 and 3, and store the result in a variable g.
+- Extract all rows where the values in column 1 are greater than 11, and store the result in a variable h.
+- Extract the cell where the row name is "a" and the column name is "B", and store the result in a variable i.
+- Extract the cells where the row names are "a", "b", and "c", and the column name is "B", and store the result in a variable j.
+- Extract all columns where the values in row 1 are greater than 10, and store the result in a variable k.
+
+
+```{r matrix4a, exercise=TRUE, eval=TRUE}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+colnames(mat) <- LETTERS[1:4]
+rownames(mat) <- letters[1:10]
+```
+
+```{r matrix4a-solution}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+colnames(mat) <- LETTERS[1:4]
+rownames(mat) <- letters[1:10]
+
+g <- mat[c(1, 3) ,c(1, 3)]
+h <- mat[mat[, 1] > 11, ]
+i <- mat["a", "B"]
+j <- mat[c("a", "b", "c"), "B"]
+k <- mat[, mat[1,] > 10]
+```
+
+```{r matrix4a-check}
+gradethis::grade_result_strict(
+  fail_if(~ sum(g) != 54, encourage = TRUE),  
+  fail_if(~ sum(h) != 208, encourage = TRUE),  
+  fail_if(~ sum(i) != 19, encourage = TRUE),
+  fail_if(~ sum(j) != 51, encourage = TRUE),
+  fail_if(~ sum(k) != 336, encourage = TRUE)
+)
+```
+</div>
+
+### Implicit Conversion by the Indexing Function
+
+The indexing function can cause a type conversion that is not always desired (but is often very practical). For example, below, **if we select a column from the matrix**, we end up with **a vector**, which seems quite natural (the same is observed if we select a row).
+
+
+```{r drop, exercise=TRUE}
+mat <- matrix(1:20, ncol=4)
+is(mat[, 1])
+```
+
+We can prevent this default behavior by setting the **drop** argument of the indexing function to FALSE. It is set to TRUE by default.
+
+```{r drop_2, exercise=TRUE}
+mat <- matrix(1:20, nc=10)
+is(mat[, 1, drop=FALSE])
+```
+
+## The apply Function
+
+Using the `apply()` function, we can **apply** functions, that take a vector as their first argument (*e.g.* `mean()`, `median()`, `var()`, `sd()`...), to the rows or columns of a matrix.
+
+The syntax and arguments of the apply function are as follows: **apply(X, MARGIN, FUN,...)**.
+
+- **X** is a matrix or a data.frame
+- **MARGIN** indicates whether the function should be applied to:
+  - **the rows** (MARGIN=1)
+  - **or the columns** (MARGIN=2)
+- **FUN** is the function to be applied
+- **... additional arguments** for FUN
+
+If we write `apply(X=mat, MARGIN=2, FUN=median)`, each column (`MARGIN=2`) of `mat` (`X=mat`) will be passed successively to the `median()` function. This will return a vector of size `ncol(mat)` containing the median values of each column.
+
+<div class="exo">
+
+Given the matrix $mat$, use **apply()** to:
+
+- Calculate the mean (**mean()**) of each row and store the result in the variable a.
+- Calculate the variance (**var()**) of each row and store the result in the variable b.
+- Calculate the standard deviation (**sd()**) of each row and store the result in the variable c.
+- Calculate the interquartile range (**IQR()**) of each row and store the result in the variable d.
+
+```{r matrix5, exercise=TRUE}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+colnames(mat) <- LETTERS[1:4]
+rownames(mat) <- letters[1:10]
+```
+
+```{r matrix5-solution}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+colnames(mat) <- LETTERS[1:4]
+rownames(mat) <- letters[1:10]
+
+a <- apply(mat, 1, mean)
+b <- apply(mat, 1, var)
+c <- apply(mat, 1, sd)
+d <- apply(mat, 1, IQR)
+```
+
+```{r matrix5-check}
+gradethis::grade_result_strict(
+  fail_if(~ round(sum(a),0) != 107, encourage = TRUE),  
+  fail_if(~ round(sum(b),0) != 214, encourage = TRUE),  
+  fail_if(~ round(sum(c),0) != 42, encourage = TRUE),
+  fail_if(~ round(sum(d),0) != 36, encourage = TRUE)
+)
+```
+</div>
+
+When the function being called has multiple arguments that need to be specified, the arguments can be passed after the apply function:
+
+```{r matrix6, exercise=TRUE, eval=TRUE, exercise.setup="matrix5"}
+# E.g. apply a trimmed mean 
+# to the rows by removing 20% 
+# of the extreme values.
+apply(mat, 1, mean, trim = 0.2)
+```
+
+<div class="exo">
+
+- Check the help for the **quantile()** function. Calculate the values of the $1^{st}$ and $3^{rd}$ quartiles for **each column**. Store the results in `q_25`and `q_75` respectively.
+
+```{r matrix6d, exercise=TRUE }
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+```
+
+```{r matrix6d-solution}
+set.seed(123)
+mat <- matrix(data=sample(1:20, size=40, replace = TRUE), 
+            ncol = 4, 
+            byrow = TRUE)
+
+q_25 <- apply(mat, MARGIN = 2, quantile, 0.25)
+q_75 <- apply(mat, MARGIN = 2, quantile, 0.75)
+```
+
+```{r matrix6d-check }
+gradethis::grade_result(
+  pass_if(~ round(sum(q_25),0) == 30),
+  pass_if(~ round(sum(q_75),0) == 55)  
+)
+```
+</div>
+
+## Mathematical Operations
+
+We will often work with **numeric matrices** on which we can perform **mathematical operations**. As with vectors, these operations are generally greatly simplified because **they implicitly apply to all elements of the matrix**. Thus, we can write the following instructions:
+
+
+```{r matrix7, exercise=TRUE, eval=TRUE, exercise.setup="exo2"}
+mat
+mat + 10
+```
+
+```{r matrix9, exercise=TRUE, eval=TRUE, exercise.setup="exo2"}
+mat / 2
+```
+
+```{r matrix10, exercise=TRUE, eval=TRUE, exercise.setup="exo2"}
+abs(mat)^0.5
+```
+
+```{r matrix12, exercise=TRUE, eval=TRUE, exercise.setup="exo2"}
+mat + mat ^ 2
+```
+
+<!--
+## Matrix Product
+
+Matrix computation facilitates complex calculations. The matrix product, in particular, is used in numerous contexts to perform dimensionality reduction (e.g., principal component analysis), apply transformations (e.g., image rotations), analyze graphs, or perform classification and prediction (*e.g.*, *machine learning*), among others.
+
+**From Wikipedia**: The product of two matrices can only be defined if the number of columns in the first matrix is the same as the number of rows in the second matrix, meaning they must have compatible dimensions.
+
+If $A=(a_{ij})$ is a matrix of type $(m, n)$ and $B=(b_{ij})$ is a matrix of type $(n, p)$, then their ''product'', denoted $AB=(c_{ij})$, is a matrix of type $(m, p)$ given by:
+
+$\forall i, j : c_{ij} = \sum_{k=1}^n a_{ik}b_{kj} = a_{i1}b_{1j}+a_{i2}b_{2j}+\cdots+ a_{in}b_{nj}$
+
+As an example of matrix computation, we create a very small version ofthe protein-protein interaction graph we discussed previously.
+
+```{r exo13, exercise=TRUE }
+mat <- matrix(c(1, 1, 0, 1, 0, 1, 0, 1, 0),
+            ncol = 3, 
+            byrow = TRUE)
+cr_names <- LETTERS[1:3]
+colnames(mat) <- rownames(mat) <- cr_names
+print(mat)
+```
+
+```{r exo14, exercise=TRUE, exercise.setup="exo13" }
+library(igraph)
+my_graph <- graph_from_adjacency_matrix(mat, mode="undirected")
+plot(my_graph)
+```
+
+To calculate the number of paths (allowing round trips) of length $n$ between two vertices/nodes in a graph, it suffices to compute the $n^{th}$ power of the adjacency matrix. For a mathematical demonstration (which is beyond the scope of this course), you can refer to [this vidéo](https://www.youtube.com/watch?v=4tfpDZYWyWw).
+
+```{r exo15, exercise=TRUE, exercise.setup="exo13" }
+mat_2 <- mat %*% mat
+print(mat_2)
+```
+
+In the example above, we calculte the number of path of size 2. We see that there are two paths of length 2 to go from B to B: **(i)** go to A and return to B, or **(ii)** go to C and return to B. However, there is only one path of length 2 from A to C, passing through B.
+
+This principle allows for simulating a random walk in a graph (*random walk*) and is used to analyze much more complex graphs to identify dense regions where the probability of moving from one node to another is high (*e.g.*, the *Markov Clustering* algorithm). These regions often correspond, for example, to proteins interacting in complexes to perform a common function.
+-->
+
+### End of the section
+
+Thank you for following this tutorial.
+
+<!--```{r end, eval=TRUE, echo=FALSE } 
+htmltools::tags$button("Retour au Menu", 
+                       class="btn btn-primary",
+                       onclick = "window.location.href='https://w3docs.com';"
+                        )
+```-->
+

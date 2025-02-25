@@ -5,9 +5,11 @@
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 # Estimated time = 2h
-title: "Les objets data.frame"
+title: "The 'data.frame' object."
 output:
   learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     highlight: default
     fig_caption: yes
@@ -147,21 +149,21 @@ gradethis::gradethis_setup()
 --> 
 
 
-## Création
+## Creation
 
-### La fonction data.frame()
+### The data.frame() Function
 
-L'objet `data.frame` est véritablement central dans R. C'est notamment l'objet renvoyé par la fonction `read.table()` (nous la rencontrerons bientôt) lorsqu'on lit un tableau de données. C'est aussi l'objet utilisé en entrée pour créer des diagrammes avec la magnifique librairie de fonctions graphiques `ggplot2` (voir par exemple [le site ggplot2 extensions](https://exts.ggplot2.tidyverse.org/gallery/ ou [r-graph-gallery](https://r-graph-gallery.com/all-graphs.html)) pour un aperçu). C'est aussi un objet permettant de stocker des informations sur des objets d'études (patients, échantillons biologiques, expériences...) et les caractéristiques (mesure, catégories...).
+The `data.frame` object is truly central in R. This object allows to store various information about objects under study (patients, biological samples, experiments...). In short, a data.frame can be viewed as a matrix where **each column can have a different and unique mode (*character, numeric, boolean*, etc.)**.
 
-Le data.frame est une matrice dont **chacune des colonnes accepte un mode différent et unique (*character, numeric, boolean*,...)**.
+You can create a dataframe using the `data.frame()` function. In the example below, the `note` column is numeric, the `diploma` column is a factor, the `age` column is numeric, and the `name` column is a character string.
 
-On pourra, notamment, créer un dataframe avec la fonction `data.frame()`. Dans l'exemple ci-dessous, la colonne `note` est numérique, la colonne `promo` est un facteur, la colonne `age` est un numérique et la colonne `name` est une chaîne de caractère.
+
 
 ```{r dataframe0, exercise=TRUE}
 set.seed(123)
 df_1 <- data.frame(
   note = round(runif(n = 6, min = 0, max = 20), 2),
-  promo = as.factor(sample(c("3A", "4A", "5A"), size = 6, replace = TRUE )),
+  diploma = as.factor(sample(c("B.Sc", "M.Sc"), size = 6, replace = TRUE )),
   age = sample(18:25, size=6, replace=TRUE),
   name = c("Miescher", "Watson", "Crick", "Chargaff", "Levene", "Kossel")
 )
@@ -173,7 +175,7 @@ df_1
 
 <div class="exo">
 
-- Créer un `data.frame` nommé `my_df` contenant les vecteurs et facteurs ci-dessous (les colonnes se nommeront "col_A", "col_B", "col_C" et "col_D" respectivement).
+- Create a `data.frame` named `my_df` containing the vectors and factors below (the columns will be named "col_A", "col_B", "col_C", and "col_D", respectively).
 
 ```{r df1, exercise=TRUE}
 set.seed(123)
@@ -202,22 +204,25 @@ gradethis::grade_result(
 ```
 </div>
 
-### Les fonctions as.data.frame() et as.matrix()
+### The as.data.frame() and as.matrix() Functions
 
-On pourra **transformer un objet `matrix` en objet `data.frame` avec la fonction `as.data.frame()` **. Cela permettra de présenter un objet au bon format à une fonction requérant un `data.frame` et pas une matrice.
+You can **convert a `matrix` object into a `data.frame` object using the `as.data.frame()` function**. This allows you to present an object in the correct format for a function that requires a `data.frame` instead of a `matrix`.
 
 ```{r dataframe02,  exercise=TRUE}
+set.seed(1)
 mat <- matrix(data=round(rnorm(20), 2), 
             ncol = 5)
+colnames(mat) <- LETTERS[1:ncol(mat)]
+rownames(mat) <- letters[1:nrow(mat)]
 df_2 <- as.data.frame(mat)
 print(df_2)
 ```
 
-On pourra de la même manière **convertir une matrice en `data.frame` avec `as.matrix()`.**
+Similarly, you can **convert a `data.frame` into a matrix using `as.matrix()`.**
 
 <div class="exo">
 
-- Les objets `data.frame` contenant potentiellement autre chose que des valeurs numériques la fonction `hist()` ne les acceptera pas par défaut. Convertissez le `data.frame`suivant en matrice (objet $mat$) et passez cette matrice à la fonction `hist()` pour construire l'histogramme correspondant.  
+- Since `data.frame` objects may contain elements other than numeric values, the `hist()` function will not accept them by default. Convert the following `data.frame` into a matrix (object $mat$) and pass this matrix to the `hist()` function to construct the corresponding histogram.
 
 ```{r dataframe03, exercise=TRUE}
 set.seed(123)
@@ -252,13 +257,13 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-## Les jeux de données
+## Datasets
 
-On pourra aussi utiliser un des nombreux jeux de données fournis par le logiciel R dont beaucoup sont des objets `data.frame*`.
+You can also use one of the many datasets provided by the R software, many of which are `data.frame` objects.
 
 <div class="exo">
 
-- Lister les jeux de démonstration disponibles avec la fonction `data()` utilisée sans argument.
+- List the available demonstration datasets using the `data()` function without any arguments.
 
 ```{r data, exercise=TRUE }
 
@@ -270,7 +275,7 @@ data()
 
 </div>
 
-Ci-dessous on charge le jeu de données `ChickWeight` (*chicken Weights*) qui contient des mesures de poids permettant d'évaluer l'efficacité de divers compléments alimentaires sur le taux de croissance de poulets. Ce jeux de données est fourni par la librairie `datasets`. Il est donc nécessaire de charger cette librairie en mémoire (`library(datasets)`) pour avoir accès à ce jeu de données. On charge explicitement le jeux de données avec `data(ChickWeight)`.
+Below, we load the `ChickWeight` dataset (*chicken weights*), which contains weight measurements used to evaluate the effectiveness of various dietary supplements on the growth rate of chickens. This dataset is provided by the `datasets` library. Therefore, it is necessary to load this library into memory (`library(datasets)`) to access the dataset. The dataset is explicitly loaded with `data(ChickWeight)`.
 
 ```{r dataframe1, exercise=TRUE}
 # On charge/active la librairie datasets
@@ -282,106 +287,84 @@ head(ChickWeight)
 ```
 
 
+## Row and Column Names
 
-## Noms de lignes et colonnes
-
-Comme pour les matrices, **les noms des colonnes d'un data.frame peuvent être obtenus avec `colnames()` **(et les lignes avec `rownames()`).
+As with matrices, **the column names of a `data.frame` can be obtained with `colnames()`** (and row names with `rownames()`).
 
 ```{r dataframe2, exercise=TRUE, setup.exercise="dataframe1"}
 colnames(ChickWeight)
 head(rownames(ChickWeight))
 ```
 
-Comme pour les matrices, on pourra changer les noms des colonnes ou des lignes. 
+## Indexing
 
-<div class="exo">
+A `data.frame` can be indexed by querying rows and columns, just like a matrix. As with a matrix, you can use **position indexing, logical indexing, and name-based indexing**. However, the `data.frame` also has an additional indexing operator, the dollar sign `$`.
 
-- Utiliser la fonction `paste0()` pour changer les noms de lignes de `ChickWeight` et les nommer "line_1", "line_2", "line_3"...  
+Type `ChickWeight$` and press the [<TAB> key](https://www.computerhope.com/jargon/t/tab-key.htm) to display the contents of the `Diet` column. Do the same for the `weight` column.
 
-```{r linedf, exercise=TRUE, exercise.setup="dataframe1" }
-ChickWeight
-```
-
-```{r linedf-solution }
-rownames(ChickWeight) <- paste0("line_", 1:nrow(ChickWeight))
-```
-
-```{r linedf-check }
-gradethis::grade_result(
-  pass_if(~ all(head(rownames(ChickWeight)) == c("line_1", "line_2", "line_3", "line_4", "line_5", "line_6")))
-)
-```
-
-</div>
-
-## Indexation
-
-On peut indexer un data.frame en interrogeant les lignes et colonnes, comme une matrice. Comme pour une matrice, on pourra utiliser **l'indexation par position, l'indexation logique, et l'indexation par nom des positions**. Cependant, le `data.frame` bénéficie d'un opérateur d'indexation supplémentaire, le dollar '$'.
-
-Tapez `ChickWeight$` et pressez la touche <TAB> (tabulation) pour afficher le contenu de la colonne `feed`. Faites de même pour la colonne `weight`.
 
 ```{r dataframe3, exercise=TRUE, setup.exercise="dataframe1"}
-# Mettez votre curseur après chickwts, tapez '$' et 
-# appuyez sur la touche tabulation (<TAB>)
+# Place your cursor after 'chickwts', type '$' and 
+# press the tab key (<TAB>)
 ChickWeight
 ```
 
-En utilisant l'indexation logique que nous avons vu sur les vecteurs et les matrices, on pourra donc écrire les choses suivantes pour sélectionner des lignes dans le `data.frame`:
+<!-- Using logical indexing as we have seen with vectors and matrices, we can write the following to select rows in the `data.frame`: -->
 
-```{r idx1, exercise=TRUE, setup.exercise="dataframe1"}
-ChickWeight[ChickWeight$weight > 300, ]
-```
 
-On encore:
+<!-- ```{r idx1, exercise=TRUE, setup.exercise="dataframe1"} -->
+<!-- ChickWeight[ChickWeight$weight > 300, ] -->
+<!-- ``` -->
 
-```{r idx2, exercise=TRUE, setup.exercise="dataframe1"}
-ChickWeight[ChickWeight$weight > 300 & ChickWeight$Diet == 2,  ]
-```
+<!-- Or even: -->
 
-<div class="exo">
+<!-- ```{r idx2, exercise=TRUE, setup.exercise="dataframe1"} -->
+<!-- ChickWeight[ChickWeight$weight > 300 & ChickWeight$Diet == 2,  ] -->
+<!-- ``` -->
 
-En utilisant l'opérateur **$** et l'indexation, extraire les lignes de `ChickWeight` pour lesquelles:
+<!-- <div class="exo"> -->
 
-- Le type de nourriture (`Diet`) est 1 ou 2. Le résultat est stocké dans `a`.
-- Le poids du poulet est compris entre 300 et 350 (inclus). Le résultat est stocké dans `b`.
-- Le type de nourriture (`Diet`) est 1 ou 2 pour un age (colonne `Time`) de 16 jours. Le résultat est stocké dans `c`.
+<!-- Using the **$** operator and indexing, extract the rows of `ChickWeight` where: -->
 
-```{r chickindex, exercise=TRUE, setup.exercise="dataframe1"}
-ChickWeight
-```
+<!-- - The type of food (`Diet`) is 1 or 2. Store the result in `a`. -->
+<!-- - The weight of the chicken is between 300 and 350 (inclusive). Store the result in `b`. -->
+<!-- - The type of food (`Diet`) is 1 or 2 for an age (`Time` column) of 16 days. Store the result in `c`. -->
 
-```{r chickindex-solution}
-a <- ChickWeight[ChickWeight$Diet == 1 | ChickWeight$Diet == 2, ]
-b <- ChickWeight[ChickWeight$weight >= 300 & ChickWeight$weight <= 350, ]
-c <- ChickWeight[(ChickWeight$Diet == 1 | ChickWeight$Diet == 2) & ChickWeight$Time == 16, ]
-```
+<!-- ```{r chickindex, exercise=TRUE, setup.exercise="dataframe1"} -->
+<!-- ChickWeight -->
+<!-- ``` -->
 
-```{r chickindex-check }
-gradethis::grade_result_strict(
-  pass_if(~ nrow(a) == 340),
-  pass_if(~ nrow(b) == 12),
-  pass_if(~ nrow(c) == 27)
-)
-```
-</div>
+<!-- ```{r chickindex-solution} -->
+<!-- a <- ChickWeight[ChickWeight$Diet == 1 | ChickWeight$Diet == 2, ] -->
+<!-- b <- ChickWeight[ChickWeight$weight >= 300 & ChickWeight$weight <= 350, ] -->
+<!-- c <- ChickWeight[(ChickWeight$Diet == 1 | ChickWeight$Diet == 2) & ChickWeight$Time == 16, ] -->
+<!-- ``` -->
 
-## Ajouter des colonnes
+<!-- ```{r chickindex-check } -->
+<!-- gradethis::grade_result_strict( -->
+<!--   pass_if(~ nrow(a) == 340), -->
+<!--   pass_if(~ nrow(b) == 12), -->
+<!--   pass_if(~ nrow(c) == 27) -->
+<!-- ) -->
+<!-- ``` -->
+<!-- </div> -->
 
-On peut facilement ajouter une colonne à un **data.frame** en utilisant notamment l'opérateur *$*.
+## Adding Columns
+
+You can easily add a column to a **data.frame**, especially by using the *$* operator.
 
 ```{r addcol, exercise=TRUE, setup.exercise="dataframe1"}
 ChickWeight$genotype <- sample(c("wild_type", "transgenic"), size=nrow(ChickWeight), replace=TRUE)
 head(ChickWeight)                        
 ```
 
-
 <div class="exo">
 
-Ajouter au tableau `ChickWeight` une colonne nommée:
+Add to the `ChickWeight` table a column named:
 
-- 'genotype' contenant des NA.
-- 'source' contenant "anonymous".
-- 'location' contenant des valeurs tirées au hasard parmi 'box_1' ou 'box_2'.
+- 'genotype' containing NA values.
+- 'source' containing "anonymous".
+- 'location' containing random values chosen from 'box_1' or 'box_2'.
 
 ```{r chickaddcol, exercise=TRUE, setup.exercise="dataframe1"}
 ChickWeight
@@ -404,52 +387,37 @@ gradethis::grade_result_strict(
 
 ## 'wide' vs 'long'
 
-**Pour plusieurs application, notamment les graphiques avec la librairie `ggplot2`** (qui est incontournable, nous en reparlerons par la suite), il est nécessaire de changer la representation des données d'`data.frame` ou d'une matrice.
+**For many applications, especially for graphics with the `ggplot2` library** (which is indispensable, and we will discuss it further later), it is necessary to change the representation of data in a `data.frame` or a matrix.
 
-Prenons la matrice suivante. Elle est initialement au format dit **"large (wide)"**. Rien ne permet de le savoir formellement à ce stade (vous verrez la différence avec le format **long** juste après). 
+Let’s take the following matrix. It is initially in the so-called **"wide" format**. At this stage, there is no formal way to identify this (you will see the difference with the **long** format shortly).
 
-```{r longlarge0, exercise=TRUE, eval=TRUE}
-# On remplit une matrice avec des données
-# issues d'une loi normale (n=20). La matrices
-# contiendra 5 colonnes 
-set.seed(123)
-m <- matrix(data=round(rnorm(20), 2), 
-            ncol = 5)
-colnames(m) <- LETTERS[1:5]
-rownames(m) <- letters[1:4]
-print(m)
+
+```{r longlarge0, exercise=TRUE, exercise.setup="dataframe02", eval=TRUE}
+mat
 ```
 
-La fonction `melt()` de la librairie `reshape2` permet de la transformer (de le faire 'fondre') au format **long**. Le nombre de ligne est maintenant le produit du nombre de lignes et de colonnes de l'objet d'entrée.
+The `melt()` function from the `reshape2` library allows transforming (or "melting") it into the **long** format. The row names now appear in the first column, the column name in the second column and the values in the third.
 
-```{r largelong1, exercise=TRUE, eval=TRUE, exercise.setup="longlarge0"}
+```{r largelong1, exercise=TRUE, eval=TRUE, exercise.setup="dataframe02"}
 library(reshape2)
-m_melted <- melt(m)
-dim(m_melted)
+m_melted <- melt(mat)
 head(m_melted)
 ```
 
-Notez que le **résultat est différent si on transforme, au préalable, la `matrice` en `data.frame`** avec `as.data.frame()`. Dans les deux cas (qu'on parte d'une matrice ou d'un `data.frame`), l'objet renvoyé est un `data.frame`.
+<!-- Note that the **result is different if the `matrix` is first converted into a `data.frame`** using `as.data.frame()`.  -->
 
-```{r largelong2, exercise=TRUE, eval=TRUE, exercise.setup="longlarge0"}
-library(reshape2)
-df_melted <- melt(as.data.frame(m))
-dim(df_melted)
-head(df_melted)
-```
 
-## Appliquer des fonctions
+<!-- ```{r largelong2, exercise=TRUE, eval=TRUE, exercise.setup="longlarge0"} -->
+<!-- library(reshape2) -->
+<!-- df_melted <- melt(as.data.frame(m)) -->
+<!-- dim(df_melted) -->
+<!-- head(df_melted) -->
+<!-- ``` -->
 
-Au même titre que pour les matrices, on pourra appliquer des fonctions aux lignes et colonnes du `data.frame` avec la fonction `apply()` (*cf* le chapitre sur les matrices). R propose une fonction supplémentaire pour les objets `data.frame`, la fonction `lapply()`. Elle est très similaire mais ne fait de calcul que sur les colonnes. Par ailleurs elle renvoie, **non pas un objet vecteur** mais un objet de type **list** (nous en discutons dans le prochain chapitre). 
+## Applying Functions
 
-```{r lapply, exercise=TRUE, exercise.setup="largelong2" }
-lapply(df_melted, length)
-```
+As with matrices, you can apply functions to the rows and columns of a `data.frame` using the `apply()` function (*see* the chapter on matrices). 
 
-```{r lapply2, exercise=TRUE, exercise.setup="largelong2" }
-apply(df_melted, 2, length)
-```
+### End of the section
 
-### C'est fini
-
-Merci d'avoir suivi ce tutoriel.
+Thank you for following this tutorial.

@@ -5,9 +5,11 @@
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 
-title: "Programmation orientée objet dans R"
+title: "Object-Oriented Programming in R"
 output:
   learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     highlight: default
     fig_caption: yes
@@ -77,6 +79,8 @@ transition: linear
 runtime: shiny_prerendered
 ---
 
+
+
 <!--  
 Here the parameters about the documents.
 https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
@@ -140,15 +144,15 @@ gradethis::gradethis_setup()
 ```
 
 
-## Introduction aux Systèmes de Classes dans R
+## Introduction to Class Systems in R
 
-Les **systèmes de classes** sont un élément fondamental de la **programmation orientée objet en R**. Ils permettent de **créer des structures de données complexes** appelées objets, qui combinent **des attributs (variables)** et **des méthodes (fonctions)** pour **représenter des entités du monde réel de manière modulaire**. En R, les deux principaux systèmes de classes sont **S3 et S4**, chacun ayant ses propres caractéristiques et conventions. Dans ce cours nous allons nous intéresser aux classes S4 dont l'utilisation est fréquente dans le cadre du projet **Bioconductor**, un ensemble de librairies de fonctions pour l'analyse de données biologiques.
+**Class systems** are a fundamental element of **object-oriented programming in R**. They allow the creation of complex data structures called objects, which combine **attributes (variables)** and **methods (functions)** to **represent real-world entities in a modular way**. In R, the two main class systems are **S3 and S4**, each with its own characteristics and conventions. In this course, we will focus on S4 classes, which are commonly used in the **Bioconductor** project, a set of function libraries for biological data analysis.
 
-## Classes S4
+### S4 Classes
 
-### Création d'une classe 'single_cell'
+#### Creating a 'single_cell' Class
 
-Ci-dessous on donne l'exemple pour implémenter une classe single_cell permettant de stocker une matrice d'expression génique, des métadonnées sur les cellules (un `data.frame`), des informations sur les gènes (un `data.frame`) et une liste contenant des informations libres sur l'expérience:
+Below is an example of how to implement a `single_cell` class that allows for storing a gene expression matrix, metadata about the cells (a `data.frame`), gene information (a `data.frame`), and a list containing free-form information about the experiment:
 
 ```{r single_cell, exercise=TRUE}
 # Définir la classe S4 "single_cell"
@@ -163,16 +167,17 @@ setClass(
 )
 ```
 
-### Définition de la méthode constructeur.
+#### Definition of the Constructor Method
 
-En programmation orientée objet (POO), **une méthode** est une **fonction associée à une classe**. Elle définit le **comportement ou les actions que les objets de cette classe peuvent effectuer**. Les méthodes sont appelées sur des objets pour réaliser des opérations spécifiques.
+In object-oriented programming (OOP), **a method** is a **function associated with a class**. It defines the **behavior or actions that objects of this class can perform**. Methods are called on objects to perform specific operations.
 
-La méthode "initialize" est une méthode spéciale dans R, souvent appelée **méthode constructeur**. Elle est utilisée pour **initialiser un objet de la classe lors de sa création**. Plus précisément, son but est de **configurer ou d'attribuer des valeurs initiales aux attributs de l'objet**, de manière à ce que l'objet soit prêt à être utilisé dans votre application. Dans le cas de la classe "single_cell" que vous avez définie, la méthode `initialize()` est responsable de l'initialisation des attributs de la classe.
+The "initialize" method is a special method in R, often called a **constructor method**. It is used to **initialize an object of the class when it is created**. More specifically, its purpose is to **configure or assign initial values to the attributes of the object**, so that the object is ready to be used in your application. In the case of the "single_cell" class you have defined, the `initialize()` method is responsible for initializing the attributes of the class.
 
-**NB**: la méthode `initialize()` attend un argument nommé `.Object` (*cf* section *Usage* `?summary`).
+**NB**: The `initialize()` method expects an argument named `.Object` (*see* section *Usage* `?summary`).
+
 
 ```{r initialize, exercise=TRUE, exercise.setup="single_cell", exercise.lines=20}
-  # Créer un constructeur pour la classe "single_cell"
+  # Create a constructor for the "single_cell" class
 setMethod("initialize", 
           signature(.Object = "single_cell"),
   function(.Object, 
@@ -193,11 +198,11 @@ setMethod("initialize",
 )
 ```
 
-## Création d'une instance
+## Creating an Instance
 
-### Création d'une instance de la classe 'single_cell'
+### Creating an Instance of the 'single_cell' Class
 
-Soit les données suivantes (matrice `m`, data.frame `cell_data`, data.frame `g_info`):
+Given the following data (matrix `m`, data.frame `cell_data`, data.frame `g_info`):
 
 ```{r scdata, exercise=TRUE, exercise.setup="initialize", exercise.lines=16}
 set.seed(123)
@@ -217,7 +222,8 @@ exp_info <- list(author="D. Puthier",
                  laboratory="TAGC")
 ```
 
-Nous allons avec le code suivant les stocker dans un objet de la classe 'single_cell'. On dit que l'objet sc_data est **une instance de la classe 'single_cell'**. 
+We will use the following code to store them in an object of the 'single_cell' class. We say that the object `sc_data` is **an instance of the 'single_cell' class**.
+
 
 ```{r new, exercise=TRUE, exercise.setup="scdata"}
 sc_data <- new("single_cell",
@@ -228,24 +234,24 @@ sc_data <- new("single_cell",
 )
 ```
 
-Pour l'instant quand on appelle l'objet, il nous montre tout ce qu'il contient. Si les données sont volumineuses, ce n'est pas pratique. Nous redéfinirons donc la méthode `show()`.
+For now, when we call the object, it shows us everything it contains. If the data is large, this is not practical. Therefore, we will redefine the `show()` method.
 
 ```{r showme, exercise=TRUE, exercise.setup="new"}
 sc_data
 ```
 
-## Définition de méthodes génériques
+## Defining Generic Methods
 
-### Définition de la méthode 'show()'
+### Defining the 'show()' Method
 
-Un certain nombre de méthodes sont dites génériques. Ces méthodes existent par défaut dans le langage R (e.g. `ncol()`, `nrow()`, `dim()`, `summary()`, `summary()`, `show()`, `[`...) et sont définis pour de très nombreux objets. De la même manière, nous pouvons les redéfinir pour notre objet 'single_cell'.
-La méthode `show()` est la méthode dite de "représentation". Elle permet de définir un message de présentation lorsqu'un objet de classe 'single_cell' est appelé (*i.e* on tape son nom dans le terminal et on tape entrée). Cette fonction existe pour tous les objets mais nous la redéfinissons ici pour notre objet 'single_cell'. 
+A number of methods are called generic. These methods exist by default in the R language (e.g., `ncol()`, `nrow()`, `dim()`, `summary()`, `show()`, `[`...) and are defined for many different objects. Similarly, we can redefine them for our 'single_cell' object.
+The `show()` method is the so-called "representation" method. It allows us to define a display message when an object of the 'single_cell' class is called (*i.e.*, when its name is typed in the terminal and Enter is pressed). This function exists for all objects, but we are redefining it here for our 'single_cell' object.
 
-**NB**: par défaut, cette fonction attend un argument nommé `objet` (*cf* `?show`).
+**NB**: By default, this function expects an argument named `object` (*see* `?show`).
 
 ```{r show, exercise=TRUE, exercise.setup="new"}
 
-# Définissons la méthode générique `show()`
+# Let's define the `show()`
 setMethod("show", 
           signature(object = "single_cell"),
   function(object) {
@@ -261,19 +267,19 @@ setMethod("show",
 
 ```
 
-Lorsque cet objet est appelé, il se présente via sa méthode 'show':
+When this object is called, it is displayed via its `show()` method:
 
 ```{r showcall, exercise=TRUE, exercise.setup="show"}
 sc_data
 ```
 
-### Définition de ncol() et nrow()
+### Defining ncol() and nrow()
 
 <div class="exo">
 
-Définissez les deux méthodes `ncol()` et `nrow()` qui renvoie respectivement le nombre de lignes et le nombre de colonnes de la matrice `expression_matrix`d'un objet 'single_cell'. Vous pourrez vous appuyer sur le code proposé ci-dessous:
+Define the two methods `ncol()` and `nrow()` that return the number of rows and columns, respectively, of the `expression_matrix` from a 'single_cell' object. You can refer to the code provided below:
 
-**NB**: `ncol()` sont des fonctions génériques dont le seul argument est `x` (*cf* `?ncol`)
+**NB**: `ncol()` and `nrow()` are generic functions where the only argument is `x` (*see* `?ncol`).
 
 ```{r ncolnrow, exercise=TRUE, exercise.setup="show", exercise.lines=15}
 setMethod("ncol", 
@@ -309,11 +315,11 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-### Définition de summary()
+### Defining summary()
 
 <div class="exo">
 
-Définissez la méthode générique `summary()` qui permet d'afficher un résumé numérique d'un objet. La méthode `summary()` attend 'objet' comme argument (`?summary`). Ici la méthode devra renvoyer la moyenne des colonnes de l'attribut 'expression_matrix'.
+Define the generic method `summary()` that displays a numeric summary of an object. The `summary()` method expects 'object' as an argument (`?summary`). Here, the method should return the mean of the columns of the 'expression_matrix' attribute.
 
 ```{r summary, exercise=TRUE, exercise.setup="show", exercise.lines=15}
 
@@ -339,11 +345,11 @@ gradethis::grade_result_strict(
 </div>
 
 
-## Créer de nouvelles méthodes génériques
+## Creating New Generic Methods
 
-### Méthode générique 'author()'
+### Generic Method 'author()'
 
-Il est possible de créer de nouvelles méthodes non prédéfinies. Dans ce cas il faut tout d'abord créer une méthode générique puis la définir pour l'objet ciblé (ici 'single_cell'). Par exemple, ici on crée la fonction `author()`qui renvoit le nom de l'expérimentateur (si il est défini).
+It is possible to create new, user-defined methods. In this case, you first need to create a generic method and then define it for the targeted object (here, 'single_cell'). For example, here we create the `author()` function, which returns the name of the experimenter (if it is defined).
 
 ```{r newgeneric, exercise=TRUE, exercise.setup="show", exercise.lines=15}
 setGeneric("author", function(object) {
@@ -362,12 +368,11 @@ setMethod("author",
 )
 ```
 
-### Méthode générique 'gene_name()'
+### Generic Method 'gene_name()'
 
 <div class="exo">
 
-Définissez une nouvelle fonction `gene_name()` qui renvoie la liste des noms de gènes (gene_name) de l'attribut  'gene_information'.
-
+Define a new function `gene_name()` that returns the list of gene names (`gene_name`) from the 'gene_information' attribute.
 
 ```{r gene_name, exercise=TRUE, exercise.setup="show", exercise.lines=15}
 
@@ -393,11 +398,11 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-## On résume
+## Summary
 
-### Code complet pour la classe
+### Complete Code for the Class
 
-Pour résumer, le code suivant nous permet de créer un classe single_cell et des méthodes associées. 
+To summarize, the following code allows us to create a `single_cell` class and its associated methods.
 
 ```{r summarize_all, exercise=TRUE, exercise.lines=90}
 # Définir la classe S4 "single_cell"
@@ -411,7 +416,7 @@ setClass(
   )
 )
 
-  # Créer un constructeur pour la classe "single_cell"
+# Create a constructor for the "single_cell" class
 setMethod("initialize", 
           signature(.Object = "single_cell"),
   function(.Object, 
@@ -431,7 +436,7 @@ setMethod("initialize",
   }
 )
 
-# Définissons la méthode générique `show()`
+# Define the generic method `show()`
 setMethod("show", 
           signature(object = "single_cell"),
   function(object) {
@@ -486,11 +491,9 @@ setMethod("gene_name",
   }
 )
 
-
 ```
 
-### C'est fini
+## End of the section
 
-Merci d'avoir suivi ce tutoriel.
-
+Thank you for following this tutorial.
 

@@ -1,0 +1,252 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "Conversions"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+## Conversion Functions
+
+### Principle and Dedicated Functions
+
+In some cases, an object can be converted into another type. These conversions (also known as coercion or *cast*) allow you to **change the format** of an object to pass it to a function that would otherwise **not be compatible with its original format**. The functions used for this purpose generally have the prefix "as.". As you can see from the following command, there are many such functions.
+
+Here are some examples:
+
+- `as.factor()` : to convert to a factor.
+- `as.data.frame()` : to convert to a data.frame.
+- `as.matrix()` : to convert to a matrix.
+- `as.list()` : to convert to a list.
+- `as.numeric()` : to convert to a numeric vector.
+- `as.character()` : to convert to a character vector.
+
+```{r convertion, exercise=TRUE}
+apropos("^as\\.")
+```
+
+Additionally, there are conversion functions that do not start with the prefix "as.", such as `unlist()`, which transforms a list into a vector.
+
+```{r unlist, exercise=TRUE}
+my_list <- list(A=1:5, B=letters[1:5])
+unlist(my_list)
+```
+
+### Convert to Modify a Result
+
+This exercise aims to demonstrate one of the key advantages of conversion. This is one of R's strengths. Some **functions are polymorphic**, meaning their behavior **depends on the type of argument provided to the function**.
+
+<div class="exo">
+
+- Given the following matrix. Use the `boxplot()` function on the matrix and on the matrix converted to a vector (`as.vector()`).
+
+```{r boxplotas, exercise=TRUE}
+set.seed(456)
+mat <- matrix(c(rnorm(n=20, mean=5, sd=2),
+                rnorm(n=20, mean=3, sd=1),
+                rnorm(n=20, mean=2, sd=2)),
+                ncol=3, byrow = FALSE)
+         
+```
+
+```{r boxplotas-solution}
+boxplot(mat)
+boxplot(as.vector(mat))
+```
+</div>
+
+```{r quizz_1, echo=FALSE }
+learnr::question("What do you observe",
+  answer("The function behaves differently depending on the argument passed to it.", correct = TRUE),
+  answer("The `boxplot()` function behaves differently depending on the argument it returns."),
+  answer("If you pass a vector to the `boxplot()` function, it produces multiple boxplots."),
+  answer("If you pass a vector to the `boxplot()` function, it produces a single boxplot.", correct = TRUE),
+  answer("If you pass a matrix to the `boxplot()` function, it produces multiple boxplots.", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+
+```{r quizz_2, echo=FALSE }
+learnr::question("What is the benefit of this behavior?",
+  answer("Avoiding the need to multiply functions.", correct = TRUE),
+  answer("There is none."),
+  answer("Easily changing the result by modifying the type of the input object.", correct = TRUE),
+  answer("Making the code more complicated."),
+  answer("Making the language easier to learn.", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+
+<div class="exo">
+
+- Given the same matrix, apply the `plot()` function on:
+
+  - the matrix $mat$ passed as the sole argument.
+  - the first column of $mat$ passed as the sole argument (drop=TRUE).
+  - the first column of $mat$ passed as the first argument and the second column of $mat$ passed as the second argument.
+
+```{r plotas_2, exercise=TRUE, exercise.setup="boxplotas"}
+
+```
+
+```{r plotas_2-solution}
+plot(mat)
+plot(mat[, 1])
+plot(mat[, 1], mat[, 2])
+```
+</div>
+
+
+```{r quizz_3, echo=FALSE }
+learnr::question("What is R's behavior when using the `plot()` function?",
+  answer("If the first argument is a matrix, R randomly represents two columns of the matrix?"),
+  answer("If the inputs are two vectors a and b, R displays for each position $i$ $a_{i}$ *versus* $b_{i}$.", correct = TRUE),
+  answer("If the first argument is a vector, R randomly displays the values of the vector."),
+  answer("If the first argument is a matrix, R represents column 1 on the x-axis *versus* column 2 on the y-axis.", correct = TRUE),
+  answer("If the first argument is a vector (and the y argument is not provided), R displays the position in the vector on the x-axis and the corresponding value on the y-axis.", correct = TRUE),
+  answer("If the first argument is a matrix, R displays the position in the vector on the x-axis and the corresponding column on the y-axis."),
+  allow_retry = TRUE 
+)
+```
+
+
+### End of the section
+
+Thank you for following this tutorial.
+

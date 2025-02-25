@@ -1,0 +1,490 @@
+---
+title: "Functions: exercises"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+
+## Writing Your Own Functions
+
+In the field of data analysis, functions play a crucial role. This section is dedicated to exploring how to write functions in R.
+
+The main goal of writing functions in R is to improve the efficiency, maintainability, and clarity of your code. Here are the primary objectives:
+
+1. **Modularity**: Functions allow you to break your code into smaller, more manageable parts. Each function focuses on a specific task, which makes the code easier to understand and maintain.
+
+2. **Reusability**: Once created, functions can be reused in different parts of your analysis or even in future projects. This reduces redundant code and promotes consistency.
+
+3. **Readability**: Functions with clear names and proper documentation serve as self-contained units that enhance the overall readability of your code.
+
+4. **Efficiency**: By isolating specific operations into functions, you can optimize code execution and avoid redundant calculations.
+
+## Prototype for Writing a Function
+
+Here is the typical prototype for creating a function in R:
+
+```{r, eval=FALSE}
+function_name <- function(argument1, argument2, ...) {
+  # Start of the function body
+  
+  instruction 1 that uses (or not) argument1, argument2, or...
+  instruction 2 that uses (or not) argument1, argument2, or...
+  ...
+  
+  return(result)
+  # End of the function body
+}
+```
+
+Explanations:
+
+- **function_name**: Replace this with the name you want to give to your function.
+
+- **argument1, argument2, ...**: These are the arguments that your function accepts as input. You can have zero or more arguments. Specify them by separating them with commas. You can also give them default values (e.g., argument1=NULL, argument2=10...).
+
+- **The function body**: This is where you place the code that performs the desired task. This code will use the variables argument1, argument2, (...).
+
+- **return(result)**: Use the `return()` function to send the result back to the user. The result can be a single value or a list of values. If it's a list, you should return a list in the form: `list(result1, result2...)`.
+
+## What does 'return a result' mean?
+
+When a function "returns a result," it means that **the result can be assigned to an object** (below `an_object`).
+
+```{r eval=FALSE}
+an_object <- a_function_returning_a_value(arguments)
+```
+
+Only functions that contain a `return()` in their definition (i.e., in the function body) allow returning a result. A function that cannot return a result returns `NULL` by default. This is the case, for example, with `cat()`, which prints a message to the screen or a file. It is not designed to return a result (`cat()` does not contain a `return()` function). So, below, even though `cat()` printed 'toto' on the screen, the value of `an_object` is `NULL`.
+
+```{r }
+an_object <- cat("toto\n")
+print(an_object)
+```
+
+## Example: Centering a Variable
+
+**Wikipedia:** "Centering a variable involves subtracting its mean from each of its original values, that is, subtracting the mean from each data point (this is called centering). It is simply a change of origin, placing the mean of the distribution at the zero point on the x-axis. [...] A centered variable has a mean of zero."
+
+This results in data that are independent of the chosen unit or scale. This operation is very useful in statistical analysis where you are dealing with variables that have very different scales.
+
+We would like to create a function that allows centering a given vector. We will implement the function as follows:
+
+```{r centering, exercise=TRUE}
+centering <- function(x){return(x - mean(x))}
+```
+
+```{r q1, echo=FALSE }
+learnr::question("Does the function `centering()` return a value?",
+  answer("No."),
+  answer("Yes.", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+
+<div class="exo">
+
+- Calculate the mean of x and store it in the object `mean_x_before`.
+- Print x.
+- Use the `centering()` function to center the variable `x` (overwrite the variable x).
+- Print x. Have the values of x changed?
+- Check if the variable is centered by calculating the mean and storing it in the object `mean_x_after`.
+
+
+```{r exocentering, exercise=TRUE , exercise.setup="centering"}
+set.seed(123)
+x <- rnorm(20, mean=10)
+```
+
+```{r exocentering-solution}
+set.seed(123)
+x <- rnorm(20, mean=10)
+print(x)
+mean_x_before <- mean(x)
+x <- centering(x)
+print(x)
+mean_x_after <- mean(x)
+```
+
+```{r exocentering-check }
+gradethis::grade_result_strict(
+  pass_if(~ round(mean_x_before, 1) == 10.1),
+  pass_if(~ round(mean_x_after, 1) == 0)
+)
+```
+</div>
+
+## Adding Arguments
+
+### Trimming the Mean
+
+One issue with the mean is that it is sensitive to extreme values. We could therefore choose to center the data by calculating a trimmed mean. Luckily, the `mean()` function in R has an argument dedicated to this.
+
+Below, we declare that for our `centering()` function, there is a new argument `mean_trim`, and its default value (*i.e.*, if not specified) is 0 (we use all values to calculate the mean).
+
+```{r trimmedmean, exercise=TRUE}
+centering <- function(x, mean_trim=0){return(x - mean(x, trim=mean_trim))}
+```
+
+<div class="exo">
+
+- Calculate the mean of x and store it in the object `mean_x_before`.
+- Print x.
+- Use the `centering()` function with `mean_trim=0.2` to center the variable `x` (overwrite the variable x).
+- Print x. Have the values of x changed?
+- Check if the variable is centered by calculating the mean and storing it in the object `mean_x_after`.
+
+```{r exocenteringtrim, exercise=TRUE , exercise.setup="trimmedmean"}
+set.seed(123)
+x <- c(rnorm(20, mean=10), 1000)
+```
+
+```{r exocenteringtrim-solution}
+set.seed(123)
+x <- c(rnorm(20, mean=10), 1000)
+print(x)
+mean_x_before <- mean(x)
+x <- centering(x, mean_trim=0.2)
+print(x)
+mean_x_after <- mean(x)
+```
+
+```{r exocenteringtrim-check }
+gradethis::grade_result(
+  pass_if(~ round(mean_x_before, 0) == 57),
+  pass_if(~ round(mean_x_after, 0) == 47)
+)
+```
+</div>
+
+
+```{r q2, echo=FALSE }
+learnr::question("Check the correct statements below:",
+  answer("The majority of values of x are close to 0 after centering.", correct = TRUE),
+  answer("The mean of x is zero (or close to zero) after centering.", correct = FALSE),
+  answer("The mean of x is rather close to 47 after centering.", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+
+## Testing Argument Values
+
+Although we can center by using the mean or the trimmed mean, it is possible to center a variable by subtracting the median. Indeed, the median is less sensitive to extreme values, and can therefore be considered a **robust** estimator of [**position**](https://fr.wikipedia.org/wiki/Indicateur_de_position).
+
+We could thus add an argument `centering_method` that would take the values "mean" or "median". If "mean" is chosen, the `mean()` function is called, and the mean is subtracted. Otherwise, the `median()` function is called, and the median is subtracted.
+
+One problem is that we need to ensure the user chooses correctly between "mean" or "median". In R, the principle is to directly offer the possible values in the function declaration and retrieve the user's selected value using `match.arg()`. Additionally, `match.arg()` will raise an error if the value of `centering_method` is neither "mean" nor "median". Furthermore, if the user does not specify `centering_method`, the first value in the vector `c("mean", "median")` will be used by default.
+
+
+```{r centeringmediane, exercise=TRUE }
+centering <- function(x, 
+                      centering_method=c("mean", "median"),
+                      mean_trim=0
+                      ){
+  
+  centering_method <- match.arg(centering_method)
+  
+  if(centering_method == "mean"){
+    return(x - mean(x, trim=mean_trim))
+  }else{
+    return(x - median(x))
+  }
+}
+    
+```
+
+
+## Exercises
+
+### Standardized Variable
+
+<div class="exo">
+
+**Wikipedia:** In probability theory and statistics, a **standardized variable** is the transformed version of a random variable by an affine transformation, such that **its mean is zero** and **its standard deviation is one**.
+
+The general method for calculating for a vector *v* consists of: 
+(i) calculating the mean of *v*, 
+(ii) subtracting the mean from each element of *v*, then, after subtracting the mean, 
+(iii) calculating the standard deviation, and 
+(iv) dividing each of the centered values by the standard deviation.
+
+In Anglo-Saxon countries, the term *standardization* is commonly used, and in some contexts, this transformation is referred to as the *z-score*.
+
+$$z = \frac{x - \bar{x}}{\sigma}$$
+
+With $x$ as the vector, $\bar{x} = \text{average}(x)$ is the mean of the vector, and $\sigma$ is the standard deviation.
+
+A standardized variable has:
+
+- A mean of zero;
+- A variance of 1;
+- A standard deviation of 1.
+
+Thus, we obtain:
+
+- Data independent of the chosen unit or scale;
+- Variables with the same mean and dispersion.
+
+This makes it easier to compare variations. Standardizing variables is very useful in data analysis. It is equivalent to a change of unit and has no impact on variation profiles. The correlation coefficients between standardized variables remain the same as they were before the centering and scaling operation.
+
+**Implement a `standardization()` function that centers and scales a variable.**
+
+- The function should have a `centering_method` argument (see previous exercises).
+- The function should have a `disp_method` argument. This argument will control how the dispersion is calculated: "sd" for standard deviation (using `sd()`), "mad" for median absolute deviation (using `mad()`), or "iqr" for interquartile range (using `IQR()`).
+
+
+```{r exoreduction, exercise=TRUE , exercise.setup="centeringmediane", exercise.lines=30}
+# To be modified and completed
+standardization <- function(x, 
+                      centering_method=c("mean", "median"),
+                      mean_trim=0
+                      ){
+  
+  centering_method <- match.arg(centering_method)
+  
+  if(centering_method == "mean"){
+    return(x - mean(x, trim=mean_trim))
+  }else{
+    return(x - median(x))
+  }
+}
+
+```
+
+```{r exoreduction-solution}
+standardization <- function(x, 
+                      centering_method=c("mean", "median"),
+                      disp_method=c("sd", "mad", "iqr"),
+                      mean_trim=0
+                      ){
+  
+  centering_method <- match.arg(centering_method)
+  disp_method <- match.arg(disp_method)
+  
+  if(centering_method == "mean"){
+    x <- x - mean(x, trim=mean_trim)
+  }else{
+    x <- x - median(x)
+  }
+  
+  if(disp_method == "sd"){
+    x <- x / sd(x)
+  }else if(disp_method == "mad") {
+    x <- x / mad(x)
+  }else{
+    x <- x / IQR(x)
+  }
+  return(x)
+}
+```
+
+```{r exoreduction-check }
+gradethis::grade_result_strict(
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="mean")), 0) == 0),
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="median")), 0) == 1),
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="median", disp_method="iqr")), 1) == 0.4),
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="median", disp_method="mad")), 1) == 0.5),  
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="median", disp_method="sd")), 1) == 0.5),
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="mean", disp_method="iqr")), 1) == 0),
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="mean", disp_method="mad")), 1) == 0),  
+  pass_if(~ round(sum(standardization(x=c(10, 34, 26, 12), centering_method="mean", disp_method="sd")), 1) == 0)
+)
+```
+</div>
+
+
+
+<div class="exo">
+
+- Given the `standardization()` function developed earlier, evaluate its effect on the columns of the `iris` matrix using the `boxplot` function. Test several parameters for the `standardization()` function.
+
+```{r standardization, echo=FALSE}
+standardization <- function(x, 
+                      centering_method=c("mean", "median"),
+                      disp_method=c("sd", "mad", "iqr"),
+                      mean_trim=0
+                      ){
+  
+  centering_method <- match.arg(centering_method)
+  disp_method <- match.arg(disp_method)
+  
+  if(centering_method == "mean"){
+    x <- x - mean(x, trim=mean_trim)
+  }else{
+    x <- x - median(x)
+  }
+  
+  if(disp_method == "sd"){
+    x <- x / sd(x)
+  }else if(disp_method == "mad") {
+    x <- x / mad(x)
+  }else{
+    x <- x / IQR(x)
+  }
+  return(x)
+}
+```
+
+
+
+```{r exofinal, exercise=TRUE , exercise.setup="standardization"}
+data(iris)
+iris <- iris[, 1:4]
+boxplot(iris, horizontal=TRUE, las=1)
+iris_std <- apply(iris, 2, standardization, centering_method="mean", disp_method="sd")
+boxplot(iris_std, horizontal=TRUE, las=1)
+```
+
+```{r exofinal-solution}
+par(mfrow=c(2,3))
+data(iris)
+iris <- iris[, 1:4]
+boxplot(iris, horizontal=TRUE, las=1)
+iris_std <- apply(iris, 2, standardization, centering_method="mean", disp_method="sd")
+boxplot(iris_std, horizontal=TRUE, las=1, main="mean(x) / sd(x)")
+iris_std <- apply(iris, 2, standardization, centering_method="mean", disp_method="mad")
+boxplot(iris_std, horizontal=TRUE, las=1,  main="mean(x) / mad(x)")
+iris_std <- apply(iris, 2, standardization, centering_method="mean", disp_method="iqr")
+boxplot(iris_std, horizontal=TRUE, las=1,  main="mean(x) / iqr(x)")
+iris_std <- apply(iris, 2, standardization, centering_method="median", disp_method="mad")
+boxplot(iris_std, horizontal=TRUE, las=1, main="median(x) / mad(x)")
+iris_std <- apply(iris, 2, standardization, centering_method="median", disp_method="iqr")
+boxplot(iris_std, horizontal=TRUE, las=1,  main="median(x) / iqr(x)")
+
+```
+
+</div>
+
+
+### End of the section
+
+Thank you for following this tutorial.
+

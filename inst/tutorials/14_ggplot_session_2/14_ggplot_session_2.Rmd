@@ -1,0 +1,497 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "The ggplot2 library (session 2)"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+## Histograms
+
+### Simple Histograms
+
+Analyzing **distributions** is **a crucial step in data exploration** and understanding the characteristics of a dataset. With ggplot2, we can easily create plots such as **histograms, density plots, boxplots, or violin plots** to analyze distributions.
+
+To create a histogram for the "price" variable in the "diamonds" dataset, we use the `geom_histogram()` function. For a histogram, the x-axis represents intervals (*bins*), and the y-axis represents the count of observations within these intervals. Therefore, only one variable needs to be provided to the `aes()` function.
+
+```{r histogram, exercise=TRUE}
+library(ggplot2)
+data(diamonds)
+
+ggplot(data = diamonds, aes(x = price)) + geom_histogram()
+
+```
+
+We can slightly improve this histogram by changing the labels (e.g title and axis names) and the colors of the bars.
+
+```{r histogram_2, exercise=TRUE, exercise.setup="histogram"}
+
+ggplot(data = diamonds, aes(x = price)) + 
+  geom_histogram(color = "black", 
+                 fill = "lightblue") +
+  labs(title = "Histogramme de Price",
+       x = "Prix",
+       y = "Fréquence")
+
+```
+
+<div class="exo">
+
+- The key parameter of a histogram is the interval size. Here, in the `geom_histogram` function, it is controlled by the `binwidth` argument (interval size) or `bins` (number of intervals). Create histograms with interval sizes of \$250, \$500, \$1000, and \$10000.
+
+```{r bins, exercise=TRUE, exercise.setup="histogram"}
+ggplot(data = diamonds, aes(x = price)) +
+  geom_histogram(binwidth = 1000)
+```
+
+```{r bins-solution}
+ggplot(data = diamonds, aes(x = price)) +
+  geom_histogram(binwidth = 250, color = "black", fill = "lightblue")
+ggplot(data = diamonds, aes(x = price)) +
+  geom_histogram(binwidth = 500, color = "black", fill = "lightblue")
+ggplot(data = diamonds, aes(x = price)) +
+  geom_histogram(binwidth = 1000, color = "black", fill = "lightblue")
+ggplot(data = diamonds, aes(x = price)) +
+  geom_histogram(binwidth = 10000, color = "black", fill = "lightblue")
+```
+</div>
+
+
+### Overlapping Histograms
+
+In the context of `geom_point()`, the **geometry is a point**, and a variable can be associated with the color of the points. For a **histogram**, it is the same concept, except the **geometry is a histogram**. If we use `cut` for the color, we will obtain histograms with different colors.
+
+<div class="exo">
+
+- Complete the following code ("___") so that the coloring of the bar (`fill`) is associated with the quality of the `cut` column (the quality of the cut) of the diamond dataset. 
+
+
+```{r histocut, exercise=TRUE , exercise.setup="histogram"}
+col_palette <- c("Ideal" = "#A22200", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+
+p <- ggplot(data = diamonds, aes(x = price, ___)) +
+            geom_histogram(binwidth = 1000, 
+                           color = "white") +
+            scale_fill_manual(values=col_palette)
+print(p)
+```
+
+```{r histocut-solution}
+col_palette <- c("Ideal" = "#A22200", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+
+p <- ggplot(data = diamonds, aes(x = price, 
+                                 fill=cut)) +
+            geom_histogram(binwidth = 1000, 
+                           color = "white") +
+            scale_fill_manual(values=col_palette)
+print(p)
+```
+
+```{r histocut-check}
+gradethis::grade_result_strict(
+  pass_if(~ any(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$fill)) != c("#21908CFF", "#3B528BFF", "#440154FF", "#5DC863FF", "#FDE725FF")) == TRUE)
+)
+```
+</div>
+
+**Here we see the limitation of the histogram for visualizing distributions**. In this case, another solution to analyze price distributions is to use density analysis. Later, we will also see that it is possible to create histogram panels (facets).
+
+## Density Profiles
+
+The density plot is another way to visualize the distribution of values in a numeric variable. It can be created using the `geom_density()` function. The `geom_density()` function displays a distribution model that aims to closely fit the histogram data. 
+
+```{r adjust, exercise=TRUE, exercise.setup="histogram"}
+ggplot(data = diamonds, aes(x = price)) + geom_density()
+```
+
+<div class="exo">
+
+- The `geom_density()` displays a distribution model. The `adjust` parameter controls the way the curve is adjusted to the data. It can significantly influence the representation. Depending on the value of `adjust`, the model may tend to be over- or under-fitted.
+ Recreate the previous density plot using the following values for `adjust`: 1, 3/4, 1/2, 1/4, and 1/8.
+
+
+```{r vardens, exercise=TRUE, exercise.setup="histogram"}
+ggplot(data = diamonds, aes(x = price)) + geom_density(adjust = ___)
+```
+
+```{r vardens-solution}
+ggplot(data = diamonds, aes(x = price)) + geom_density(adjust = 1)
+ggplot(data = diamonds, aes(x = price)) + geom_density(adjust = 3/4)
+ggplot(data = diamonds, aes(x = price)) + geom_density(adjust = 1/2)
+ggplot(data = diamonds, aes(x = price)) + geom_density(adjust = 1/4)
+ggplot(data = diamonds, aes(x = price)) + geom_density(adjust = 1/8)
+```
+
+</div>
+
+<div class="exo">
+
+- Complete the code to produce a plot where the densities for the different cuts (`cut`) are represented with a specific border color for each. Apply your own colors.
+
+```{r vardens_2, exercise=TRUE, exercise.setup="histogram"}
+color_palette <- c("Ideal" = ___, 
+                   "Premium" = ___, 
+                   "Very Good" = ___, 
+                   "Good" = ___, 
+                   "Fair" = ___)
+
+p <- ggplot(data = diamonds, aes(x = price, ___ )) + 
+  geom_density(adjust = 1/2, linewidth=0.5) +
+  scale_color_manual(values=color_palette)
+
+print(p)
+```
+
+```{r vardens_2-solution}
+color_palette <- c("Ideal" = "#A22200", 
+                   "Premium" = "#0871A4", 
+                   "Very Good" = "#00B850", 
+                   "Good" = "#226666", 
+                   "Fair" = "#FF8900")
+
+p <- ggplot(data = diamonds, aes(x = price, color=cut )) + 
+  geom_density(adjust = 1/2, linewidth=0.5) +
+  scale_color_manual(values=color_palette)
+  
+print(p)
+```
+
+```{r vardens_2-check}
+
+gradethis::grade_result_strict(
+  pass_if(~ any(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$colour)) != c("#21908CFF", "#3B528BFF", "#440154FF", "#5DC863FF", "#FDE725FF")) == TRUE)
+)
+```
+
+</div>
+
+## Boxplots and Violin Plots
+
+Boxplots (**boxplots**) and violin plots (**violin plots**) can be used to represent distributions associated with a dataset. Below are some examples.
+
+As always, to create our plot we will first:
+
+- *(i)* Associate data (data.frame or tibble) with an object (`data=diamonds`).
+- *(ii)* Define **the variables/columns of the data.frame to analyze** and pass them to the **aes()** function.
+
+For a **boxplot** or **violin plot**, the **aesthetic variables** accepted are generally the same as for **geom_points**. However, a key difference is that the *x* variable must be a factor (indicating the names of the boxes on the *x* axis) and the *y* variable must be numeric (the values taken by each category).
+
+```{r firstgg2, exercise=TRUE , exercise.setup="histogram" }
+ggplot(data=diamonds, aes(x=cut, y=price)) + geom_boxplot()
+```
+
+<div class="exo">
+
+- Since `geom_boxplot()` and `geom_violin()` share the same aesthetic elements, complete the following code. This code creates a violin plot where the colors of the violins correspond to the cut type (`cut`).
+
+```{r violin, exercise=TRUE , exercise.setup="histogram" }
+col_palette <- c("Ideal" = "#A222A0", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=___)) + 
+  geom_violin(color=___) +
+  scale_fill_manual(values=___)
+
+print(p)
+```
+
+```{r violin-solution}
+col_palette <- c("Ideal" = "#A222A0", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) + 
+  geom_violin(color="black") +
+  scale_fill_manual(values=col_palette)
+
+print(p)
+```
+
+```{r violin-check}
+
+gradethis::grade_result_strict(
+  pass_if(~ p$labels$x == "cut"),
+  pass_if(~ p$labels$y == "price"),
+  pass_if(~ p$labels$fill == "cut"),
+  pass_if(~ any(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$fill)) != c("#21908CFF", "#3B528BFF", "#440154FF", "#5DC863FF", "#FDE725FF"))),
+  pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomViolin")  
+)
+```
+
+</div>
+
+## Overlaying Graphical Elements
+
+### Example with the Violin Plot
+
+The underlying ggplot model allows for relatively easy layering of graphical elements.
+
+Consider the previous plot, $p$, created with the `geom_violin()` geometry.
+
+
+```{r violinprepare, exercise=TRUE, exercise.setup="histogram" }
+library(ggplot2)
+data(diamonds)
+col_palette <- c("Ideal" = "#A22200", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut))  +
+  geom_violin(color="black") +
+  scale_fill_manual(values=col_palette)
+
+p
+```
+
+You might want to visualize the points that were used to construct the violin model. One might think to simply add a `geom_points()` geometry. Nothing could be easier: just add a `geom_point()` layer using the addition operator (`+`). The aesthetics are inherited, so `x=cut` and `y=price` are naturally passed to `geom_point()`. One issue is that the points are aligned vertically...
+
+```{r violinvspoints, exercise=TRUE, exercise.setup="violinprepare"}
+col_palette <- c("Ideal" = "#A22200", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+
+ p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) +
+        geom_violin(color="black") +
+        scale_fill_manual(values=col_palette) + 
+        geom_point()
+p
+```
+
+This can be resolved by using `geom_jitter()` (instead of `geom_point()`), which adds **a bit of noise to the x-axis and y-axis**. As we only wants some "jittering" on the x axis we will indicate `height=0` (*i.e* no jittering on the y-axis).
+
+```{r violinvsjitter, exercise=TRUE, exercise.setup="violinprepare"}
+col_palette <- c("Ideal" = "#A22200", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) +
+  geom_violin(color="black") +
+  scale_fill_manual(values=col_palette) +
+  geom_jitter(height=0)
+
+p
+```
+
+This is not ideal here because we have many points in each class. Instead, we can reverse the layers.
+
+```{r violinvsjitter_2, exercise=TRUE, exercise.setup="violinprepare"}
+col_palette <- c("Ideal" = "#A22200", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) + 
+  geom_jitter(height=0) +
+  geom_violin(color="black") +
+  scale_fill_manual(values=col_palette)
+
+p
+```
+
+<div class="exo">
+
+- Complete the previous code so that the points have the same color as the violins.
+
+```{r violinjittercol, exercise=TRUE , exercise.setup="violinprepare"}
+col_palette <- c("Ideal" = "#A22200", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut, ___)) +
+    geom_jitter(height=0) +
+    geom_violin(color="black") +
+    scale_fill_manual(values=col_palette) +
+    ___
+p
+```
+
+```{r violinjittercol-solution}
+col_palette <- c("Ideal" = "#A22200", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut, color=cut))  +
+     geom_jitter(height=0) +
+     geom_violin(color="black") +
+     scale_fill_manual(values=col_palette) +
+     scale_color_manual(values=col_palette)
+
+p
+```
+
+```{r violinjittercol-check}
+
+gradethis::grade_result_strict(
+  pass_if(~ p$labels$x == "cut"),
+  pass_if(~ p$labels$y == "price"),
+  pass_if(~ p$labels$fill == "cut"),
+  pass_if(~ all(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$colour)) == sort(unique(ggplot2::ggplot_build(p)$data[[1]]$fill)))),
+  pass_if(~ class(p$layers[[2]]$geom)[1] == "GeomViolin" ), 
+  pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomPoint" ) 
+)
+```
+
+</div>
+
+
+### End of the section
+
+Thank you for following this tutorial.

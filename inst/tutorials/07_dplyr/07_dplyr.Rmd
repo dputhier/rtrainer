@@ -1,0 +1,237 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "Manipulating data.frames with the dplyr library"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+## Overview of Pipes (|>)
+
+Pipes allow function calls to be chained together, making the code more readable. It can be read as a sequence of steps in which the result of the preceding function is sent, implicitly, to the first argument of the following function:
+
+```{r example_pipe, exercise=TRUE}
+rnorm(100, mean=10) |> 
+  mean() |> 
+  round(digit=2) |> 
+  as.character()
+```
+
+
+## The dplyr library
+
+The `dplyr` library is part of the tidyverse package. It is designed for fast, readable, and concise data manipulation. It simplifies common data manipulation tasks. It focuses on a set of function to make data transformations intuitive. The input to `dplyr` functions are always a `data.frame` (or `tibble` which is very close) and the output is always a `data.frame`. Functions (e.g. `select()`, `mutate()`, `filter()`) will typically receive the names of the columns (without quotes) to operate on.
+
+We will illustrate the use of dplyr with the iris dataset that provide various flower measurement over 3 species of iris. 
+
+```{r loadiris, exercise=TRUE,}
+library(dplyr)
+data(iris) 
+head(iris)
+```
+
+
+## The select() function
+
+Select a set of columns. This is an alternative to the indexing function.
+
+```{r select, exercise=TRUE, exercise.setup="loadiris"}
+iris |> 
+  select(Sepal.Length, Sepal.Width, Species) |> 
+  head()
+```
+
+Or `select()` a column that `matches` a regular expression (here something that ends with and "h"). 
+
+```{r match, exercise=TRUE, exercise.setup="select"}
+iris |> 
+  select(matches("h$")) |> 
+  head()
+```
+
+## The filter() function
+
+Select a set of rows. This is an alternative to the indexing function.
+
+```{r filter, exercise=TRUE, exercise.setup="select"}
+iris |> 
+  filter(Sepal.Length > 6 & Sepal.Width > 3.5)
+```
+
+## The mutate() function
+
+This allow to create new columns that are functions of existing variables/columns:
+
+```{r mutate, exercise=TRUE, exercise.setup="select"}
+iris |> 
+  select(matches("al")) |> 
+  mutate(Sepal.diff=Sepal.Length - Sepal.Width,
+         Petal.diff=Petal.Length - Petal.Width) |>
+  head()
+```
+
+
+## The summarise() function
+
+It can be viewed as an alternative to the apply (with MARGIN=2). It will return a data.frame after applying an operation over all rows of user-defined columns:
+
+```{r summarise, exercise=TRUE, exercise.setup="select"}
+iris |> summarise(mean.Sepal.Length=mean(Sepal.Length), 
+                  mean.Sepal.Width=mean(Sepal.Width))
+```
+
+## The groupby() function
+
+All this functions naturally combine with the `group_by()`function allowing to group rows by a set of categories. This may be particularly interesting to compute a statistic by category.
+
+```{r group_by, exercise=TRUE, exercise.setup="select"}
+iris |> 
+  group_by(Species) |> 
+  summarise(mean.Sepal.Length=mean(Sepal.Length), 
+            mean.Sepal.Width=mean(Sepal.Width))
+```
+
+## Note
+
+The `dplyr` library is quite a vast subject. We provide only a few basics in this tutorial. We encourage users to consult the [Data Transformation](https://r4ds.hadley.nz/data-transform) section of the “R for Data Science” book for more information.
+
+### End of the section
+
+Thank you for following this tutorial.
+

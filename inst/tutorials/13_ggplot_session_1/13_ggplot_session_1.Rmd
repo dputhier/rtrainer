@@ -1,0 +1,408 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "The ggplot2 library (session 1)"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+
+## The ggplot2 Library
+
+### Limitations of Basic Graphics in R   
+
+R provides **numerous graphical functions**, some of which we have encountered: `hist()`, `plot()`, and `barplot()`. However, **these basic graphical functions** suffer from several limitations: 
+
+- Their syntax/arguments are not standardized.
+- Modifying certain graphical parameters can be complex and unintuitive.
+- Although it is possible to overlay plots (e.g., `points()`, `abline()` on a diagram created with `plot()`), the number of combinations is limited.
+- Moreover, when performing descriptive statistics, we often want to **partition the graphical window** (*i.e.*, create **facets**) based on the levels of a categorical (*i.e.*, qualitative) or ordinal variable. Creating such graphics quickly becomes extremely complicated with the basic tools.
+
+### The ggplot Library
+
+To rethink the design of graphics in R, **Hadley Wickham** developed the **ggplot2** library, which has quickly become **popular and essential** in the world of bioinformatics and data analysis. This library is now considered **one of R's true strengths** compared to languages like **Python** or **Julia**.
+
+One of the unique aspects of the ggplot2 library is that its development is based on a model proposed by **Leland Wilkinson** in his book **The Grammar of Graphics**. This book offers insights into the components of graphics. According to **Leland Wilkinson**:
+
+- A graphic represents **a correspondence** between **data** and **aesthetic attributes (color, shape, size...) of geometric objects (points, lines, bars...)**.
+- The graphic can also include **data transformations** (*e.g.*, logarithmic scale) and is drawn in a specific **coordinate system** (*e.g.*, Cartesian or polar).
+- **Facets** can be used to generate the same graphic for **different subsets of the dataset**.
+
+It is the combination of these independent components that forms a graphic. In ggplot2, these different components are modeled **as layers** that can be **added** to one another using **the addition operator**. The success of ggplot2 has led many developers to produce **extensions**, creating an **extremely rich suite of graphical functions** today.
+
+
+```{r, echo=FALSE, fig.height=6, fig.width=6}
+library("png")
+path <- file.path(system.file(package="rtrainer"), "tutorials", 
+                  "13_ggplot_session_1", "img", "ggbasics.png")
+pp <- readPNG(path)
+plot.new() 
+rasterImage(pp,0,0,1,1)
+```
+
+You can find a ggplot2 cheatsheet as a complement to this course at [this address](https://thinkr.fr/pdf/ggplot2-french-cheatsheet.pdf).
+
+### The Dataset
+
+To start, we will use the "diamonds" dataset from the **ggplot2** library. The **diamonds** dataset contains various information about 54,000 diamonds. It is part of the `ggplot2` package. The following details are available:
+
+- Carat, size, color, clarity, depth, table, price, x, y, z
+
+```{r, echo=FALSE, fig.height=5}
+library("png")
+path <- file.path(system.file(package="rtrainer"), "tutorials", "13_ggplot_session_1", "img", "diamonds.png")
+pp <- readPNG(path)
+plot.new() 
+rasterImage(pp,0,0,1,1)
+```
+
+Let's load the dataset.
+
+```{r dataset, exercise=TRUE }
+## Load the ggplot2 library
+library(ggplot2)
+## Next, load the chickwts dataset
+data(diamonds)
+```
+
+The first lines of this dataset are the following :
+
+```{r head, exercise=TRUE, exercise.setup="dataset"}
+head(diamonds)
+```
+
+The types of the columns are the following.
+
+```{r type, exercise=TRUE, exercise.setup="dataset" }
+str(diamonds)
+```
+
+Note that the `diamonds` object could be a `data.frame`. In fact, it is a `tibble`, which is very close to a `data.frame`.
+
+```{r convert, exercise=TRUE, exercise.setup="dataset" }
+class(diamonds)
+```
+
+## Scatterplots
+
+There are more than 50 types of plots (geometries) available in `ggplot2`, and even more if we consider ggplot2 extensions.
+
+We will start with a simple scatterplot. To create our scatterplot, we will use the `geom_points()` geometry. This requires:
+
+- *(i)* **Data** in `data.frame` or `tibble` format.
+- *(ii)* **Associating this data** with a ggplot object (`ggplot(data=diamonds)`).
+- *(iii)* Defining **the columns of the dataframe to use and associate them with the aesthetics of a selected geometrical objects**.
+
+For a scatterplot (`geom_points()`), two aesthetics are mandatory: $x$ (x-axis) and $y$ (y-axis). The $x$ and $y$ variables are typically numeric. Here, we will associate the `carat` and `price` columns, both of which are numeric, to the `x`and `y`aesthetic using the `aes()` function.
+
+Then we apply the geometry using `+ geom_points()` which adds a layer to the diagram.
+
+```{r firstgg, exercise=TRUE , exercise.setup="convert" }
+# We create the plot by passing 
+# the data.frame (diamonds) and the result 
+# of the aes() function to ggplot. 
+# The aes() function associates column names 
+# with aesthetic elements.
+p <- ggplot(data=diamonds, aes(x=carat, y=price)) + geom_point()
+p
+```
+
+You can modify the aesthetics of the geometric shape (here, points) by passing arguments to the geometry function (here `geom_points()`).
+
+For the **geom_points** geometry, the following **aesthetics** are accepted:
+
+| **Aesthetic**  |                                   **Purpose**                                   |              **Value**              |
+|:--------------:|:-------------------------------------------------------------------------------:|:-----------------------------------:|
+|       x        |                                Values for the x-axis                           |         Numeric or factor           |
+|       y        |                                Values for the y-axis                           |         Numeric or factor           |
+|     alpha      |                                Opacity of points                               |         Numeric between 0 and 1     |
+| colour or color| Color of points or borders (if points have borders)                            |         A color                     |
+|      fill      | Filling, if the point has a fill                                               |         A color                     |
+|      shape     | Shapes of points                                                              |         An integer                  |
+|      size      | Sizes of points                                                               |         Numeric                     |
+|     stroke     | Border sizes                                                                  |         Numeric                     |
+|      ...       |                                                                               |                                     |
+
+For example, you can change the color and size of the points as follows:
+
+
+```{r gg2, exercise=TRUE , exercise.setup="convert" }
+p <- ggplot(data=diamonds, aes(x=carat, y=price)) + 
+       geom_point(size=2, colour="red")
+p
+```
+
+## Point Shapes (Aesthetic *shape*)
+
+The correspondences between point shapes and the numeric variables passed are shown below:
+
+
+```{r, echo=FALSE, fig.height=5}
+library("png")
+path <- file.path(system.file(package="rtrainer"), "tutorials", "13_ggplot_session_1", "img", "point.png")
+pp <- readPNG(path)
+plot.new() 
+rasterImage(pp,0,0,1,1)
+```
+
+Other point shapes are possible, for example, by using the [ggstar](https://cran.r-project.org/web/packages/ggstar/vignettes/ggstar.html) library:
+
+```{r, echo=FALSE, fig.height=5}
+library("png")
+path <- file.path(system.file(package="rtrainer"), "tutorials", "13_ggplot_session_1", "img", "ggstar.png")
+pp <- readPNG(path)
+plot.new() 
+rasterImage(pp,0,0,1,1)
+```
+
+More generally, any image can be used as a point (using [ggimage](https://yulab-smu.top/pkgdocs/ggimage.html)).
+
+<div class="exo">
+
+### Exercise
+
+- Using point shape 22 (`shape=22`), create a scatterplot (`geom_point()`) and color the interior and borders of the points with colors of your choice. Adjust the opacity to better visualize overlapping points.
+
+```{r colorgg2, exercise=TRUE , exercise.setup="convert"}
+colors()
+p <- ggplot(data=diamonds, aes(x=carat, y=price))
+```
+
+```{r colorgg2-solution}
+p <- ggplot(data=diamonds, aes(x=carat, y=price))
+p + geom_point(size=2, shape=22, fill="violet", color="darkviolet", alpha=0.3)
+```
+
+
+</div>
+
+
+## Point Colors (Aesthetics *colour* and *fill*)
+
+**Colors** play an **essential role in data visualization**, and R provides a **wide range of options to manipulate and use colors** in your plots and analyses.
+
+R has a convenient function called `colors()` that displays the names of the colors available in R. This function returns a vector containing the predefined color names. Here's an example to display some of these colors:
+
+
+```{r colors, exercise=TRUE}
+head(colors(), 20)
+```
+
+In addition to color names, it is common to represent colors using the **hexadecimal format**. In this format, each color is represented by a combination of **six hexadecimal digits**, corresponding to the **amount of red (R), green (G), and blue (B) in the color**. Each color has an intensity level between 00 (minimum) and FF (maximum). For example, green is represented by #00FF00, red by #FF0000, black by #000000, and white by #FFFFFF.
+
+In R, you can specify colors in hexadecimal format by simply using the # prefix followed by the appropriate hexadecimal combination. For example:
+
+```{r hexa, exercise=TRUE, exercise.setup="convert"}
+p <- ggplot(data=diamonds, aes(x=carat, y=price)) + 
+      geom_point(size=2, shape=22, fill="#7F00FF", color="#9400D3", alpha=0.3)
+p
+```
+
+## All 'Aesthetics' can be linked to variables
+
+The control of aesthetics in ggplot2 provides remarkable flexibility by allowing you to customize plots with **fixed values** as we have seen (*e.g.*, color, size, opacity) but also with **variables**. This unique feature enables dynamic and customized graphics based on your data. You can modify the color, size, shape (...) of points based on the values of a column. To do this, you **associate additional variables with aesthetics using the `aes()` function**.
+
+For example, we can use a variable like **`cut` to control the color of the points** and another variable **like `depth` to adjust their size**:
+
+```{r varasesthetics, exercise=TRUE, exercise.setup="convert"}
+p <- ggplot(data = diamonds, aes(x = carat, 
+                                 y = price, 
+                                 color = cut, 
+                                 size = depth)) +
+         geom_point(alpha=0.5)
+
+p
+```
+
+If you want to customize the colors, you can add a layer to the plot using the functions `scale_color_manual()` or `scale_fill_manual()` to manually define the colors for the `color` and `fill` aesthetics.
+
+<div class="exo">
+
+- Complete the following code to associate custom colors with the plot $p$:
+
+```{r colpoints, exercise=TRUE , exercise.setup="convert"}
+col_pal <- c("Ideal" = "#A22200", 
+             "Premium" = "#0871A4", 
+             "Very Good" = "#00B850", 
+             "Good" = "#226666", 
+             "Fair" = "#FF8900")
+
+p <- ggplot(data = diamonds, aes(x = carat, 
+                                 y = price, 
+                                 color = cut, 
+                                 size = depth)) +
+  geom_point(alpha=1, shape=16) +
+  scale_color_manual(values = ___)
+
+p
+```
+
+```{r colpoints-solution}
+col_pal <- c("Ideal" = "#A22200", 
+             "Premium" = "#0871A4", 
+             "Very Good" = "#00B850", 
+             "Good" = "#226666", 
+             "Fair" = "#FF8900")
+
+p <- ggplot(data = diamonds, aes(x = carat, 
+                                 y = price, 
+                                 color = cut, 
+                                 size = depth)) +
+  geom_point(alpha=1, shape=16) +
+ scale_color_manual(values = col_pal)
+
+p
+```
+
+```{r colpoints-check}
+ 
+gradethis::grade_result_strict(
+  pass_if(~ any(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$colour)) != c("#21908CFF", 
+                                                                             "#3B528BFF", 
+                                                                             "#440154FF", 
+                                                                             "#5DC863FF", "#FDE725FF")))
+)
+```
+
+</div>
+
+
+ggplot2 offers **great flexibility** in **controlling the aesthetics of your graphs**. You can use **fixed values** to create static graphs, but using **variables allows even more dynamic, data-driven customization**. 
+
+### End of the section
+
+Thank you for following this tutorial.

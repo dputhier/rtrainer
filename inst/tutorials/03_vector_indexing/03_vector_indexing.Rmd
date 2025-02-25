@@ -1,0 +1,510 @@
+---
+# theme
+# "bootstrap", "cerulean", "cosmo", "darkly", "flatly", "journal", "lumen", "paper", 
+# "readable", "sandstone", "simplex", "spacelab", "united", "yeti"
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+# Estimated time = 2h
+title: "Indexing vectors."
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+<!--  
+<img src="img/graph_with_r.jpeg"> 
+![](img/graph_with_r.jpeg)
+--> 
+
+## Indexing
+
+### Principle
+
+Indexing retrieves specific elements from an object using brackets `[]`.
+
+```
+# the_target_positions are the positions we wish to extract from 'my_vector' vector.
+my_vector[target_positions]
+```
+
+Here, target_positions can be:
+
+- A **vector of indices** (positions from 1 to the length of the vector).
+- A **logical vector** (of the size of the vector).
+- Named positions in the vector.
+
+We'll look at these different cases below.
+
+## Indexing vectors by position
+
+### Principle
+
+The indexing argument may be a set of numerical positions.
+
+**Note:** R uses **one-based** indexing, where the first position is 1 (unlike Python’s **zero-based **indexing, starting at 0).
+
+```{r vector12, exercise=TRUE}
+set.seed(123) 
+x <- sort(round(rnorm(10), digit=2), decreasing = T)
+x
+```
+
+Retrieving positions 1 to 5 can thus be written:
+
+```{r vector12_2, exercise=TRUE, exercise.setup="vector12" }
+x[1:5]
+```
+
+It's also possible to request all but certain positions (we use **-**).
+
+```{r vector13, exercise=TRUE, exercise.setup="vector12"}
+print(x[-c(1,3)])
+```
+
+### Exercise 
+
+<div class="exo">
+- Given the vector below, use the indexing operator and :
+  - Store position 6 of x in variable *a*.
+  - Store positions 5, 18 and 27 in variable *b*.
+  - After setting the random value generator to 123, randomly draw 10 positions of x without replacement and store the corresponding values in variable d.
+  
+```{r vector13a, exercise=TRUE}
+set.seed(123)
+x <- sort(sample(1:1000, size=100))
+```
+
+```{r vector13a-solution}
+set.seed(123)
+x <- sort(sample(1:1000, size=100))
+a <- x[6]
+b <- x[c(5, 18, 27)]
+set.seed(123)
+rnd_pos <- sample(1:length(x), size=10, replace=FALSE) 
+d <- x[rnd_pos]
+```
+
+```{r vector13a-check}
+gradethis::grade_result(
+  pass_if(~ a == 39),
+  pass_if(~ sum(b) == 411),
+  pass_if(~ sum(d) == 4854)
+)
+```
+</div>
+
+<div class="exo">
+```{r helpexo2, echo=FALSE}
+learnr::question("Given a vector `v` of unknown size, how can you retrieve the last element?",
+  answer("v[-1]"),
+  answer("v[size(v)]"),
+  answer("v[length(v)]", correct = TRUE),
+  answer("v[len(v)]"),
+  allow_retry = TRUE 
+)
+```
+</div>
+
+## Logical Indexing of Vectors
+
+### Principe
+
+The principle is to pass the indexing operator a logical vector of the same size as the vector. **Only true positions (TRUE) will be returned/selected**.
+
+```{r vector14, exercise=TRUE, exercise.setup="vector12"}
+print(x)
+```
+
+```{r vector14_1, exercise=TRUE, exercise.setup="vector14" }
+x > 0
+```
+
+```{r vector14_2, exercise=TRUE, exercise.setup="vector14"}
+x[x > 0]
+```
+
+Logical operators `&` and `|` can test vector positions based on another vector, especially when both are of the same size.
+
+### Example
+
+Imagine, for example, the x and y coordinates of 2D points. 
+
+
+```{r vector15, exercise=TRUE}
+set.seed(123)
+# We create normally distributed values 
+# on the x-axis.
+x <- rnorm(100)
+# Add a little noise to x
+# to create y.
+y <- x + rnorm(100, mean=0.3, sd=0.4)
+```
+
+One can visualize the result using the `plot()` function.
+
+```{r vector15a, exercise=TRUE, exercise.setup="vector15" }
+# plot() creates a scatterplot
+plot(x, y)
+# Add a vertical/horizontal grid
+grid()
+# Adds a vertical (argument v) line
+abline(v = 0, col="black")
+# Add a horizontal (argument h) line
+abline(h= 0, col="black")
+# Add a diagonal line
+# with equation y=x (intersect/a = 0, slope/b = 1)
+abline(a= 0, b=1, col="black")
+```
+
+Indexing allows you to highlight specific points, such as coloring positive `x` and `y` values. Use the `points()` function to overlay these points on an existing plot.
+
+```{r vector15b, exercise=TRUE, exercise.setup="vector15" }
+plot(x, y)
+grid()
+abline(v = 0, col="black")
+abline(h= 0, col="black")
+abline(a= 0, b=1, col="black")
+
+# What are the positive positions in x and y?
+pos <- x > 0 & y > 0
+# points() overlay points
+# to an existing diagram.
+# pch= point type
+# col= color
+points(x[pos], y[pos], pch=16, col="red")
+```
+
+### Exercise
+
+<div class="exo">
+Complete the code to display in red those points for which the x-values are greater than the y-values, and in blue those for which y is greater than x.
+
+```{r vector16, exercise=TRUE, eval=FALSE}
+set.seed(123)
+x <- rnorm(100)
+y <- x + rnorm(100, mean=0.1, sd=0.3)
+plot(x,y)
+grid()
+```
+
+```{r vector16-solution}
+set.seed(123)
+x <- rnorm(100)
+y <- x + rnorm(100, mean=0.1, sd=0.3)
+plot(x,y)
+grid()
+abline(v = 0, col="black")
+abline(h= 0, col="black")
+abline(a= 0, b=1, col="black")
+points(x[x > y], y[x > y], pch=16, col="red")
+points(x[x < y], y[x < y], pch=16, col="blue")
+```
+</div>
+
+<div class="exo">
+
+Complete the code to display in red all points within a circle centered at (0,0) with radius 1. Use Pythagoras' theorem: points should satisfy `sqrt(x^2 + y^2) <= 1` (sqrt() is the square root).
+
+<div class="hint">
+To raise to a power, use the `^` operator. For example, write `x ^ 2`.
+</div>
+
+```{r vector17, exercise=TRUE, eval=FALSE, fig.dim=c(5,5.5)}
+set.seed(123)
+x <- rnorm(100)
+y <- rnorm(100)
+plot(x,y)
+```
+
+```{r vector17-solution}
+set.seed(123)
+x <- rnorm(100)
+y <- rnorm(100)
+plot(x,y)
+grid()
+abline(v = 0, col="black")
+abline(h= 0, col="black")
+abline(a= 0, b=1, col="black")
+pos <- sqrt(x ^ 2 + y ^ 2) <= 1
+points(x[pos], y[pos], col="red", pch=16)
+```
+</div>
+
+## Indexing vectors by position names
+
+### Principle and examples
+
+
+Vector positions can be named and extracted by passing their names as a vector to the indexing operator `[]`. For example, a vector might store gene expression levels, with positions named after gene symbols.
+
+```{r vector18, exercise=TRUE}
+gene_expression <- c(2, 8, 5.6, 10, 2.7)
+names(gene_expression) <- c("CD3E", "CD4", "ZAP70", "PCNA", "BUB3")
+gene_expression
+```
+
+We can then naturally search for gene expression in the vector using the gene names passed in as a string vector.
+
+```{r vector19, exercise=TRUE, exercise.setup="vector18"}
+gene_expression[c("ZAP70", "CD3E", "CD4")]
+```
+
+
+###  Using regular expressions for indexing
+
+Consider the same vector.
+
+```{r vector19_1, exercise=TRUE, exercise.setup="vector18"}
+gene_expression
+```
+
+The `grep()` function searches for genes matching a **regular expression**, which defines patterns in character strings using a set of operators.
+
+
+|        Operator          |        Meaning                                                      |
+|------------------|---------------------------------------------------------------------------------------------|
+| .                | Any character (except 	\\n). |
+| [ABc]          | A choice. Here A, B or c. |
+| [a-z]          | A lower-case letter (or any interval, *e.g*: [u-w]).   |
+| [A-Z]          | An upper-case letter (or any interval, *e.g*: [A-W]).  |
+| [^ABab]   | A negation. Here any character but A, B, a or b.  |
+| x*               | 0 to n time the previous character (here "x").                                                              |
+| x+               | 1 to n time the previous character (here "x"). |
+| x{n,m}         | n to m time the previous character (here "x"). |
+| (foo\|bar)      | A character string or another (foo or bar).  |
+| \^             | The beginning of the line                                                                             |
+| \$               | The end of the line.                                                                               |
+| \\n | A newline.                       |
+| \\t | A  tabulation.             |
+| \\   | Escaping character (e.g \\. means "a dot" not "any character" as indicated in the first line of the table). |
+
+The grep() function returns positions matching a **regular expression**, e.g., genes whose names start (^) with "CD".
+
+```{r vector20, exercise=TRUE, exercise.setup="vector18"}
+pos <- grep(pattern = "^CD", x = names(gene_expression), perl = TRUE)
+pos
+```
+
+These positions can then simply be extracted
+
+```{r vector20_1, exercise=TRUE, exercise.setup="vector20"}
+gene_expression[pos]
+```
+
+**NB:** By default, `grep()` does not include certain regular expression operators. The use of the `perl = TRUE` argument below extends its capabilities to all operators. When in doubt, it is preferable to set this argument to TRUE.
+
+### Exercices
+
+<div class="exo">
+
+In the example below, extract the expression values for genes whose name **starts with 'CD' and ends with a numerical value** (store the results in a variable named `g_exp_sub`). Use the table above to construct the regular expression.
+
+```{r vector21, exercise=TRUE, eval=FALSE}
+gene_expression <- c(2, 8, 5.6, 10, 2.7, 4, 9, 12)
+names(gene_expression) <- c("CD3E", "CD4", "ZAP70", "PCNA", "BUB3", "CDC42BPA", "CDK11B", "CD52")
+```
+
+```{r vector21-solution}
+gene_expression <- c(2, 8, 5.6, 10, 2.7, 4, 9, 12)
+names(gene_expression) <- c("CD3E", "CD4", "ZAP70", "PCNA", "BUB3", "CDC42BPA", "CDK11B", "CD52")
+pos <- grep(pattern = "^CD.*[0-9]$", x = names(gene_expression), perl = TRUE)
+g_exp_sub <- gene_expression[pos]
+```
+
+```{r vector21-check}
+gradethis::grade_result(
+  pass_if(~ sum(g_exp_sub) == 20),
+  pass_if(~ all(c("CD4", "CD52") %in% names(g_exp_sub)) == TRUE))
+```
+</div>
+
+<div class="exo">
+In the example below, extract the expression values for genes whose name starts with 'CD' and ends with an **alphanumerical value** (store the results in a variable named `g_exp_sub`). Use the table above to construct the regular expression.
+
+```{r vector21b, exercise=TRUE, eval=FALSE}
+gene_expression <- c(2, 8, 5.6, 10, 2.7, 4, 9, 12)
+names(gene_expression) <- c("CD3E", "CD4", "ZAP70", "PCNA", "BUB3", "CDC42BPA", "CDK11B", "CD52")
+```
+
+```{r vector21b-solution}
+gene_expression <- c(2, 8, 5.6, 10, 2.7, 4, 9, 12)
+names(gene_expression) <- c("CD3E", "CD4", "ZAP70", "PCNA", "BUB3", "CDC42BPA", "CDK11B", "CD52")
+pos <- grep(pattern = "^CD.*[0-9A-Za-z]$", x = names(gene_expression), perl = TRUE)
+g_exp_sub <- gene_expression[pos]
+```
+
+```{r vector21b-check}
+gradethis::grade_result(
+  pass_if(~ sum(g_exp_sub) == 35),
+  pass_if(~ all(c("CD3E", "CD4", "CDC42BPA", "CDK11B", "CD52") %in% names(g_exp_sub)) == TRUE))
+```
+
+</div>
+
+## Quizz
+
+Answer the questions below.
+
+```{r quizz_ind_1, echo=FALSE }
+learnr::question("Indexing means retrieving certain elements from an object.",
+  answer("Yes.", correct = TRUE),
+    answer("No."),
+  allow_retry = TRUE 
+)
+```
+
+```{r quizz_ind_2, echo=FALSE }
+learnr::question("Indexing of a vector can be performed using:",
+  answer("A vector of integers ?", correct = TRUE),
+  answer("A logical vector ?", correct = TRUE ),
+  answer("A vector of irrational numbers ?", correct = FALSE ),
+  answer("A vector containing any real number ?", correct = FALSE ),
+  answer("A set of names passed as a vector of character string ? ", correct = TRUE ),
+  allow_retry = TRUE
+)
+```
+
+```{r quizz_ind_3, echo=FALSE }
+learnr::question("In regular expression:",
+  answer("'^' means the end of the line ?", correct = FALSE),
+  answer("'+' means one to n times the previous character ?", correct = TRUE ),
+  answer("'.' means any character (except \\n) ?", correct = TRUE ),
+  answer("'^[ABC]' Means not a A, B or C ?", correct = FALSE ),
+  answer("'[^ABC]' Means not a A, B or C ?", correct = TRUE ),
+  answer("'^[ABC]' Means a string starting with a A, B or C ?", correct = TRUE ),
+  allow_retry = TRUE
+)
+```
+
+### End of the section
+
+Thank you for following this tutorial.

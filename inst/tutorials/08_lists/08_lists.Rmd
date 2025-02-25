@@ -5,9 +5,11 @@
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 
-title: "Les listes"
+title: "Lists"
 output:
   learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     highlight: default
     fig_caption: yes
@@ -146,11 +148,12 @@ gradethis::gradethis_setup()
 ![](img/graph_with_r.jpeg)
 --> 
 
-## Les listes
+## Lists
 
-### Listes ?
+### What are Lists?
 
-L'objet `list`, est l'objet **le plus flexible** des objets basiques de R. Il ne possède **pas de contraintes de tailles** et on peut donc y placer **des objets de tailles différentes**. De même, il ne contient **pas de contraintes de types** et on pourra donc y **stocker des objets très divers**. Etant donné cette flexibilité, les fonctions peuvent renvoyer les résultats sous cette forme (exemple : une liste contenant des vecteurs, des matrices et autres objets divers et variés issus d'un calcul). Chaque élément de la liste peut posséder un nom. Ces noms sont accessibles via la fonction `names()` comme pour les vecteurs.
+The `list` object is **the most flexible** of R's basic objects. It has **no size constraints**, meaning you can store **objects of different sizes** within it. Similarly, it has **no type constraints**, allowing you to **store a wide variety of objects**. Each element in the list can have a name. These names can be accessed using the `names()` function, just like with vectors.
+
 
 ```{r exo1, exercise=TRUE}
 my_list <- list(a_vector = 1:5, 
@@ -162,17 +165,19 @@ my_list
 ```{r exo0_1, exercise=TRUE, exercise.setup="exo1" }
 names(my_list)
 ```
-La taille de la liste (le nombre d'objets stockés) est donnée, comme pour les vecteurs, par la fonction `length()`.
+
+The size of the list (the number of stored objects) is given, as with vectors, by the `length()` function.
 
 ```{r exo0, exercise=TRUE, exercise.setup="exo1" }
 length(my_list)
 ```
 
-## Indexation des listes
+## Indexing Lists
 
-### La fonction d'indexation '['
+### The Indexing Function '['
 
-Attention, dans le cas des listes, la fonction d'indexation ("[") renvoie une sous-liste. Elle est donc utile pour produire une nouvelle liste qui est un sous-ensemble de la liste de départ.
+Note that in the case of lists, the indexing function ("[") returns a sublist. It is therefore useful for creating a new list that is a subset of the original list.
+
 
 ```{r exo2, exercise=TRUE, exercise.setup="exo1"}
 sub_list <- my_list[c(1,3)]
@@ -181,15 +186,15 @@ sub_list
 ```
 
 
-```{r exo2_1, exercise=TRUE, exercise.setup="exo1" }
-sub_list <- my_list[1]
-is(sub_list)
-sub_list
-```
+<!-- ```{r exo2_1, exercise=TRUE, exercise.setup="exo1" } -->
+<!-- sub_list <- my_list[1] -->
+<!-- is(sub_list) -->
+<!-- sub_list -->
+<!-- ``` -->
 
-### La fonction d'indexation '[['
+### The Indexing Function '[['
 
-Pour avoir accès directement aux éléments contenus dans la liste, il faut utiliser la fonction d'indexation "[[" et lui passer comme argument une valeur numérique ou le nom d'un élément cible. Cette fonction n'accepte qu'un vecteur atomique (ne contenant qu'un élément) en entrée.
+To directly access the elements contained in the list, you need to use the "[[" indexing function and pass it either a numeric value or the name of a target element as an argument. This function only accepts an atomic vector (containing a single element) as input.
 
 ```{r exo_3, exercise=TRUE, exercise.setup="exo1" }
 # Mêmes résultats
@@ -198,9 +203,9 @@ my_list[['a_vector']]
 ```
 
 
-### La fonction d'indexation $
+### The Indexing Function $
 
-De même que pour les objets  `data.frame`, on pourra, de plus, utiliser l'opérateur '$' pour indexer la liste.
+As with `data.frame` objects, you can also use the '$' operator to index the list.
 
 ```{r exo_4, exercise=TRUE, exercise.setup="exo1"  }
 # Mêmes résultats
@@ -209,8 +214,8 @@ my_list$a_vector
 
 <div class="exo">
 
-- En utilisant les fonctions d'indexation, extraire la $5^{ième}$ position du vecteur 'a_vector' contenu dans my_list. Placez le résultat dans la variable 'a'. 
-- En utilisant les fonctions d'indexation, extraire la cellule ligne 2 / colonne 2 de la matrice 'a_matrix'. Placez le résultat dans la variable 'b'. 
+- Using the indexing functions, extract the $5^{th}$ position of the vector `a_vector` contained in `my_list`. Store the result in the variable `a`.
+- Using the indexing functions, extract the cell at row 2 / column 2 of the matrix `a_matrix`. Store the result in the variable `b`.
 
 ```{r exolist1, exercise=TRUE }
 my_list <- list(a_vector = 1:5, 
@@ -220,6 +225,11 @@ my_list <- list(a_vector = 1:5,
 ```
 
 ```{r exolist1-solution}
+my_list <- list(a_vector = 1:5, 
+                a_matrix = matrix(8:13, nr = 2), 
+                some_letters = LETTERS[10:15])
+
+
 # Exo a: solution 1
 a <- my_list[['a_vector']][5]
 # Exo a: solution 2
@@ -232,8 +242,8 @@ a <- v[5]
 a <- my_list$a_vector[5]
 
 
-# Exo b (à vous de trouver les 
-# autres solutions)
+# Exo b (your turn to find 
+# additional solutions)
 b <- my_list$a_matrix[2, 2]
 ```
 
@@ -248,8 +258,8 @@ gradethis::grade_result(
 
 <div class="exo">
 
-- En utilisant les fonctions d'indexation, extraire la $5^{ième}$ position du vecteur 'a_vector' contenu dans la liste imbriquée. Placez le résultat dans la variable 'a'. 
-- En utilisant les fonctions d'indexation, extraire la cellule ligne 2 / colonne 2 de la matrice 'a_matrix' contenue dans la liste imbriquée. Placez le résultat dans la variable 'b'. 
+- Using the indexing functions, extract the $5^{th}$ position of the vector `a_vector` contained in the nested list. Store the result in the variable `a`.
+- Using the indexing functions, extract the cell at row 2 / column 2 of the matrix `a_matrix` contained in the nested list. Store the result in the variable `b`.
 
 ```{r exolist2, exercise=TRUE }
 my_list <- list(A=list(a_vector = 1:5, 
@@ -260,6 +270,12 @@ my_list <- list(A=list(a_vector = 1:5,
 ```
 
 ```{r exolist2-solution}
+my_list <- list(A=list(a_vector = 1:5, 
+                       a_matrix = matrix(8:13, nr = 2)),
+                B=list(some_letters = LETTERS[10:15],
+                       other_letters = LETTERS[18:26])
+               )
+
 a <- my_list$A$a_vector[5]
 b <- my_list$A$a_matrix[2, 2]
 ```
@@ -272,9 +288,9 @@ gradethis::grade_result(
 ```
 </div>
 
-### C'est fini
+### End of the section
 
-Merci d'avoir suivi ce tutoriel.
+Thank you for following this tutorial.
 
 
 

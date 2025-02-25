@@ -1,0 +1,477 @@
+---
+title: "Preambles"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+            hidden=true;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+
+## A few words about R
+
+The rise of **high-throughput biological analysis techniques** has led to a deluge of data, requiring biologists to handle datasets with thousands to billions of values. Flexible software for **data collection, processing, and statistical analysis** is now essential.
+
+R, developed by **Robert Gentleman and Ross Ihaka**, is a free statistical analysis tool available on Unix, Linux, Windows, and Mac. Its **open-source** nature allows continuous evolution through contributions from an active **developer community**.
+
+Widely used by scientists in fields like biology, statistics, and geography, R promotes collaboration and the exchange of tools, driving its success. Its flexibility and interactive command-line execution make it accessible, though new users may need time to master it.
+
+Learning R pays off quickly, thanks to its vast library of packages tailored for diverse tasks, from classical biology to high-throughput methods. Additionally, R offers advanced graphical tools for customizable outputs in formats like .jpg, .png, .pdf, and .html, making data sharing and presentation seamless.
+
+## Object creation
+
+### Assignment operators
+
+R is an object-based language (*vector, matrix, data.frame, list, factor,*...). We generally use the '<-' (arrow) operator to create objects. To begin with, let's create a simple "vector" object (a kind of array) that will contain a numerical value. Here, the code "x <- 15" could read "the variable x takes the value 15" or "we assign 15 to x".
+
+```{r assign0, exercise=TRUE}
+x <- 15
+print(x)
+```
+
+The arrow assignment operator '<-' can be substituted by the '=' operator (this syntax is often used by R language beginners). However, it is **always preferable to use** '<-'. This is the recommendation of Hadley Wickham, developer of numerous function libraries, in his [*tidyverse style guide*](https://style.tidyverse.org/) (*cf* section 2.7).
+
+```{r assign1, exercise=TRUE, exercise.setup = "assign0"}
+x = 15
+print(x)
+```
+
+The following form (*i.e* the inverted arrow) is also accepted. However, it is rarely recommended.
+
+```{r assign0b, exercise=TRUE}
+15 -> x
+print(x)
+```
+
+<div class="exo">
+- Write a code to store 3 in a variable x, 5 in y and then the sum (operator *+*) of x and y in z. Print the contents of the 3 variables.
+
+```{r assign2, exercise=TRUE, exercise.setup = "assign1"}
+
+```
+
+
+```{r assign2-solution, eval=TRUE, echo=FALSE}
+x <- 3
+y <- 5
+z <- x + y
+print(x)
+print(y)
+print(z)
+```
+
+```{r assign2-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result_strict(
+  pass_if(~ x == 3),
+  pass_if(~ y == 5),
+  pass_if(~ z == 8)
+)
+```
+</div>
+
+### How to name objects
+
+There are several recommendations for naming objects.
+
+- It is generally recommended to use explicit, lower-case variable names. 
+- We'll follow the recommendations of [Hadley Wickman](http://adv-r.had.co.nz/Style.html) and use an "underscore" character (_) to separate words in a variable name. 
+- Variable names should be in English as all other language elements are in English (e.g function names.  
+- Try to keep names concise and meaningful. Here are a few examples.
+
+
+```{r assign3, exercise=TRUE}
+age <- 20
+average_size <- 130
+nb_iteration <- 100
+nb_genes <- 20e3
+```
+
+**In this tutorial, we make some exceptions** by using variable names like `x`, `y`, or `z`. This keeps the examples concise and straightforward. However, such naming is not advised for production code.
+
+## Code elements
+
+### Comments
+
+Code may be commented using the "#" character. Any command following this character will not be interpreted. This allows you to annotate your code (that is explain how it works for yourself and others).
+
+```{r assign3b, exercise=TRUE}
+# This is a comment
+z <- 10 # This is another comment
+```
+
+
+### Separing instructions
+
+Instructions can be separated by a carriage return or by the **';'** character.
+
+```{r assign4, exercise=TRUE}
+x <- 12; y <- 13
+print(x)
+print(y)
+```
+
+## Manage objects in memory
+
+### Listing and destroying objects
+
+Created objects are stored in the computer's RAM. At this stage, they are not stored on disk. If you quit the program without saving, they will be destroyed. 
+
+To find out which objects are available (*i.e* have been created at a given time), you can **list** the objects in memory with the **ls()** function. 
+
+```{r assign5, exercise=TRUE}
+# Let's create some objects
+x <- 1; y <- 2; z <- 3
+# List the objects stored in memory
+ls()
+```
+
+Objects can be destroyed using the **rm()** function (**remove**).
+
+```{r assign5b, exercise=TRUE, exercise.setup="assign5"}
+# Destroy x 
+rm(x)
+ls()
+```
+
+### Predefined variables
+
+There are a number of predefined variables  in the R environment. These include `LETTERS` (upper-case alphabet), `letters` (lower-case alphabet), `pi` (...). We'll use them in our code according to our needs.
+
+```{r letters, exercise=TRUE}
+letters
+```
+```{r letters_2, exercise=TRUE}
+LETTERS
+```
+```{r pi, exercise=TRUE}
+LETTERS
+```
+
+
+## Functions
+
+### Functions ? 
+
+In R, you can call functions to **query objects and perform actions on them**. Functions take the following form:
+
+```
+functionname(arg1= a, arg2= b,...)
+
+# Above arg1 and arg2 (...) correspond to argument names
+# a and b correspond to the objects/values you wish to pass to the 
+# 'functionname' function to perform a task using them.
+
+```
+We've already used the `ls()` and `rm()` functions. Lots of other functions exist. For example, you can use the `round()` function to rounds the values of a vector to the specified number of decimal places. 
+
+
+```{r function0, exercise=TRUE }
+x <- 170.4578
+round(x, 2)
+```
+
+<div class="exo">
+
+- Use the `round()` function with argument round x to 1 decimal places. Store the result in x (*i.e.* overwrite `x`).
+
+```{r lsexo, exercise=TRUE}
+x <- 170.4578
+```
+
+```{r lsexo-solution}
+x <- 170.4578
+x <- round(x, 1)
+```
+
+
+```{r lsexo-check}
+gradethis::grade_result_strict(
+  pass_if(~ x == 170.5)
+)
+```
+</div>
+
+
+### Examples of function usage
+
+The `c()` (**combine**) function is used to combine values (e.g. numerical) into a *vector*.  
+
+**NB:** below 1:8 produces a vector containing all integers from 1 to 8. 
+
+```{r function1, exercise=TRUE}
+# Integers from 1 to 8
+x <- 1:8
+# Combine -50, x (i.e. 1 to 8) and 70 
+# into a new vector y
+y <- c(-50, x, 70)
+print(y)
+```
+
+The `length()` function lets you find out the size of a vector.
+
+```{r function_1_1, exercise=TRUE, exercise.setup="function1"}
+# The length of y (i.e the number of elements in y)
+print(length(y))
+```
+
+The `is()` and `class()` functions are used to find out the type of an object. Knowing the type of an object is important for knowing which functions can be applied to it. 
+
+```{r function2, exercise=TRUE, exercise.setup="function1"}
+is(y)
+class(y)
+```
+
+<div class="exo">
+
+- Store the type of x (`class()`) in z.
+
+```{r is, exercise=TRUE}
+x <- matrix()
+```
+
+```{r is-solution}
+x <- matrix()
+z <- class(x)
+```
+
+
+```{r is-check}
+gradethis::grade_result_strict(
+  pass_if(~ z[1] == "matrix")
+)
+```
+
+</div>
+
+### Function arguments
+
+The `round()` function has two arguments: *x* and *digits* (which controls the number of decimal places).
+
+
+```{r}
+args(round)
+```
+
+```{r fonction3b, exercise=TRUE}
+y <- c(2.567, 3.987, 4, 10.34566)
+round(x=y, digits = 2)
+```
+
+Note that **argument names can be abbreviated** (note that abbreviation can be ambiguous when there are many arguments with the same prefix).
+
+```{r fonction4, exercise=TRUE}
+y <- c(2.567, 3.987, 4, 10.34566)
+round(x=y, d = 2)
+```
+
+**Argument names can also be omitted**. However, they must be in the expected order.
+
+```{r fonction4b, exercise=TRUE}
+y <- c(2.567, 3.987, 4, 10.34566)
+round(y, 2)
+```
+
+## Getting help in R
+
+### The help() function
+
+Help on a given function can be obtained using the `help()` function. Help can also be called up using the "?" character. Help sheets about functions provide information on input arguments, returned values and usage through examples.
+
+The various help fields are as follows:
+
+- **Description:** provides information on the function's role.
+- **Usage:** describes the function and its default parameters.
+- **Arguments:** lists the arguments to be passed to this function.
+- **Value:** the type of object(s) returned by the function.
+- **See Also:** other similar or complementary functions.
+- **Examples:** some examples of how to use this function}.
+
+<div class="exo">
+- Look for help on one of this functions: `min()`, `max()`, `sort()`, `log()`, `log2()` or `log10()`.
+
+```{r function6, exercise=TRUE, exercise.setup = "function1"}
+
+```
+
+```{r function6-solution}
+?min
+# or
+help(min)
+```
+
+</div>
+
+## Exercises
+
+### Exercise 1
+
+Answer the following questions:
+
+<div class="exo">
+```{r exoq1, echo=FALSE }
+learnr::question("It's advisable to use the '=' operator rather than '<-' when assigning ?",
+  answer("Yes"),
+  answer("No", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+
+```{r exoq2, echo=FALSE }
+learnr::question("When calling a function, if the arguments are named, their order doesn't matter.",
+  answer("Yes", correct = TRUE),
+  answer("No"),
+  allow_retry = TRUE 
+)
+```
+
+```{r exoq4, echo=FALSE }
+learnr::question("When calling a function, if you abbreviate the names of the arguments, take care that the abbreviations are not ambiguous.",
+  answer("Yes", correct = TRUE),
+  answer("No"),
+  allow_retry = TRUE 
+)
+```
+
+```{r exoq3, echo=FALSE }
+learnr::question("The ls() function is used to list files?",
+  answer("Yes"),
+  answer("No", correct = TRUE),
+  allow_retry = TRUE 
+)
+```
+
+</div>
+
+### Finished
+
+Thank you for following this tutorial.
