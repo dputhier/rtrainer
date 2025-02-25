@@ -196,25 +196,25 @@ Let's load the dataset.
 ## Load the ggplot2 library
 library(ggplot2)
 ## Next, load the chickwts dataset
-data(diamonds, package = "ggplot2")
+data(diamonds)
 ```
 
-Les premières lignes du jeu de données sont les suivantes :
+The first lines of this dataset are the following :
 
-```{r head, exercise=TRUE }
+```{r head, exercise=TRUE, exercise.setup="dataset"}
 head(diamonds)
 ```
 
-Les type des colonnes sont:
+The types of the columns are the following.
 
 ```{r type, exercise=TRUE, exercise.setup="dataset" }
 str(diamonds)
 ```
-Note that the `diamonds` object could be a `data.frame`. In fact, it is a `tibble`, which is a type of `data.frame` where the columns are slightly more typed. For example, it distinguishes between real numbers (`<dbl>`) and integers (`<int>`). However, you can easily convert this `tibble` into a `data.frame` to obtain an object you are already familiar with.
+
+Note that the `diamonds` object could be a `data.frame`. In fact, it is a `tibble`, which is very close to a `data.frame`.
 
 ```{r convert, exercise=TRUE, exercise.setup="dataset" }
-diamonds <- as.data.frame(diamonds)
-head(diamonds)
+class(diamonds)
 ```
 
 ## Scatterplots
@@ -225,9 +225,11 @@ We will start with a simple scatterplot. To create our scatterplot, we will use 
 
 - *(i)* **Data** in `data.frame` or `tibble` format.
 - *(ii)* **Associating this data** with a ggplot object (`ggplot(data=diamonds)`).
-- *(iii)* Defining **the variables/columns of the data.frame to be analyzed** and passing them to the `aes()` function.
+- *(iii)* Defining **the columns of the dataframe to use and associate them with the aesthetics of a selected geometrical objects**.
 
-For a scatterplot, two aesthetics are mandatory: $x$ (x-axis) and $y$ (y-axis). The $x$ and $y$ variables are typically numeric. Here, we will use the `carat` and `price` columns, both of which are numeric.
+For a scatterplot (`geom_points()`), two aesthetics are mandatory: $x$ (x-axis) and $y$ (y-axis). The $x$ and $y$ variables are typically numeric. Here, we will associate the `carat` and `price` columns, both of which are numeric, to the `x`and `y`aesthetic using the `aes()` function.
+
+Then we apply the geometry using `+ geom_points()` which adds a layer to the diagram.
 
 ```{r firstgg, exercise=TRUE , exercise.setup="convert" }
 # We create the plot by passing 
@@ -235,11 +237,8 @@ For a scatterplot, two aesthetics are mandatory: $x$ (x-axis) and $y$ (y-axis). 
 # of the aes() function to ggplot. 
 # The aes() function associates column names 
 # with aesthetic elements.
-p <- ggplot(data=diamonds, aes(x=carat, y=price))
-
-## We then add a geometry
-p.sc <- p + geom_point()
-print(p.sc)
+p <- ggplot(data=diamonds, aes(x=carat, y=price)) + geom_point()
+p
 ```
 
 You can modify the aesthetics of the geometric shape (here, points) by passing arguments to the geometry function (here `geom_points()`).
@@ -262,8 +261,9 @@ For example, you can change the color and size of the points as follows:
 
 
 ```{r gg2, exercise=TRUE , exercise.setup="convert" }
-p <- ggplot(data=diamonds, aes(x=carat, y=price))
-p + geom_point(size=2, colour="red")
+p <- ggplot(data=diamonds, aes(x=carat, y=price)) + 
+       geom_point(size=2, colour="red")
+p
 ```
 
 ## Point Shapes (Aesthetic *shape*)
@@ -319,10 +319,7 @@ R has a convenient function called `colors()` that displays the names of the col
 
 
 ```{r colors, exercise=TRUE}
-# Display the names of the colors available in R
-color_avail <- colors()
-print(length(color_avail))
-head(color_avail, 20)
+head(colors(), 20)
 ```
 
 In addition to color names, it is common to represent colors using the **hexadecimal format**. In this format, each color is represented by a combination of **six hexadecimal digits**, corresponding to the **amount of red (R), green (G), and blue (B) in the color**. Each color has an intensity level between 00 (minimum) and FF (maximum). For example, green is represented by #00FF00, red by #FF0000, black by #000000, and white by #FFFFFF.
@@ -330,8 +327,9 @@ In addition to color names, it is common to represent colors using the **hexadec
 In R, you can specify colors in hexadecimal format by simply using the # prefix followed by the appropriate hexadecimal combination. For example:
 
 ```{r hexa, exercise=TRUE, exercise.setup="convert"}
-p <- ggplot(data=diamonds, aes(x=carat, y=price))
-p + geom_point(size=2, shape=22, fill="#7F00FF", color="#9400D3", alpha=0.3)
+p <- ggplot(data=diamonds, aes(x=carat, y=price)) + 
+      geom_point(size=2, shape=22, fill="#7F00FF", color="#9400D3", alpha=0.3)
+p
 ```
 
 ## All 'Aesthetics' can be linked to variables
@@ -342,17 +340,12 @@ For example, we can use a variable like **`cut` to control the color of the poin
 
 ```{r varasesthetics, exercise=TRUE, exercise.setup="convert"}
 p <- ggplot(data = diamonds, aes(x = carat, 
-                                 y = price)) +
-  geom_point(aes(color = cut, 
-                 size = depth), alpha=0.5)
-# or 
-# p <- ggplot(data = diamonds, aes(x = carat, 
-#                                 y = price, 
-#                                 color = cut, 
-#                                 size = depth)) +
-# geom_point(alpha=0.5)
+                                 y = price, 
+                                 color = cut, 
+                                 size = depth)) +
+         geom_point(alpha=0.5)
 
-print(p)
+p
 ```
 
 If you want to customize the colors, you can add a layer to the plot using the functions `scale_color_manual()` or `scale_fill_manual()` to manually define the colors for the `color` and `fill` aesthetics.
@@ -362,29 +355,37 @@ If you want to customize the colors, you can add a layer to the plot using the f
 - Complete the following code to associate custom colors with the plot $p$:
 
 ```{r colpoints, exercise=TRUE , exercise.setup="convert"}
-levels(diamonds$cut)
+col_pal <- c("Ideal" = "#A22200", 
+             "Premium" = "#0871A4", 
+             "Very Good" = "#00B850", 
+             "Good" = "#226666", 
+             "Fair" = "#FF8900")
+
 p <- ggplot(data = diamonds, aes(x = carat, 
                                  y = price, 
                                  color = cut, 
                                  size = depth)) +
   geom_point(alpha=1, shape=16) +
- scale_color_manual(values = c("Ideal" = "#A22200",___))
-print(p)
+  scale_color_manual(values = ___)
+
+p
 ```
 
 ```{r colpoints-solution}
-levels(diamonds$cut)
+col_pal <- c("Ideal" = "#A22200", 
+             "Premium" = "#0871A4", 
+             "Very Good" = "#00B850", 
+             "Good" = "#226666", 
+             "Fair" = "#FF8900")
+
 p <- ggplot(data = diamonds, aes(x = carat, 
                                  y = price, 
                                  color = cut, 
                                  size = depth)) +
   geom_point(alpha=1, shape=16) +
- scale_color_manual(values = c("Ideal" = "#A22200", 
-                               "Premium" = "#0871A4", 
-                               "Very Good" = "#00B850", 
-                               "Good" = "#226666", 
-                               "Fair" = "#FF8900"))
-print(p)
+ scale_color_manual(values = col_pal)
+
+p
 ```
 
 ```{r colpoints-check}

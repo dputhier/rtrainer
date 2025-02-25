@@ -740,8 +740,8 @@ print(p)
 ```{r nbgenes-check }
 
 gradethis::grade_result_strict(
-  pass_if(~ as.character(p$mapping$x)[2] == "seqid"),
-  pass_if(~ p$labels$y == "count"),
+  pass_if(~ p$labels$x[1] == "seqid"),
+  pass_if(~ p$labels$y[1] == "count"),
   pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBar")
 )
 ```

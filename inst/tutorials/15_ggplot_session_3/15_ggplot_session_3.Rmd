@@ -153,7 +153,7 @@ The `position = "dodge"` argument places the bars side by side, making it easier
 ## Load the ggplot2 library
 library(ggplot2)
 ## Next, load the chickwts dataset
-data(diamonds, package = "ggplot2")
+data(diamonds)
 
 p <- ggplot(data = diamonds, aes(x = cut, fill = cut)) +
      geom_bar(position = "dodge") +
@@ -228,8 +228,8 @@ head(diamonds$clarity)
 As in the previous examples, you can change the colors with `scale_fill_manual`. However, at this stage, we can introduce a new function, `scale_fill_brewer()`, which requires installing the `RColorBrewer` library. For this function, you need to choose the name of one of the palettes displayed by `RColorBrewer::display.brewer.all()`. You pass the palette name to the function (*e.g.*, `scale_fill_brewer(palette='Purples')`).
 
 ```{r RColorBrewer, exercise=TRUE, fig.height=7, exercise.setup="convert"}
-if(!require('RColorBrewer')){install.packages('RColorBrewer')}
-RColorBrewer::display.brewer.all()
+library('RColorBrewer')
+display.brewer.all()
 ```
 
 There are **three types of palettes in `RColorBrewer`: sequential, diverging, and qualitative**.
@@ -318,15 +318,17 @@ ggplot(data = diamonds, aes(x = cut, fill=clarity)) +
 <div class="exo">
 
 - Create a plot like the one shown below that compares the sepal lengths (`Sepal.Length`) for each flower species (`Species`) in the iris dataset (`data(iris)`). The plot, stored in a variable `p`, should display the distributions as boxes (`geom_boxplot()`) with jittered points (`geom_jitter()`) to visualize each individual observation. The axes should be renamed "Species" and "Sepal Lengths." Each species should be associated with a unique box color ('fill'). 
+- Control colors using `scale_fill_brewer(palette='Dark2')`.
 
 
 ```{r, echo=FALSE, fig.height=4}
 library(ggplot2)
+set.seed(456)
 data(iris)
 # Example of comparing distributions with violins
 gg <- ggplot(iris, aes(x = Species, y = Sepal.Length, fill = Species)) +
   geom_boxplot(alpha = 0.7) +
-  geom_jitter() +
+  geom_jitter(height = 0) +
   scale_fill_brewer(palette='Dark2') +
   labs(title = "Comparison of Sepal Lengths by Species",
        x = "Species",
@@ -337,15 +339,19 @@ gg
 ```
 
 ```{r iris, exercise=TRUE , exercise.setup="RColorBrewer"}
+library(ggplot2)
+set.seed(456)
 data(iris)
 ```
 
 ```{r iris-solution}
+library(ggplot2)
+set.seed(456)
 data(iris)
 # Example of comparing distributions with violins
 p <- ggplot(iris, aes(x = Species, y = Sepal.Length, fill = Species)) +
   geom_boxplot(alpha = 0.7) +
-  geom_jitter() +
+  geom_jitter(height = 0) +
   scale_fill_brewer(palette='Dark2') +
   labs(title = "Comparison of Sepal Lengths by Species",
        x = "Species",
@@ -376,7 +382,7 @@ gradethis::grade_result_strict(
 - The categories 'OJ' and 'VC' should be replaced with 'Orange juice' and 'Ascorbic acid'.
 - Add "rugs" (small lines) to the plot (`geom_rug()`) to visualize the data distribution along the y-axis.
 - The axes should be renamed "Supplements" and "Tooth Lengths". Each violin should have its own unique color ('fill').
-
+- Control colors with `scale_fill_brewer(palette='Accent')` and `scale_color_brewer(palette='Accent')`.
 
 ```{r, echo=FALSE, fig.height=4}
 data(ToothGrowth)
@@ -449,9 +455,9 @@ p <- ggplot(penguins, aes(x = flipper_length_mm, y = bill_length_mm, size = body
     geom_point(alpha = 0.7) +
     scale_color_manual(values = palette_couleurs) +
     labs(x = "Flipper Length (mm)", 
-         y = "Longueur du bec (mm)", 
-         color = "Espèce", 
-         size = "Masse corporelle (g)") 
+         y = "Bill Length (mm)", 
+         color = "Species", 
+         size = "Body Mass (g)") 
 print(p)
 
 ``` 

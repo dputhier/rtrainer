@@ -16,7 +16,8 @@ Imports:
     png,
     sortable,
     reshape2,
-    dplyr
+    dplyr, 
+    RColorBrewer
 Collate: utils.R datasets_doc.R extract_text.R check_tuto.R
 License: MIT + file LICENSE
 Encoding: UTF-8

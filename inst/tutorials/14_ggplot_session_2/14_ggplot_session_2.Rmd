@@ -149,28 +149,32 @@ Analyzing **distributions** is **a crucial step in data exploration** and unders
 
 To create a histogram for the "price" variable in the "diamonds" dataset, we use the `geom_histogram()` function. For a histogram, the x-axis represents intervals (*bins*), and the y-axis represents the count of observations within these intervals. Therefore, only one variable needs to be provided to the `aes()` function.
 
-```{r convert, exercise=TRUE}
+```{r histogram, exercise=TRUE}
 library(ggplot2)
+data(diamonds)
 
-data(diamonds, package = "ggplot2")
+ggplot(data = diamonds, aes(x = price)) + geom_histogram()
 
-p <- ggplot(data = diamonds, aes(x = price)) +
-  geom_histogram(binwidth = 1000, 
-                 color = "black", 
+```
+
+We can slightly improve this histogram by changing the labels (e.g title and axis names) and the colors of the bars.
+
+```{r histogram_2, exercise=TRUE, exercise.setup="histogram"}
+
+ggplot(data = diamonds, aes(x = price)) + 
+  geom_histogram(color = "black", 
                  fill = "lightblue") +
   labs(title = "Histogramme de Price",
        x = "Prix",
        y = "Fréquence")
-print(p)
-```
 
-In this histogram, we used a class interval of \$1000 to group the values of the `price` variable (\$0-\$1000, \$1000-\$2000, \$2000-\$3000, ...). The plot displays the frequency of diamond prices within each class interval.
+```
 
 <div class="exo">
 
 - The key parameter of a histogram is the interval size. Here, in the `geom_histogram` function, it is controlled by the `binwidth` argument (interval size) or `bins` (number of intervals). Create histograms with interval sizes of \$250, \$500, \$1000, and \$10000.
 
-```{r bins, exercise=TRUE, exercise.setup="convert"}
+```{r bins, exercise=TRUE, exercise.setup="histogram"}
 ggplot(data = diamonds, aes(x = price)) +
   geom_histogram(binwidth = 1000)
 ```
@@ -194,14 +198,20 @@ In the context of `geom_point()`, the **geometry is a point**, and a variable ca
 
 <div class="exo">
 
-- Complete the following code so that the coloring is associated with the quality of the cut (`cut`) of the diamonds. Assign colors of your choice using `scale_fill_manual()`.
+- Complete the following code ("___") so that the coloring of the bar (`fill`) is associated with the quality of the `cut` column (the quality of the cut) of the diamond dataset. 
 
 
-```{r histocut, exercise=TRUE , exercise.setup="convert"}
-col_palette <- c("Ideal" = "#A22200", ___)
+```{r histocut, exercise=TRUE , exercise.setup="histogram"}
+col_palette <- c("Ideal" = "#A22200", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+
 p <- ggplot(data = diamonds, aes(x = price, ___)) +
-  geom_histogram(binwidth = 1000, color = "white") +
-  scale_fill_manual(values=col_palette)
+            geom_histogram(binwidth = 1000, 
+                           color = "white") +
+            scale_fill_manual(values=col_palette)
 print(p)
 ```
 
@@ -211,9 +221,12 @@ col_palette <- c("Ideal" = "#A22200",
                  "Very Good" = "#00B850", 
                  "Good" = "#226666", 
                  "Fair" = "#FF8900")
-p <- ggplot(data = diamonds, aes(x = price, fill=cut)) +
-  geom_histogram(binwidth = 1000, color = "white") +
-  scale_fill_manual(values=col_palette)
+
+p <- ggplot(data = diamonds, aes(x = price, 
+                                 fill=cut)) +
+            geom_histogram(binwidth = 1000, 
+                           color = "white") +
+            scale_fill_manual(values=col_palette)
 print(p)
 ```
 
@@ -228,21 +241,20 @@ gradethis::grade_result_strict(
 
 ## Density Profiles
 
-The density plot is another way to visualize the distribution of values in a numeric variable. It can be created using the `geom_density()` function. The `geom_density()` function displays a distribution model that aims to closely fit the histogram data. However, it is a model, and the `adjust` parameter of this function can significantly influence the representation. Depending on the value of `adjust`, the model may tend to be over- or under-fitted.
+The density plot is another way to visualize the distribution of values in a numeric variable. It can be created using the `geom_density()` function. The `geom_density()` function displays a distribution model that aims to closely fit the histogram data. 
 
-
-```{r adjust, exercise=TRUE, exercise.setup="convert"}
-ggplot(data = diamonds, aes(x = price)) +
-  geom_density(adjust=1)
+```{r adjust, exercise=TRUE, exercise.setup="histogram"}
+ggplot(data = diamonds, aes(x = price)) + geom_density()
 ```
 
 <div class="exo">
 
-- Recreate the previous density plot using the following values for `adjust`: 1, 3/4, 1/2, 1/4, and 1/8.
+- The `geom_density()` displays a distribution model. The `adjust` parameter controls the way the curve is adjusted to the data. It can significantly influence the representation. Depending on the value of `adjust`, the model may tend to be over- or under-fitted.
+ Recreate the previous density plot using the following values for `adjust`: 1, 3/4, 1/2, 1/4, and 1/8.
 
 
-```{r vardens, exercise=TRUE, exercise.setup="convert"}
-ggplot(data = diamonds, aes(x = price)) + geom_density(adjust = 1)
+```{r vardens, exercise=TRUE, exercise.setup="histogram"}
+ggplot(data = diamonds, aes(x = price)) + geom_density(adjust = ___)
 ```
 
 ```{r vardens-solution}
@@ -257,23 +269,32 @@ ggplot(data = diamonds, aes(x = price)) + geom_density(adjust = 1/8)
 
 <div class="exo">
 
-- Complete the code to produce a plot where the densities for the different cuts (`cut`) are represented with a unique border color for each. Apply your own colors.
+- Complete the code to produce a plot where the densities for the different cuts (`cut`) are represented with a specific border color for each. Apply your own colors.
 
-```{r vardens_2, exercise=TRUE, exercise.setup="convert"}
+```{r vardens_2, exercise=TRUE, exercise.setup="histogram"}
+color_palette <- c("Ideal" = ___, 
+                   "Premium" = ___, 
+                   "Very Good" = ___, 
+                   "Good" = ___, 
+                   "Fair" = ___)
+
 p <- ggplot(data = diamonds, aes(x = price, ___ )) + 
   geom_density(adjust = 1/2, linewidth=0.5) +
-  ___
+  scale_color_manual(values=color_palette)
+
 print(p)
 ```
 
 ```{r vardens_2-solution}
+color_palette <- c("Ideal" = "#A22200", 
+                   "Premium" = "#0871A4", 
+                   "Very Good" = "#00B850", 
+                   "Good" = "#226666", 
+                   "Fair" = "#FF8900")
+
 p <- ggplot(data = diamonds, aes(x = price, color=cut )) + 
   geom_density(adjust = 1/2, linewidth=0.5) +
-  scale_color_manual(values=c("Ideal" = "#A22200", 
-                             "Premium" = "#0871A4", 
-                             "Very Good" = "#00B850", 
-                             "Good" = "#226666", 
-                             "Fair" = "#FF8900"))
+  scale_color_manual(values=color_palette)
   
 print(p)
 ```
@@ -282,38 +303,6 @@ print(p)
 
 gradethis::grade_result_strict(
   pass_if(~ any(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$colour)) != c("#21908CFF", "#3B528BFF", "#440154FF", "#5DC863FF", "#FDE725FF")) == TRUE)
-)
-```
-
-</div>
-
-<div class="exo">
-
-- Complete the code to produce a plot where the densities for the different cuts (`cut`) are represented with a unique fill color for each. Apply your own colors.
-
-```{r vardens_3, exercise=TRUE, exercise.setup="convert"}
-p <- ggplot(data = diamonds, aes(x = price, ___ )) + 
-     geom_density(adjust = 1/2, size=0.5, color="white") +
-     scale_ ___ _manual(values= ___ )
-print(p)
-```
-
-```{r vardens_3-solution}
-p <- ggplot(data = diamonds, aes(x = price, fill=cut )) + 
-     geom_density(adjust = 1/2, size=0.5, color="white") +
-     scale_fill_manual(values=c("Ideal" = "#A22200", 
-                             "Premium" = "#0871A4", 
-                             "Very Good" = "#00B850", 
-                             "Good" = "#226666", 
-                             "Fair" = "#FF8900"))
-  
-print(p)
-```
-
-```{r vardens_3-check}
-
-gradethis::grade_result_strict(
-  pass_if(~ any(sort(unique(ggplot2::ggplot_build(p)$data[[1]]$fill)) != c("#21908CFF", "#3B528BFF", "#440154FF", "#5DC863FF", "#FDE725FF")) == TRUE)
 )
 ```
 
@@ -330,28 +319,25 @@ As always, to create our plot we will first:
 
 For a **boxplot** or **violin plot**, the **aesthetic variables** accepted are generally the same as for **geom_points**. However, a key difference is that the *x* variable must be a factor (indicating the names of the boxes on the *x* axis) and the *y* variable must be numeric (the values taken by each category).
 
-```{r firstgg2, exercise=TRUE , exercise.setup="convert" }
-# We create the plot by passing 
-# the data.frame (diamonds) and the result 
-# of the aes() function to ggplot. 
-# The aes() function associates column names 
-# with aesthetic elements.
-p <- ggplot(data=diamonds, aes(x=cut, y=price))
-
-## We then add a geometry
-p.bp <- p + geom_boxplot()
-print(p.bp)
+```{r firstgg2, exercise=TRUE , exercise.setup="histogram" }
+ggplot(data=diamonds, aes(x=cut, y=price)) + geom_boxplot()
 ```
 
 <div class="exo">
 
 - Since `geom_boxplot()` and `geom_violin()` share the same aesthetic elements, complete the following code. This code creates a violin plot where the colors of the violins correspond to the cut type (`cut`).
 
-```{r violin, exercise=TRUE , exercise.setup="convert" }
-col_palette <- c("Ideal" = "#A222A0", ___)
+```{r violin, exercise=TRUE , exercise.setup="histogram" }
+col_palette <- c("Ideal" = "#A222A0", 
+                 "Premium" = "#0871A4", 
+                 "Very Good" = "#00B850", 
+                 "Good" = "#226666", 
+                 "Fair" = "#FF8900")
+
 p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=___)) + 
   geom_violin(color=___) +
   scale_fill_manual(values=___)
+
 print(p)
 ```
 
@@ -364,6 +350,7 @@ col_palette <- c("Ideal" = "#A222A0",
 p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) + 
   geom_violin(color="black") +
   scale_fill_manual(values=col_palette)
+
 print(p)
 ```
 
@@ -389,17 +376,20 @@ The underlying ggplot model allows for relatively easy layering of graphical ele
 Consider the previous plot, $p$, created with the `geom_violin()` geometry.
 
 
-```{r violinprepare, exercise=TRUE, exercise.setup="convert" }
+```{r violinprepare, exercise=TRUE, exercise.setup="histogram" }
 library(ggplot2)
-data(diamonds, package = "ggplot2")
+data(diamonds)
 col_palette <- c("Ideal" = "#A22200", 
                  "Premium" = "#0871A4", 
                  "Very Good" = "#00B850", 
                  "Good" = "#226666", 
                  "Fair" = "#FF8900")
-p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) 
-p + geom_violin(color="black") +
+
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut))  +
+  geom_violin(color="black") +
   scale_fill_manual(values=col_palette)
+
+p
 ```
 
 You might want to visualize the points that were used to construct the violin model. One might think to simply add a `geom_points()` geometry. Nothing could be easier: just add a `geom_point()` layer using the addition operator (`+`). The aesthetics are inherited, so `x=cut` and `y=price` are naturally passed to `geom_point()`. One issue is that the points are aligned vertically...
@@ -410,14 +400,15 @@ col_palette <- c("Ideal" = "#A22200",
                  "Very Good" = "#00B850", 
                  "Good" = "#226666", 
                  "Fair" = "#FF8900")
-p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) 
-p <- p + geom_violin(color="black") +
-    scale_fill_manual(values=col_palette) + 
-    geom_point()
-print(p)
+
+ p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) +
+        geom_violin(color="black") +
+        scale_fill_manual(values=col_palette) + 
+        geom_point()
+p
 ```
 
-This can be resolved by using `geom_jitter()` (instead of `geom_point()`), which adds **a bit of noise to the x-axis** to offset the points from the vertical lines.
+This can be resolved by using `geom_jitter()` (instead of `geom_point()`), which adds **a bit of noise to the x-axis and y-axis**. As we only wants some "jittering" on the x axis we will indicate `height=0` (*i.e* no jittering on the y-axis).
 
 ```{r violinvsjitter, exercise=TRUE, exercise.setup="violinprepare"}
 col_palette <- c("Ideal" = "#A22200", 
@@ -425,11 +416,13 @@ col_palette <- c("Ideal" = "#A22200",
                  "Very Good" = "#00B850", 
                  "Good" = "#226666", 
                  "Fair" = "#FF8900")
-p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) 
-p <- p + geom_violin(color="black") +
-    scale_fill_manual(values=col_palette) +
-    geom_jitter(size=0.01)
-print(p)
+
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) +
+  geom_violin(color="black") +
+  scale_fill_manual(values=col_palette) +
+  geom_jitter(height=0)
+
+p
 ```
 
 This is not ideal here because we have many points in each class. Instead, we can reverse the layers.
@@ -440,11 +433,13 @@ col_palette <- c("Ideal" = "#A22200",
                  "Very Good" = "#00B850", 
                  "Good" = "#226666", 
                  "Fair" = "#FF8900")
-p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) 
-p <- p + geom_jitter(size=0.01) +
-    geom_violin(color="black") +
-    scale_fill_manual(values=col_palette)
-print(p)
+
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut)) + 
+  geom_jitter(height=0) +
+  geom_violin(color="black") +
+  scale_fill_manual(values=col_palette)
+
+p
 ```
 
 <div class="exo">
@@ -457,12 +452,13 @@ col_palette <- c("Ideal" = "#A22200",
                  "Very Good" = "#00B850", 
                  "Good" = "#226666", 
                  "Fair" = "#FF8900")
-p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut, ___)) 
-p <- p + geom_jitter(size=0.01) +
-     geom_violin(color="black") +
-     scale_fill_manual(values=col_palette) +
+
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut, ___)) +
+    geom_jitter(height=0) +
+    geom_violin(color="black") +
+    scale_fill_manual(values=col_palette) +
     ___
-prin(p)
+p
 ```
 
 ```{r violinjittercol-solution}
@@ -471,12 +467,14 @@ col_palette <- c("Ideal" = "#A22200",
                  "Very Good" = "#00B850", 
                  "Good" = "#226666", 
                  "Fair" = "#FF8900")
-p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut, color=cut)) 
-p <- p + geom_jitter(size=0.01) +
+
+p <- ggplot(data=diamonds, aes(x=cut, y=price, fill=cut, color=cut))  +
+     geom_jitter(height=0) +
      geom_violin(color="black") +
      scale_fill_manual(values=col_palette) +
      scale_color_manual(values=col_palette)
-print(p)
+
+p
 ```
 
 ```{r violinjittercol-check}
