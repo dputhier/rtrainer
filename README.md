@@ -18,13 +18,6 @@ Currently use the following command:
 	  install.packages("devtools")
    	  devtools::install_github("dputhier/rtrainer")
 
-	  # Currently for the english version
-	  devtools::install_github("dputhier/rtrainer@english_version")
-
-	  # Currently for the french (old) version
-	  devtools::install_github("dputhier/rtrainer@french_ver")
-
-
 # Running the tutorials 
 
 The tutorials can be found in `inst/tutorials/`. Only french versions
