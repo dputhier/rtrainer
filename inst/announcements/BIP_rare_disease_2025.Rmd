@@ -27,15 +27,15 @@ You should go through all the modules outlined below. Each topic is designed to 
 
 | Module | Description |
 |--------|------------|
-| 01 - [Getting Started with R](https://denis-puthier.shinyapps.io/01_preamble/) | Introduction to understanding basic R syntax. |
-| 02 - [Working with Vectors](https://dputhier.shinyapps.io/02_vectors/) | Understanding vectors, R’s primary data structure, and performing basic operations. |
-| 03 - [Indexing and Subsetting Vectors]() | Learn how to access, filter, and manipulate vector elements efficiently. |
-| 04 - Factors and Categorical Data | Handling categorical variables in R using factors, including ordering and labeling. |
-| 05 - Matrices: Working with 2D Data | Creating and manipulating matrices, performing operations, and understanding their structure. |
-| 06 - Data Frames: The Heart of R | Introduction to data frames, R’s most widely used structure for handling tabular data. |
-| 07 - Data Manipulation with dplyr | Using dplyr to filter, summarize, and transform data efficiently with a tidy approach. |
-| 08 - Lists: Flexible Data Storage | Understanding lists and how they store heterogeneous data types in R. |
-| 09 - Navigating the File System | Reading and writing files, setting working directories, and managing paths in R. |
+| 01 - [Getting Started with R](https://denis-puthier-bip.shinyapps.io/01_preamble/) | Introduction to understanding basic R syntax. |
+| 02 - [Working with Vectors](https://denis-puthier-bip.shinyapps.io/02_vectors/) | Understanding vectors, R’s primary data structure, and performing basic operations. |
+| 03 - [Indexing and Subsetting Vectors](https://denis-puthier-bip.shinyapps.io/03_vector_indexing/) | Learn how to access, filter, and manipulate vector elements efficiently. |
+| 04 - [Factors and Categorical Data](https://denis-puthier-bip.shinyapps.io/04_factors/) | Handling categorical variables in R using factors, including ordering and labeling. |
+| 05 - [Matrices: Working with 2D Data](https://denis-puthier-bip.shinyapps.io/05_matrices/) | Creating and manipulating matrices, performing operations, and understanding their structure. |
+| 06 - [Data Frames: The Heart of R](https://denis-puthier-bip.shinyapps.io/06_dataframes/) | Introduction to data frames, R’s most widely used structure for handling tabular data. |
+| 07 - [Data Manipulation with dplyr](https://denis-puthier-bip.shinyapps.io/07_dplyr/) | Using dplyr to filter, summarize, and transform data efficiently with a tidy approach. |
+| 08 - [Lists: Flexible Data Storage](https://denis-puthier-bip.shinyapps.io/08_listss/) | Understanding lists and how they store heterogeneous data types in R. |
+| 09 - [Navigating the File System]() | Reading and writing files, setting working directories, and managing paths in R. |
 | 10 - Data Type Conversions | Converting between different data types (numeric, character, factor, etc.) to ensure consistency. |
 | 11 - Conditional Statements in R | Using if, else, and switch statements for decision-making in your R scripts. |
 | 12 - Loops and Iterations | Implementing for loops, while loops, and alternatives for iterative programming in R. |
