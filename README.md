@@ -1,8 +1,6 @@
 # The rtrainer package
 
-This software is still in development. 
-
-The rtrainer package aims at providing a set of tutorials for learning R.
+The rtrainer package offers a collection of tutorials for learning R. Contributions are welcome—feel free to submit an issue or a pull request. We are eager to expand the collection with new tutorials on a variety of topics. 
 
 # Note for dev
 
