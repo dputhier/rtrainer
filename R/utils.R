@@ -143,41 +143,5 @@ set_verbosity <- function(verbosity_value) {
   }
 }
 
-#################################################################
-##    write_fasta_fragilaria()
-#################################################################
-#' @title Writes the fragilaria dataset to files
-#'
-#' @description
-#' Writes the fragilaria dataset to files
-#'
-#' @return The paths to the directory where file have been stored.
-#' 
-#' @examples
-#' write_fasta_fragilaria()
-#' @export write_fasta_fragilaria
-#' 
-write_fasta_fragilaria <- function(dir_path=NULL){
-  if(is.null(dir_path)){
-    tmp_dir_path <- tempdir()
-    tmp_dir_path <- file.path(tmp_dir_path, "fragilaria")
-  }
-  
-  dir.create(tmp_dir_path, recursive = TRUE)
-
-  data(fragilaria, package = "bioseq")
-  fra_data <- bioseq::read_fasta(fragilaria)
-  
-  
-  for(seq in names(fra_data)){
-    bioseq::write_fasta(fra_data[seq], 
-                        file = file.path(tmp_dir_path, 
-                                         paste0(gsub("[^A-Za-z0-9\\-\\._]", "_", seq), 
-                                                ".fasta")), 
-                        block_length = 80)
-  }
-  
-  return(tmp_dir_path)
-}
 
 
