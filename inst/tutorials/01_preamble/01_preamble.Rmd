@@ -272,7 +272,7 @@ letters
 LETTERS
 ```
 ```{r pi, exercise=TRUE}
-LETTERS
+pi
 ```
 
 

@@ -251,14 +251,18 @@ x <- as.character(factor(x, levels = c('cat', 'hamster')))
 
 
 ```{r txGRCh38, exercise=TRUE, exercise.lines=6}
-## The URL pointing to the dataset
+## URL directing to the dataset
 url <- "https://zenodo.org/record/8171242/files/Homo_sapiens.GRCh38.110.chr_10k.tsv"
+## Adjust timeout settings to prevent interruptions during download  
+options(timeout = 1000)
 tx_info <- read.table(file=url, header=TRUE, sep="\t", row.name=11)
 ```
 
 ```{r txGRCh38-solution}
-## The URL pointing to the dataset
+## URL directing to the dataset
 url <- "https://zenodo.org/record/8171242/files/Homo_sapiens.GRCh38.110.chr_10k.tsv"
+## Adjust timeout settings to prevent interruptions during download  
+options(timeout = 1000)
 tx_info <- read.table(file=url, header=TRUE, sep="\t", row.name=11)
 tx_info$mono_exonic <- ifelse(tx_info$nb_exons == 1, 'mono', 'multi')
 count_mono_exonic <- table(tx_info$mono_exonic)

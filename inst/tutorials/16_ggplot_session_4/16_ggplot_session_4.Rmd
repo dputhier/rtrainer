@@ -8,8 +8,6 @@
 title: "The ggplot2 library (session 4)"
 output:
   learnr::tutorial:
-    includes:
-      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     highlight: default
     fig_caption: yes
@@ -149,7 +147,8 @@ gradethis::gradethis_setup()
 The `ggplot2` library offers an extremely powerful tool for dividing a plot into panels (facets) based on the levels of specified categorical variables. **Facets allow for data exploration based on a factor** or a given group of factors. For the following example, we will create a matrix containing the results of a **fictitious ELISA test**, where measurements are taken at 2 different times (days) for experiments conducted by four different operators.
 
 ```{r read_table, exercise=TRUE }
-
+## Adjust timeout settings to prevent interruptions during download  
+options(timeout = 1000)
 url <- "https://zenodo.org/record/8210893/files/elisa_artificial.txt"
 elisa <- read.table(url, sep="\t", header=TRUE, row.names=1)
 head(elisa)
@@ -226,6 +225,8 @@ p + geom_histogram() +
 
 
 ```{r boxplotfacet_show, echo=FALSE, fig.height=6, fig.width=6}
+## Adjust timeout settings to prevent interruptions during download  
+options(timeout = 1000)
 url <- "https://zenodo.org/record/8210893/files/elisa_artificial.txt"
 elisa <- read.table(url, sep="\t", header=TRUE, row.names=1)
 p <- ggplot(data = elisa, 
@@ -294,6 +295,8 @@ In `ggplot2`, to order factors, you need to create ordinal variables. This can b
 - Modify the following code so that the columns are ordered.
 
 ```{r, echo=FALSE, fig.height=8, fig.width=6}
+## Adjust timeout settings to prevent interruptions during download  
+options(timeout = 1000)
 url <- "https://zenodo.org/record/8210893/files/elisa_artificial.txt"
 elisa <- read.table(url, sep="\t", header=TRUE, row.names=1)
 
@@ -610,6 +613,8 @@ theme()
 Below, we customize various elements of a graph (with varying levels of aesthetic appeal...). You will notice that it is quite intuitive to determine whether to use `element_text()`, `element_line()`, or `element_rect()` depending on the context. Note that the argument names are consistent across these three functions (color, size...), which makes them easy to use.
 
 ```{r prepelisaraster}
+## Adjust timeout settings to prevent interruptions during download  
+options(timeout = 1000)
 url <- "https://zenodo.org/record/8210893/files/elisa_artificial.txt"
 elisa <- read.table(url, sep="\t", header=TRUE, row.names=1)
 
