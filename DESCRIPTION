@@ -9,7 +9,6 @@ Imports:
     ggplot2,
     igraph,
     fs,
-    bioseq,
     data.table,
     palmerpenguins,
     ggthemes,
