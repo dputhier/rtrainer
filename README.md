@@ -1,20 +1,15 @@
 # The rtrainer package
 
-The rtrainer package offers a collection of tutorials for learning R. Contributions are welcome—feel free to submit an issue or a pull request. We are eager to expand the collection with new tutorials on a variety of topics. 
-
-# Note for dev
-
-To deploy on ShinyApp these lines should be discarded from tutorials:
-
-               includes:
-                   before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+The rtrainer package offers a collection of tutorials for learning R. Contributions are welcome—feel free to submit an issue or a pull request. We are eager to expand the collection with new tutorials on a variety of topics.
 
 # Installation
 
+Please install a recent version of R (R > 4.4.1) and RStudio.
+
 Currently use the following command:
 
-	  install.packages("devtools")
-   	  devtools::install_github("dputhier/rtrainer")
+	   install.packages("devtools", dependencies=TRUE)
+	   devtools::install_github("dputhier/rtrainer")
 
 # Running the tutorials 
 
@@ -30,3 +25,10 @@ Run a tutorial using the following command:
 
     learnr::run_tutorial("04_factors", "rtrainer")
     
+
+# Note for dev
+
+To deploy on ShinyApp these lines should be discarded from tutorials:
+
+               includes:
+                   before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
