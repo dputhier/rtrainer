@@ -278,11 +278,11 @@ data()
 Below, we load the `ChickWeight` dataset (*chicken weights*), which contains weight measurements used to evaluate the effectiveness of various dietary supplements on the growth rate of chickens. This dataset is provided by the `datasets` library. Therefore, it is necessary to load this library into memory (`library(datasets)`) to access the dataset. The dataset is explicitly loaded with `data(ChickWeight)`.
 
 ```{r dataframe1, exercise=TRUE}
-# On charge/active la librairie datasets
+# Loading the datasets library
 library(datasets)
-# On charge le jeu de donnée chickwts
+# Loading the chickwts dataset
 data(ChickWeight)
-# Voilà ses premières lignes
+# The first lines of the dataset
 head(ChickWeight)
 ```
 
