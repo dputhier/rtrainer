@@ -286,7 +286,6 @@ data(ChickWeight)
 head(ChickWeight)
 ```
 
-
 ## Row and Column Names
 
 As with matrices, **the column names of a `data.frame` can be obtained with `colnames()`** (and row names with `rownames()`).
