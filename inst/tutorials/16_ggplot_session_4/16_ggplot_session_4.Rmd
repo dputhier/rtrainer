@@ -158,15 +158,28 @@ head(elisa)
 
 ```
 
+
+```{r read_table_setup,  echo=FALSE}
+options(timeout=10000)
+dir_path <- file.path(fs::path_home(), ".rtrainer")
+dir.create(dir_path, showWarnings = FALSE)
+## The URL pointing to the dataset
+url <- "https://zenodo.org/record/8210893/files/elisa_artificial.txt"
+# Download
+file_path <- file.path(dir_path, "elisa_artificial.txt")
+if(!file.exists(file_path)) download.file(url=url, destfile = file_path, quiet = TRUE)
+elisa <- read.table(file.path(dir_path, "elisa_artificial.txt"), sep="\t", header=TRUE, row.names=1)
+```
+
 This is an artificial dataset from an ELISA test using 96-well plates. Eight ELISA plates (12 columns / 8 rows) were used, as can be verified here.
 
-```{r table, exercise=TRUE, exercise.setup="read_table" }
+```{r table, exercise=TRUE, exercise.setup="read_table_setup" }
 table(elisa$rows, elisa$columns)
 ```
 
 These eight plates were produced by 4 experimenters on two different days.
 
-```{r table2, exercise=TRUE, exercise.setup="read_table" }
+```{r table2, exercise=TRUE, exercise.setup="read_table_setup" }
 table(elisa$user, elisa$day)
 ```
 
@@ -178,7 +191,7 @@ With the `ggplot2` syntax, it becomes very easy to produce histograms correspond
 - The `facets` argument passed to `facet_wrap()` must be a formula (`formula`). In our example, `facets = ~ user` translates to 'create graphical panels based on the value of the `user` variable.'
 
 
-```{r facet_wrap, exercise=TRUE, exercise.setup="read_table", fig.height=6, fig.width=6}
+```{r facet_wrap, exercise=TRUE, exercise.setup="read_table_setup", fig.height=6, fig.width=6}
 p <- ggplot(data = elisa, 
             mapping = aes(x=value))
 p + geom_histogram() + 
@@ -188,7 +201,7 @@ p + geom_histogram() +
 For exploratory purposes, we can similarly analyze the distributions of the values obtained based on the operator (`user`) and the day (`day`).
 
 
-```{r facet_wrap2, exercise=TRUE, exercise.setup="read_table", fig.height=8, fig.width=6}
+```{r facet_wrap2, exercise=TRUE, exercise.setup="read_table_setup", fig.height=8, fig.width=6}
 p <- ggplot(data = elisa, 
             mapping = aes(x=value))
 p + geom_histogram() + 
@@ -199,7 +212,7 @@ p + geom_histogram() +
 
 - Display the density distributions of `value` in facets based on the experimenter and the day.
 
-```{r userday_dens, exercise=TRUE, echo=FALSE, fig.height=8, fig.width=6, exercise.setup="read_table"}
+```{r userday_dens, exercise=TRUE, echo=FALSE, fig.height=8, fig.width=6, exercise.setup="read_table_setup"}
 ```
 
 ```{r userday_dens-solution}
@@ -215,7 +228,7 @@ p + geom_density(color=NA) +
 Since each user performed an ELISA experiment on Monday and Friday, we can choose a **two-dimensional faceted representation** with `facet_grid()` (a grid/matrix of facets). Here we will create a facetted diagram with `user` as rows and `day` as columns. Note that `user` and `day` should be wrapped in the `vars()` function. 
 
 
-```{r facet_grid, exercise=TRUE, exercise.setup="read_table" }
+```{r facet_grid, exercise=TRUE, exercise.setup="read_table_setup" }
 p <- ggplot(data = elisa, 
             mapping = aes(x=value, fill=user))
 p + geom_histogram() + 
@@ -238,7 +251,7 @@ p + geom_boxplot() + coord_flip() +
     facet_wrap(facets = ~ day, ncol=2)
 ```
 
-```{r boxplotfacet, exercise=TRUE, echo=FALSE, fig.height=6, fig.width=6, exercise.setup="read_table"}
+```{r boxplotfacet, exercise=TRUE, echo=FALSE, fig.height=6, fig.width=6, exercise.setup="read_table_setup"}
 
 ```
 
@@ -259,7 +272,7 @@ Based on the numerical data loaded into R, we may want to create a color-coded i
 
 We can use *geom_raster()* to represent an ELISA plate and partition the plot based on `user` and `day`.
 
-```{r geom_raster, exercise=TRUE, exercise.setup="read_table", fig.height=8, fig.width=6 }
+```{r geom_raster, exercise=TRUE, exercise.setup="read_table_setup", fig.height=8, fig.width=6 }
 p <- ggplot(data = elisa, 
             mapping = aes(x=columns, y=rows, fill=value))
 p + geom_raster() + 
@@ -274,7 +287,7 @@ For `geom_raster()`, which represents **the continuous numeric variable `value`*
 
 - `scale_fill_gradientn()`: This function is used to specify a fill gradient with multiple custom colors. You can define the colors you want to use in the color scale based on your data and preferences.
 
-```{r scale_fill_gradientn, exercise=TRUE, exercise.setup="read_table" }
+```{r scale_fill_gradientn, exercise=TRUE, exercise.setup="read_table_setup" }
 p <- ggplot(data = elisa, 
             mapping = aes(x=columns, y=rows, fill=value))
 p + geom_raster() + 
@@ -319,7 +332,7 @@ p <- p + geom_raster() +
 print(p)
 ```
 
-```{r orderedfactor, exercise=TRUE, exercise.setup="read_table", fig.height=8, fig.width=6}
+```{r orderedfactor, exercise=TRUE, exercise.setup="read_table_setup", fig.height=8, fig.width=6}
 ___
 p <- ggplot(data = elisa, 
             mapping = aes(x=columns, y=rows, fill=value))
