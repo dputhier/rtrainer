@@ -8,8 +8,6 @@
 title: "The ggplot2 library (session 2)"
 output:
   learnr::tutorial:
-    includes:
-      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     highlight: default
     fig_caption: yes
@@ -137,6 +135,7 @@ https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
 ```{r setup, include=FALSE}
 library(learnr)
 library(gradethis)
+library(ggplot2)
 knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
 gradethis::gradethis_setup()
 ```

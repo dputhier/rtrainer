@@ -136,6 +136,9 @@ https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
 library(learnr)
 library(gradethis)
 library(ggplot2)
+library(palmerpenguins)
+library(ggthemes)
+library(fs)
 knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
 gradethis::gradethis_setup()
 ```
@@ -209,14 +212,14 @@ p + geom_density(color=NA) +
 
 ### The facet_grid() Function
 
-Since each user performed an ELISA experiment on Monday and Friday, we can choose a **two-dimensional faceted representation** with `facet_grid()` (a grid/matrix of facets). Note that the `facets` argument is set to `user ~ day`, indicating that `user` will be displayed in rows and `day` in columns.
+Since each user performed an ELISA experiment on Monday and Friday, we can choose a **two-dimensional faceted representation** with `facet_grid()` (a grid/matrix of facets). Here we will create a facetted diagram with `user` as rows and `day` as columns. Note that `user` and `day` should be wrapped in the `vars()` function. 
 
 
 ```{r facet_grid, exercise=TRUE, exercise.setup="read_table" }
 p <- ggplot(data = elisa, 
             mapping = aes(x=value, fill=user))
 p + geom_histogram() + 
-    facet_grid(facets = user ~ day) +
+    facet_grid(rows = vars(user),  cols = vars(day)) +
     scale_fill_manual(values=c("#1B9E77", "#D95F02", "#7570B3", "#E7298A"))
 ```
 
@@ -260,7 +263,7 @@ We can use *geom_raster()* to represent an ELISA plate and partition the plot ba
 p <- ggplot(data = elisa, 
             mapping = aes(x=columns, y=rows, fill=value))
 p + geom_raster() + 
-  facet_grid(facets = user ~ day) 
+  facet_grid(rows = vars(user), cols= vars(day)) 
 ```
 
 For `geom_raster()`, which represents **the continuous numeric variable `value`**, one of the following functions can be used to control the colors:
@@ -275,7 +278,7 @@ For `geom_raster()`, which represents **the continuous numeric variable `value`*
 p <- ggplot(data = elisa, 
             mapping = aes(x=columns, y=rows, fill=value))
 p + geom_raster() + 
-  facet_grid(facets = user ~ day) +
+  facet_grid(rows = vars(user), cols= vars(day)) +
   scale_fill_gradientn(colours = c("#0000BF", "#0000FF", 
                                    "#0080FF", "#00FFFF", 
                                    "#40FFBF", "#80FF80", 
@@ -296,7 +299,7 @@ In `ggplot2`, to order factors, you need to create ordinal variables. This can b
 
 ```{r, echo=FALSE, fig.height=8, fig.width=6}
 ## Adjust timeout settings to prevent interruptions during download  
-options(timeout = 1000)
+options(timeout = 200)
 url <- "https://zenodo.org/record/8210893/files/elisa_artificial.txt"
 elisa <- read.table(url, sep="\t", header=TRUE, row.names=1)
 
@@ -306,7 +309,7 @@ p <- ggplot(data = elisa,
                           y=rows, 
                           fill=value))
 p <- p + geom_raster() + 
-          facet_grid(facets = user ~ day) +
+          facet_grid(rows = vars(user), cols= vars(day)) +
           scale_fill_gradientn(colours = c("#0000BF", "#0000FF", 
                                            "#0080FF", "#00FFFF", 
                                            "#40FFBF", "#80FF80", 
@@ -321,7 +324,7 @@ ___
 p <- ggplot(data = elisa, 
             mapping = aes(x=columns, y=rows, fill=value))
 p + geom_raster() + 
-  facet_grid(facets = user ~ day) +
+  facet_grid(rows = vars(user), cols= vars(day)) +
   scale_fill_gradientn(colours = c("#0000BF", "#0000FF", 
                                    "#0080FF", "#00FFFF", 
                                    "#40FFBF", "#80FF80", 
@@ -337,7 +340,7 @@ p <- ggplot(data = elisa,
                           y=rows, 
                           fill=value))
 p <- p + geom_raster() + 
-          facet_grid(facets = user ~ day) +
+          facet_grid(rows = vars(user), cols= vars(day)) +
           scale_fill_gradientn(colours = c("#0000BF", "#0000FF", 
                                            "#0080FF", "#00FFFF", 
                                            "#40FFBF", "#80FF80", 
@@ -624,7 +627,7 @@ p <- ggplot(data = elisa,
                           y=rows, 
                           fill=value))
 p <- p + geom_raster() + 
-          facet_grid(facets = user ~ day) +
+          facet_grid(rows = vars(user), cols= vars(day)) +
           scale_fill_gradientn(colours = c("#0000BF", "#0000FF", 
                                            "#0080FF", "#00FFFF", 
                                            "#40FFBF", "#80FF80", 
@@ -644,7 +647,7 @@ p <- p + theme(strip.background = element_rect(color="red", fill="orange"),
                axis.ticks.y     = element_line(color="darkturquoise", linewidth=1),
                plot.background  = element_rect(fill="paleturquoise"),  
               )
-#...
+print(p)
 ```
 
 ### Exercises
@@ -722,6 +725,7 @@ head(tx_info)
 <div class="exo">
 
 Create a diagram with `geom_bar()` showing the number of different transcripts per chromosome (`seqid`). 
+
 - Use ` + coord_flip()` to rotate the diagram.
 - Order the chromosomes as follows: 1, 2, 3 .. 22, X, Y, MT.
 
@@ -745,8 +749,7 @@ print(p)
 ```{r nbgenes-check }
 
 gradethis::grade_result_strict(
-  pass_if(~ p$labels$x[1] == "seqid"),
-  pass_if(~ p$labels$y[1] == "count"),
+  pass_if(~ rlang::quo_get_expr(p$mapping$x) == "seqid"),
   pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBar")
 )
 ```
@@ -800,33 +803,32 @@ print(p)
 ```
 
 
-```{r txgenomicsize, exercise=TRUE , exercise.setup="txgenomicsizeprep"}
+```{r txgenomicsize, exercise=TRUE , exercise.setup="txgenomicsizeprep", fig.height=6, fig.width=4}
 
 ```
 
 ```{r txgenomicsize-solution}
 p <- ggplot(data=tx_info, 
             mapping=aes(x=tx_genomic_size_log10)) + 
-     geom_histogram(bins=50) +
+     geom_histogram(bins=100) +
      facet_grid(gene_biotype~., scale="free_y") + 
      labs(x="Genomic Size of Transcripts (log10)") +
-     theme_minimal() +
+     theme_bw() +
      theme(panel.grid.minor = element_blank(), 
            strip.text.y = element_text(angle=0, size=5), 
-           axis.text.y = element_text(size=5))
-     
+           axis.text.y = element_text(size=5)) 
+print(p)
 ```
 
 ```{r txgenomicsize-check }
-
 gradethis::grade_result_strict(
+  pass_if(~ rlang::quo_get_expr(p$mapping$x) == "tx_genomic_size_log10"),
   pass_if(~ length(levels(ggplot2::ggplot_build(p)$data[[1]]$PANEL)) == 12),
-  pass_if(~ p$labels$y == "count"),
   pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBar")
 )
 ```
-
-
+</div>
+<div class="exo">
 ```{r q1, echo=FALSE }
 learnr::question("Based on the source available at [this address](http://www.ensembl.org/info/genome/genebuild/biotypes.html), how can we explain that the size of the *processed pseudogene* class is smaller than the *protein coding* class?",
   answer("It is thought that these genes lack UTRs."),
@@ -844,7 +846,7 @@ If *processed pseudogenes* no longer have introns, we should only find one exon.
 
 <div class="exo">
 
-Transform the `nb_exons` column into its logarithm and place the result in the `nb_exons_log10` column. What can you say about the number of exons (`nb_exons_log10`) for transcripts based on "gene_biotype"? Use a *boxplot* or *violin plot* to present this information.
+Transform the `nb_exons` column into its logarithm and place the result in the `nb_exons_log10` column. What can you say about the number of exons (`nb_exons_log10`) for transcripts based on "gene_biotype"? Use a *boxplot* to present this information.
 
 ```{r nbexons, exercise=TRUE , exercise.setup="txgenomicsizeprep"}
 
@@ -860,7 +862,7 @@ p <- ggplot(data=tx_info,
                         fill=gene_biotype)) + 
      geom_boxplot() +
      theme_minimal() + 
-     labs(y="Nummber of exons (log10)") +
+     labs(y="Number of exons (log10)") +
      coord_flip() +
      scale_fill_manual(values=palette) +
      theme(legend.position = "none")
@@ -869,12 +871,12 @@ print(p)
 ```
 
 ```{r nbexons-check }
-gradethis::grade_result_strict(
-  pass_if(~ as.character(p$mapping$y)[2] == "nb_exons_log10"),
-  pass_if(~ as.character(p$mapping$x)[2] == "gene_biotype"),
-  pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBoxplot")
-  
-)
+  gradethis::grade_result_strict(
+    pass_if(~ rlang::quo_get_expr(p$mapping$y) == "nb_exons_log10"),
+    pass_if(~ rlang::quo_get_expr(p$mapping$x) == "gene_biotype"),
+    pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBoxplot")
+    
+  )
 ```
 </div>
 
@@ -907,8 +909,8 @@ print(p)
 
 ```{r distchrombiotypes-check }
 gradethis::grade_result_strict(
-  pass_if(~ as.character(p$mapping$x)[2] == "seqid"),
-  pass_if(~ as.character(p$mapping$fill)[2] == "gene_biotype"),
+  pass_if(~ rlang::quo_get_expr(p$mapping$x) == "seqid"),
+  pass_if(~ rlang::quo_get_expr(p$mapping$fill) == "gene_biotype"),
   pass_if(~ class(p$layers[[1]]$geom)[1] == "GeomBar")
   
 )

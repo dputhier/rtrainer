@@ -8,8 +8,6 @@
 title: "The ggplot2 library  (session 3)"
 output:
   learnr::tutorial:
-    includes:
-      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     highlight: default
     fig_caption: yes
@@ -137,6 +135,9 @@ https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
 ```{r setup, include=FALSE}
 library(learnr)
 library(gradethis)
+library(ggplot2)
+library(RColorBrewer)
+library(palmerpenguins)
 knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
 gradethis::gradethis_setup()
 ```
@@ -228,7 +229,7 @@ head(diamonds$clarity)
 As in the previous examples, you can change the colors with `scale_fill_manual`. However, at this stage, we can introduce a new function, `scale_fill_brewer()`, which requires installing the `RColorBrewer` library. For this function, you need to choose the name of one of the palettes displayed by `RColorBrewer::display.brewer.all()`. You pass the palette name to the function (*e.g.*, `scale_fill_brewer(palette='Purples')`).
 
 ```{r RColorBrewer, exercise=TRUE, fig.height=7, exercise.setup="convert"}
-library('RColorBrewer')
+library(RColorBrewer)
 display.brewer.all()
 ```
 

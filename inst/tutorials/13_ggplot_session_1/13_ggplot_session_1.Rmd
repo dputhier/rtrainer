@@ -8,8 +8,6 @@
 title: "The ggplot2 library (session 1)"
 output:
   learnr::tutorial:
-    includes:
-      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
     theme: default
     fig_caption: yes
     self_contained: true
@@ -136,6 +134,9 @@ https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
 ```{r setup, include=FALSE}
 library(learnr)
 library(gradethis)
+library(png)
+library(ggplot2)
+library(RCurl)
 knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
 gradethis::gradethis_setup()
 ```
@@ -166,10 +167,8 @@ It is the combination of these independent components that forms a graphic. In g
 
 
 ```{r, echo=FALSE, fig.height=6, fig.width=6}
-library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", 
-                  "13_ggplot_session_1", "img", "ggbasics.png")
-pp <- readPNG(path)
+library(png)
+pp <- readPNG(getURLContent("https://zenodo.org/records/15083675/files/ggbasics.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
 ```
@@ -183,9 +182,9 @@ To start, we will use the "diamonds" dataset from the **ggplot2** library. The *
 - Carat, size, color, clarity, depth, table, price, x, y, z
 
 ```{r, echo=FALSE, fig.height=5}
-library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", "13_ggplot_session_1", "img", "diamonds.png")
-pp <- readPNG(path)
+library(png)
+library(RCurl)
+pp <- readPNG(getURLContent("https://zenodo.org/records/15083675/files/diamonds.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
 ```
@@ -273,8 +272,8 @@ The correspondences between point shapes and the numeric variables passed are sh
 
 ```{r, echo=FALSE, fig.height=5}
 library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", "13_ggplot_session_1", "img", "point.png")
-pp <- readPNG(path)
+library(RCurl)
+pp <- readPNG(getURLContent("https://zenodo.org/records/15083675/files/point.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
 ```
@@ -282,9 +281,8 @@ rasterImage(pp,0,0,1,1)
 Other point shapes are possible, for example, by using the [ggstar](https://cran.r-project.org/web/packages/ggstar/vignettes/ggstar.html) library:
 
 ```{r, echo=FALSE, fig.height=5}
-library("png")
-path <- file.path(system.file(package="rtrainer"), "tutorials", "13_ggplot_session_1", "img", "ggstar.png")
-pp <- readPNG(path)
+library(png)
+pp <- readPNG(getURLContent("https://zenodo.org/records/15083675/files/ggstar.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
 ```

@@ -1,0 +1,870 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "The ggplot2 library (session 5)"
+output:
+  learnr::tutorial:
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(ggplot2)
+library(palmerpenguins)
+library(ggthemes)
+library(fs)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
+gradethis::gradethis_setup()
+```
+
+
+## Polar Coordinates
+
+### Principle
+
+In ggplot2, **polar coordinates** allow you to map one of the Cartesian axes (usually *x* or *y*) to an **angle** and the other to the **radius**. This is done with the function:
+
+- `coord_polar(theta = "x")` or `coord_polar(theta = "y")`
+
+Typical uses:
+
+- Make **pie charts** from bar plots (`geom_bar()` / `geom_col()` + `coord_polar(theta = "y")`).
+- Make **“rose” diagrams** (circular bar plots).
+- Transform stacked bar plots into **circular compositions**.
+
+
+```{r polar_1, exercise=TRUE}
+library(ggplot2)
+data(diamonds)
+p <- ggplot(diamonds, aes(x = cut, fill = cut)) +
+            geom_bar() +
+            labs(x = "Cut", y = "Count", fill = "Cut",
+            title = "Number of diamonds with specific cuts")
+print(p)
+```
+
+To obtain **a pie chart**, we typically:
+
+- Use **a constant x value** (for all data points) which indicates that we want **a fixed radius**.
+- Map the **count to the y axis**.
+- Convert to polar coordinates with theta = "y".
+
+```{r polar_2, exercise=TRUE, exercise.setup="polar_1"}
+p_pie <- ggplot(diamonds, aes(x = "", fill = cut)) +
+                geom_bar() +
+                coord_polar(theta = "y") 
+print(p_pie)
+```
+
+We may then **edit slightly** the diagram to make it look more like a pie chart.
+
+
+```{r polar_3, exercise=TRUE, exercise.setup="polar_1"}
+p_pie <- ggplot(diamonds, aes(x = "", fill = cut)) +
+                geom_bar(color="white") +
+                coord_polar(theta = "y") +
+                labs(x = NULL, y = NULL, fill = "Cut",
+                title = "Number of diamonds with specific cuts") +
+                scale_fill_brewer(palette='Dark2') +
+                theme_void()
+print(p_pie)
+```
+
+<div class="exo">
+
+You are provided with a figure showing multiple pie charts, each representing the distribution of **diamond cut** within a specific **clarity** category (see **diamonds** dataset). Your task is to determine the ggplot2 code that was used to generate this visualization. Carefully examine the graphical elements in the figure:
+
+ - the use of polar coordinates to create pie charts,
+ - the color palette (`Dark2`) applied to represent the cut categories,
+ - the presence of faceting by clarity (have a look at the `scale` and `ncols` arguments of `facet_wrap()`...),
+- the absence of axes, and any visible styling choices (titles, legend, labels, etc.). (choose the theme accordingly)
+
+Store the ggplot diagram in a object named `p_pie`. 
+
+```{r exo_1_code, echo=FALSE, fig.height=6, fig.width=6}
+p_pie <- ggplot(diamonds, aes(x = "", fill = cut)) +
+                geom_bar(color="white") +
+                coord_polar("y", start=0) +
+                labs(x = NULL, y = NULL,
+                title = "Number of cuts according to clarity") +
+                scale_fill_brewer(palette='Dark2') +
+                facet_wrap(~clarity, scale="free_y", ncol=4) +
+                labs(x = NULL, y = NULL, fill = "Cut") +
+                theme_void() 
+  print(p_pie)
+```
+
+```{r exo_1, exercise=TRUE, echo=FALSE, fig.height=6, fig.width=6}
+
+```
+
+
+```{r exo_1-solution}
+
+p_pie <- ggplot(diamonds, aes(x = "", fill = cut)) +
+                geom_bar(color="white") +
+                coord_polar("y", start=0) +
+                labs(x = NULL, y = NULL,
+                title = "Number of cuts according to clarity") +
+                scale_fill_brewer(palette='Dark2') +
+                facet_wrap(~clarity, scale="free_y", ncol=4) +
+                labs(x = NULL, y = NULL, fill = "Cut") +
+                theme_void() 
+  print(p_pie)
+```
+
+```{r exo_1-check}
+gradethis::grade_result_strict(
+  # Check mapping
+  pass_if(~ p_pie$mapping$x == ""),
+  pass_if(~ rlang::quo_get_expr(p_pie$mapping$fill) == "cut"),
+
+  # Check first layer is a bar geom (pie chart is a polar bar chart)
+  pass_if(~ inherits(p_pie$layers[[1]]$geom, "GeomBar")),
+
+  # Check coordinate system is polar with theta = "y"
+  pass_if(~ inherits(p_pie$coordinates, "CoordPolar")),
+  pass_if(~ p_pie$coordinates$theta == "y"),
+
+  # Check facetting by clarity
+  pass_if(~ inherits(p_pie$facet, "FacetWrap")),
+  pass_if(~ as.character(p_pie$facet$params$facets) == "~clarity")
+)
+```
+</div>
+
+### Donut Chart (Ring Plot)
+
+A **donut chart** is a pie chart with a hole in the middle. In ggplot2, you can create it by:
+
+- Mapping **x to a constant (e.g. 2)**, which means that each **bar will be placed at a radius of 2 units** from the center.
+- Using  **`geom_bar`** and set the **width of the bar to 1**.
+- Using `coord_polar(theta = "y")` to map **y to the angle**.
+- Using **`xlim()`** to **limit the range** of values to be displayed.
+
+```{r donut_chart, exercise=TRUE}
+p_donut <- ggplot(diamonds, aes(x = 2, fill = cut)) +
+                geom_bar(color="white", width=1) +
+                xlim(0.5, 2.5) +
+                coord_polar(theta = "y")
+print(p_donut)
+```
+
+Now we can **customize the donut chart** to make it more visually appealing.
+
+```{r donut_chart_1, exercise=TRUE, exercise.setup="donut_chart"}
+p_donut <- ggplot(diamonds, aes(x = 2, fill = cut)) +
+                geom_bar(color="white", width=1) +
+                xlim(0.5, 2.5) +
+                coord_polar(theta = "y") +
+                labs(x = NULL, y = NULL, fill = "Species",
+                title = "Diamond cuts (donut chart)") +
+                theme_void() +
+                theme(legend.position = "right") +
+                scale_fill_brewer(palette='Set2')
+print(p_donut)
+```
+
+### Circular bar plots
+
+Polar coordinates are useful to **create circular bar plots**, which can be an alternative to classic bar charts for displaying counts on many categories (e.g. chromosomes). Although they are harder to interpret precisely than standard Cartesian bar charts, they offer several advantages in specific contexts. They allow the display of long categorical axes without requiring excessive horizontal space, making them useful when the goal is to present many categories in a single compact figure
+
+We can reuse the transcript dataset `tx_info` from the previous sections. In this data.frame, each line contains information about a transcript that is hosted by a chromosome (column seqid).
+
+
+```{r prepare_tx_human_1, exercise=TRUE, echo=FALSE}
+options(timeout=10000)
+dir_path <- file.path(fs::path_home(), ".rtrainer")
+dir.create(dir_path, showWarnings = FALSE)
+## The URL pointing to the dataset
+url <- "https://zenodo.org/record/8211383/files/Homo_sapiens.GRCh38.110.subset_2.tsv.gz"
+# Download
+file_path <- file.path(dir_path, "Homo_sapiens.GRCh38.110.subset_2.tsv.gz")
+if(!file.exists(file_path)) download.file(url=url, destfile = file_path, quiet = TRUE)
+tx_info <- read.table(file=file_path, header=TRUE, sep="\t", row.names=6)
+```
+
+```{r circular_barplot, exercise=TRUE, exercise.setup="prepare_tx_human_1"}
+p_circ <- ggplot(tx_info, aes(x = seqid, fill = seqid)) +
+                geom_bar(color="white") +
+                coord_polar(theta = "x") +
+                labs(x = NULL, y = NULL, fill = "Number of transcript",
+                title = "Number of transcripts per chromosome") +
+                guides(fill="none") +
+                theme_minimal() 
+print(p_circ)
+```
+
+<div class="exo">
+
+Redo the previous diagram but ensure the chromosome are ordered based on the number of transcript they host. To do so:
+
+- Use dplyr `group_by()` and `count()` or, alternatively use `table()` to create a `data.frame` with chromosomes and number of transcripts (column names should be 'Chromosome' and 'Count').
+- Change the 'Chromosomes' column to create a factor ordered by the number of transcripts (use `factor()` with the `levels` and `ordered` arguments together with the `order()` function).
+- Use `geom_col()` instead of `geom_bar()` (with `show.legend=FALSE`).
+- Map the chromosome to the "x" aesthetic and the number of transcripts to the "y" aesthetic.
+- Use `coord_polar()` to convert to polar coordinates (set `theta = "x"`).
+- Use the `theme_minimal()` theme.
+- Use the `labs()` function to add title and axis/legend labels.
+- Control the colors with `scale_fill_viridis_d()` (option "F", direction 1).
+- Store the diagram in an object called `p_circ`.
+
+```{r exo_circbar_code,  echo=FALSE, fig.height=6, fig.width=6}
+library(dplyr)
+options(timeout=10000)
+dir_path <- file.path(fs::path_home(), ".rtrainer")
+dir.create(dir_path, showWarnings = FALSE)
+## The URL pointing to the dataset
+url <- "https://zenodo.org/record/8211383/files/Homo_sapiens.GRCh38.110.subset_2.tsv.gz"
+# Download
+file_path <- file.path(dir_path, "Homo_sapiens.GRCh38.110.subset_2.tsv.gz")
+if(!file.exists(file_path)) download.file(url=url, destfile = file_path, quiet = TRUE)
+tx_info <- read.table(file=file_path, header=TRUE, sep="\t", row.names=6)
+
+
+tx_info %>% 
+  rename(Chromosome = seqid)  %>%
+  group_by(Chromosome) %>% 
+  count(name="Count") -> tx_counts
+
+# Create an ordered factor 
+tx_counts$Chromosome <- factor(tx_counts$Chromosome,
+                               levels=tx_counts$Chromosome[order(tx_counts$Count,
+                                                                 decreasing=TRUE)], 
+                               ordered=TRUE)
+
+# Generate the diagram
+p_circ <- ggplot(tx_counts, aes(x = Chromosome, 
+                                y = Count, 
+                                fill = Chromosome)) +
+                geom_col(color=NA,  show.legend=FALSE) +
+                coord_polar(theta = "x") +
+                labs(x = NULL, y = NULL, fill = "Number of transcript",
+                title = "Number of transcripts per chromosome") +
+                scale_fill_viridis_d(option = "F", direction = 1) +
+                theme_minimal() 
+print(p_circ)
+```
+
+```{r exo_circbar, exercise=TRUE, exercise.setup="prepare_tx_human_1", echo=FALSE, fig.height=6, fig.width=6}
+tx_info
+```
+
+
+```{r exo_circbar-solution}
+# An alternative to 
+# tx_counts <- as.data.frame(table(tx_info$seqid))
+# colnames(tx_counts) <- c("Chromosome", "Count")
+library(dplyr)
+tx_info %>% 
+  rename(Chromosome = seqid)  %>%
+  group_by(Chromosome) %>% 
+  count(name="Count") -> tx_counts
+
+
+
+# Create an ordered factor 
+tx_counts$Chromosome <- factor(tx_counts$Chromosome,
+                               levels=tx_counts$Chromosome[order(tx_counts$Count,
+                                                                 decreasing=TRUE)], 
+                               ordered=TRUE)
+
+# Generate the diagram
+p_circ <- ggplot(tx_counts, aes(x = Chromosome, 
+                                y = Count, 
+                                fill = Chromosome)) +
+                geom_col(color=NA,  show.legend=FALSE) +
+                coord_polar(theta = "x") +
+                labs(x = NULL, y = NULL, fill = "Number of transcript",
+                title = "Number of transcripts per chromosome") +
+                scale_fill_viridis_d(option = "F", direction = 1) +
+                theme_minimal() 
+print(p_circ)
+```
+
+```{r exo_circbar-check}
+gradethis::grade_result_strict(
+
+  # Mapping checks
+  pass_if(~ rlang::quo_get_expr(p_circ$mapping$y) == "Count"),
+  pass_if(~ rlang::quo_get_expr(p_circ$mapping$x) == "Chromosome"),
+
+  # First layer is geom_col()
+  pass_if(~ inherits(p_circ$layers[[1]]$geom, "GeomCol")),
+
+  # Coordinate system is polar
+  pass_if(~ inherits(p_circ$coordinates, "CoordPolar")),
+  pass_if(~ p_circ$coordinates$theta == "x")
+)
+```
+</div>
+
+### Note about Polar Charts  
+
+Polar coordinates (pie charts, donut charts, circular bars…) may look pretty, but they introduce interpretation problems.
+
+- Angles are harder to compare than lengths.  
+- Radial distances distort perception of area.  
+- Circular bar charts exaggerate upper categories.  
+- Humans systematically misjudge slices that are narrow or disconnected.  
+- Rotations and ordering impact interpretation.
+
+So use them with caution...
+
+## Smoothing and Trend Lines
+
+### Principle
+
+The function `geom_smooth()` in **ggplot2** adds a **smoothed trend line** to a scatterplot or other geoms.  
+
+It is useful for:
+
+- highlighting relationships between variables,  
+- visualizing trends in noisy biological data,  
+- comparing regressions between groups,  
+- and displaying uncertainty via confidence intervals.
+
+The `geom_smooth()` propose several smoothing methods, including linear models (`lm`).
+
+### Basic Example
+
+```{r basic-geom-smooth, exercise=TRUE}
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+  geom_point() +
+  geom_smooth(method="lm", se=FALSE)
+```
+
+
+### Smooth per Species 
+
+<div class="exo">
+
+Given the `iris` dataset, create a scatterplot of **Sepal.Length** vs **Sepal.Width** then:
+
+- Color the points by **species**.  
+- Add a smooth trend line **per Species** using `geom_smooth()` with `se = FALSE` and `model=lm`.  
+- Store the plot in an object called **`p`** and print it.
+
+```{r penguins-smooth, exercise=TRUE}
+
+```
+
+```{r penguins-smooth-solution}
+p <- ggplot(iris, aes(x = Sepal.Width, 
+                      y = Sepal.Length, 
+                      color = Species, 
+                      fill=Species)) +
+  geom_point(shape=16) +
+  geom_smooth(method="lm")
+
+p
+```
+
+```{r penguins-smooth-check}
+gradethis::grade_result_strict(
+  # p must be a ggplot object
+  pass_if(~ inherits(p, "ggplot")),
+  # correct aesthetics
+  pass_if(~ as.character(p$mapping$x)[2] == "Sepal.Width"),
+  pass_if(~ as.character(p$mapping$y)[2] == "Sepal.Length"),
+  pass_if(~ as.character(p$mapping$colour)[2] == "Species"),
+  # must contain at least one point layer
+  pass_if(~ any(vapply(p$layers, function(ly) inherits(ly$geom, "GeomPoint"), logical(1)))),
+  # must contain at least one smooth layer
+  pass_if(~ any(vapply(p$layers, function(ly) inherits(ly$geom, "GeomSmooth"), logical(1))))
+)
+```
+
+</div>
+
+## Combining Multiple Plots
+
+When working with complex datasets, it is often useful to present multiple graphics side by side or stacked vertically. The recommended approach to combine multiple plot is to use the **patchwork** library, which offers an intuitive syntax:
+
+```r
+p1 + p2                # place plots side by side
+p1 / p2                # place plots on top of one another
+(p1 | p2) / p3         # create grids
+```
+
+`patchwork` automatically aligns axes, manages titles, and supports nested layouts intuitively.
+
+### Example
+
+Here we will use the mtcars dataset to create two plots and combine them side by side. The mtcars dataset contains various attributes of different car models, such as weight (`wt`), miles per gallon (`mpg`), and number of cylinders (`cyl`).
+
+```{r patchwork_example, echo=TRUE, exercise=TRUE, message=FALSE, warning=FALSE, fig.height=5, fig.width=6}
+library(ggplot2)
+library(patchwork)
+
+p1 <- ggplot(mtcars, aes(wt, mpg)) + 
+  geom_point(color="steelblue") +
+  theme_minimal()
+
+p2 <- ggplot(mtcars, aes(factor(cyl), mpg)) +
+  geom_boxplot(fill="gray70") +
+  theme_minimal()
+
+p1 | p2
+```
+
+
+### Adding Labels to Combined Plots
+
+Patchwork allows adding panel labels such as **A, B, C…** using the `plot_annotation()` function.
+
+Example:
+
+```{r label1, exercise=TRUE, exercise.setup="patchwork_example", fig.height=5, fig.width=6}
+(p1 | p2) + 
+  plot_annotation(tag_levels = "A")
+```
+
+or to label each plot manually:
+
+```{r label2, exercise=TRUE, exercise.setup="patchwork_example", fig.height=5, fig.width=6}
+(p1 + labs(tag = "A")) | (p2 + labs(tag = "B"))
+```
+
+This is useful when preparing multi-panel figures for publications.
+
+### Exercise: Create a 4‑panels figure
+
+<div class="exo">
+
+Reproduce the combined figure shown below. It includes **four labeled plots (A–D)** arranged in a 2×2 grid:
+
+1. **A:** Scatterplot of `wt` vs `mpg`
+2. **B:** Boxplot of `mpg` by `cyl`
+3. **C:** Histogram of `hp`
+4. **D:** Density plot of `qsec`
+
+To do this:
+
+- Given the plots named `pA`, `pB`, `pC`, `pD` Add tag labels using either `labs(tag="XXX")` or `plot_annotation(tag_levels="XXX")` and combine them using the patchwork syntax.
+
+```{r exo_mtcars_show, echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(patchwork)
+
+pA <- ggplot(mtcars, aes(wt, mpg)) +
+  geom_point() +
+  theme_minimal() 
+
+pB <- ggplot(mtcars, aes(factor(cyl), mpg)) +
+  geom_boxplot() +
+  theme_minimal() 
+
+pC <- ggplot(mtcars, aes(hp)) +
+  geom_histogram(bins=20, fill="steelblue", color="white") +
+  theme_minimal() 
+
+pD <- ggplot(mtcars, aes(qsec)) +
+  geom_density(fill="gray70") +
+  theme_minimal() 
+
+pA <- pA + labs(tag="A", title="mpg vs wt")
+
+pB <- pB + labs(tag="B", title="mpg by cyl")
+
+pC <- pC + labs(tag="C", title="Distribution of hp")
+
+pD <- pD + labs(tag="D", title="Density of qsec")
+
+(pA | pB) / (pC | pD)
+```
+
+```{r exo_mtcars_prepare, echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(patchwork)
+
+pA <- ggplot(mtcars, aes(wt, mpg)) +
+  geom_point() +
+  theme_minimal() 
+
+pB <- ggplot(mtcars, aes(factor(cyl), mpg)) +
+  geom_boxplot() +
+  theme_minimal() 
+
+pC <- ggplot(mtcars, aes(hp)) +
+  geom_histogram(bins=20, fill="steelblue", color="white") +
+  theme_minimal() 
+
+pD <- ggplot(mtcars, aes(qsec)) +
+  geom_density(fill="gray70") +
+  theme_minimal() 
+```
+
+```{r exo_mtcars, exercise.setup= "exo_mtcars_prepare", exercise=TRUE, echo=FALSE, fig.height=5, fig.width=5}
+pA
+pB
+pC
+pD
+```
+
+
+```{r exo_mtcars-solution}
+
+pA <- pA + labs(tag="A", title="mpg vs wt")
+
+pB <- pB + labs(tag="B", title="mpg by cyl")
+
+pC <- pC + labs(tag="C", title="Distribution of hp")
+
+pD <- pD + labs(tag="D", title="Density of qsec")
+
+(pA | pB) / (pC | pD)
+```
+
+
+```{r exo_mtcars-check}
+gradethis::grade_result_strict(
+
+  # Ensure objects exist
+  fail_if(~ !exists("pA"), "Missing plot pA."),
+  fail_if(~ !exists("pB"), "Missing plot pB."),
+  fail_if(~ !exists("pC"), "Missing plot pC."),
+  fail_if(~ !exists("pD"), "Missing plot pD."),
+
+  # Check titles
+  fail_if(~ pA$labels$title != "mpg vs wt",
+          "The title of pA must be exactly: 'mpg vs wt'."),
+  fail_if(~ pB$labels$title != "mpg by cyl",
+          "The title of pB must be exactly: 'mpg by cyl'."),
+  fail_if(~ pC$labels$title != "Distribution of hp",
+          "The title of pC must be exactly: 'Distribution of hp'."),
+  fail_if(~ pD$labels$title != "Density of qsec",
+          "The title of pD must be exactly: 'Density of qsec'."),
+
+  # Check tags
+  fail_if(~ pA$labels$tag != "A", "Plot pA must have tag 'A'."),
+  fail_if(~ pB$labels$tag != "B", "Plot pB must have tag 'B'."),
+  fail_if(~ pC$labels$tag != "C", "Plot pC must have tag 'C'."),
+  fail_if(~ pD$labels$tag != "D", "Plot pD must have tag 'D'."),
+
+  # Check combined patchwork structure
+  pass_if(~ inherits((pA | pB) / (pC | pD), "patchwork"))
+)
+```
+
+</div>
+
+## Interactive Extensions
+
+While `ggplot2` is primarily designed for static graphics, several extensions can convert existing plots into **interactive visualizations** suitable for HTML documents, dashboards, and exploratory data analysis.
+
+Common approaches:
+
+- **plotly** (`ggplotly()`)
+- **ggiraph** (`geom_point_interactive()`, HTML tooltips, hover effects)
+
+These allow:
+- Hover tooltips  
+- Zooming/panning  
+- Clickable elements  
+- Dynamic legends  
+
+---
+
+### Example using `ggplotly()`
+
+```{r exampleplotly, exercise=TRUE, exercise=TRUE, echo=FALSE, fig.height=5, fig.width=5}
+library(ggplot2)
+library(plotly)
+data(mtcars)
+
+p <- ggplot(mtcars, aes(wt, mpg, color=factor(cyl))) +
+  geom_point(size=3) +
+  theme_minimal()
+
+ggplotly(p)
+```
+
+### Exercise: Create an Interactive Barplot
+
+<div class="exo">
+
+Create an **interactive barplot** using the `diamonds` dataset.  
+The final interactive object must be named **`p_interactive`**.
+
+- Use `diamonds` (from **ggplot2**)
+- Build a stacked barplot:
+  - `cut` on **x**
+  - `clarity` mapped to **fill**
+- Use `geom_bar()`
+- Use `theme_minimal()`
+- Add title: `"Interactive barplot: clarity by cut"`
+- Convert to interactive with **ggplotly()**
+- Save your final object as **`p_interactive`**
+
+
+
+```{r exo_interactive, exercise=TRUE, echo=FALSE}
+
+```
+
+
+```{r exo_interactive-solution}
+library(ggplot2)
+library(plotly)
+
+p_base <- ggplot(diamonds, aes(x = cut, fill = clarity)) +
+  geom_bar() +
+  theme_minimal() +
+  labs(title = "Interactive barplot: clarity by cut")
+
+p_interactive <- ggplotly(p_base)
+
+p_interactive
+```
+
+
+
+```{r exo_interactive-check}
+gradethis::grade_result_strict(
+
+  fail_if(~ !exists("p_interactive"),
+          "You must create an object named `p_interactive`."),
+
+  pass_if(~ "plotly" %in% class(p_interactive),
+          "Great! Your interactive barplot was created.")
+)
+```
+
+</div>
+
+
+## Improving Text Labels with *ggrepel*
+
+When adding text labels (*e.g.* with `geom_text()`) to points in a scatterplot, labels often **overlap**, making the figure hard to read .  
+The **ggrepel** package provides drop-in replacements for `geom_text()` and `geom_label()`:
+
+- `geom_text_repel()`
+- `geom_label_repel()`
+
+These geoms automatically **repel** labels away from each other and from the points, reducing overlap while keeping labels readable.
+
+---
+
+### Basic Example
+
+```{r bex, exercise=TRUE, exercise=TRUE, echo=FALSE, fig.height=5, fig.width=5}
+library(ggplot2)
+library(ggrepel)
+
+mtcars$car_name <- rownames(mtcars)
+
+ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  geom_text_repel(
+    data = subset(mtcars, mpg > 25),
+    aes(label = car_name),
+    size = 3
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Cars with high fuel efficiency",
+    x = "Weight (1000 lbs)",
+    y = "Miles per gallon"
+  )
+```
+
+### Exercise: Label the Heaviest Cars
+
+<div class="exo">
+
+Create a scatterplot using the `mtcars` dataset and label the **heaviest cars** using `ggrepel`.
+
+Your final ggplot object must be named **`p_ggrepel`**.
+
+- Add column `car_name <- rownames(mtcars)`
+- Scatterplot:
+  - `wt` on x-axis  
+  - `mpg` on y-axis  
+- Add points with `geom_point()`
+- Label cars with **wt > 3.5** using `geom_label_repel()`
+- Add title: `"Heaviest cars (wt > 3.5) with labels"`
+- Use `theme_minimal()`
+- Save plot to **p_ggrepel**
+
+```{r exo_ggrepel, exercise=TRUE, echo=FALSE}
+
+```
+
+
+```{r exo_ggrepel-solution}
+library(ggplot2)
+library(ggrepel)
+
+mtcars$car_name <- rownames(mtcars)
+
+p_ggrepel <- ggplot(mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  geom_label_repel(
+    data = subset(mtcars, wt > 3.5),
+    aes(label = car_name),
+    size = 1.5,
+    fill="lightblue", 
+    color="black"
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Heaviest cars (wt > 3.5) with labels",
+    x = "Weight (1000 lbs)",
+    y = "Miles per gallon"
+  )
+
+p_ggrepel
+```
+
+
+```{r exo_ggrepel-check}
+gradethis::grade_result_strict(
+
+  fail_if(~ !exists("p_ggrepel"), 
+          "You must create a plot named `p_ggrepel`."),
+
+  fail_if(~ !"ggplot" %in% class(p_ggrepel),
+          "`p_ggrepel` must be a ggplot object."),
+
+  fail_if(
+    ~ !any(vapply(p_ggrepel$layers, function(l) inherits(l$geom, "GeomLabelRepel"), logical(1))),
+    "Make sure you use `geom_label_repel()` in your plot."
+  ),
+
+  pass_if(~ TRUE, "Great job! Your ggrepel-labeled plot looks correct!")
+)
+```
+
+</div>
+
+### End of the section
+
+Thank you for following this tutorial.
+
