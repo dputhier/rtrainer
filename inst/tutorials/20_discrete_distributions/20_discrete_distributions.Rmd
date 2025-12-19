@@ -1,0 +1,1001 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "The binomial distribution and (r)GREAT functional enrichment tool"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(ggplot2)
+library(palmerpenguins)
+library(ggthemes)
+library(fs)
+knitr::opts_chunk$set(echo=TRUE, 
+                      eval=TRUE, 
+                      cache=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE, 
+                      comment="",
+                      exercise.timelimit="600",
+                      exercise.completion=TRUE,
+                      exercise.diagnostics=TRUE)
+gradethis::gradethis_setup()
+```
+
+## Bernoulli Trials
+
+### Definition
+
+<div class="alert alert-success" role="alert">
+In probability, a **Bernoulli trial** with probability `p` is a random experiment with exactly **two possible outcomes**: success or failure.
+
+- `p` is the probability of success.
+- `q = 1 - p` is the probability of failure.
+
+The definition of "success" and "failure" is **conventional** and can change depending on the context.
+</div>
+
+**Examples**
+
+- Getting a head when flipping a coin.
+- Getting a six when rolling a Dice.
+- Falling into an exonic region when randomly sampling nucleotides from the genome. 
+- Finding a particular DNA motif when going along a particular DNA sequence.
+- ...
+
+### Simulation
+
+<div class="exo">
+Use the **interactive control panel** in the app below to simulate Bernoulli trials:
+
+- Set the **probability of success (`p`)** using the slider.
+- Choose the **number of trials (`n`)** with the numeric input.
+- The app will display:
+  - **Statistics panel**: shows the empirical mean and variance versus theoretical values.
+  - **Histogram**: visualizes the distribution of successes from your simulations.
+- Increase the number of trial and verify that the empirical mean converges to the theoretical mean as `n` increases.
+
+```{r bernoulli-ui, echo=FALSE}
+# UI: inputs and output placeholders (visible to the user)
+sliderInput("p_sim", "Probability of success (p):",
+            min = 0, max = 1, value = 0.5, step = 0.01)
+
+numericInput("n_sim", "Number of Bernoulli trials (n):",
+             value = 100, min = 1)
+
+verbatimTextOutput("bernoulliStats")
+plotOutput("bernoulliHist")
+```
+
+```{r bernoulli-server, context="server"}
+# Server: reactive code that populates the output placeholders
+output$bernoulliStats <- renderPrint({
+  req(input$p_sim, input$n_sim)
+  p <- input$p_sim
+  n <- input$n_sim
+  x <- rbinom(n, size = 1, prob = p)
+
+  cat("Number of expected successes:        ", n * p , "\n")
+  cat("Number of expected failures:          ", n * (1 - p), "\n")
+  cat("Number of observed successes:        ", n * mean(x) , "\n")
+  cat("Number of observed failures:          ", n * (1 - mean(x)), "\n") 
+  cat("Empirical mean:             ", mean(x), "\n")
+  cat("Theoretical mean (p):       ", p, "\n\n")
+
+})
+
+output$bernoulliHist <- renderPlot({
+  req(input$p_sim, input$n_sim)
+  p <- input$p_sim
+  n <- input$n_sim
+  x <- rbinom(n, size = 1, prob = p)
+  df <- data.frame(x = factor(x, levels = c(0, 1)))
+
+  ggplot(df, aes(x = x)) +
+    geom_bar(fill="#548BC5") +
+    labs(
+      x = "Outcome (0 = failure, 1 = success)",
+      y = "Count",
+      title = paste("Bernoulli simulation (n =", n, ", p =", p, ")")
+    ) +
+    theme_minimal()
+})
+```
+</div>
+
+## Independence
+
+### Principle
+
+<div class="alert alert-success" role="alert">
+Trials are said to be **independent** if one trial’s outcome does **not** affect the others.
+</div>
+
+**Examples**:
+
+- **Independent Trials**:
+  - **Flipping a coin multiple times**: The outcome of one flip does not influence the outcome of the next flip.
+  - **Rolling a die multiple times**: Each roll is independent of the previous rolls.
+
+- **Dependent Trials**:
+  - **Drawing cards from a deck without replacement**: The outcome of one draw affects the probabilities of subsequent draws.
+  - **Selecting marbles from a bag without replacement**: The probability of drawing a specific color changes as marbles are removed.
+
+### Exercises
+
+<div class="exo">
+
+You have a deck of 52 cards, and you draw the Ace of Spades on the first draw. What is the probability of drawing another Ace on the second draw **without replacement**?
+
+```{r question-deck, echo=FALSE}
+learnr::question(
+  "What is the probability of drawing another Ace on the second draw without replacement?",
+  learnr::answer("1/13", 
+                 message="Not quite. Remember, the first Ace has been removed from the deck.", 
+                 correct = FALSE),
+  learnr::answer("3/51", 
+                 message="Correct! After drawing the Ace of Spades, there are 3 Aces left out of 51 remaining cards.", 
+                 correct = TRUE),
+  learnr::answer("1/51", 
+                 message="Not quite. Remember, the first Ace has been removed from the deck.", 
+                 correct = FALSE),
+  learnr::answer("4/52", 
+                 message="Not quite. Remember, the first Ace has been removed from the deck.", 
+                 correct = FALSE),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+
+You have a bag with 5 red marbles and 5 blue marbles. You draw one red marble and do not replace it. What is the probability of drawing a red marble on the second draw?
+
+```{r question-marbles, echo=FALSE}
+learnr::question(
+  "What is the probability of drawing a red marble on the second draw without replacement?",
+  learnr::answer("5/9", 
+                 message="Not quite. Remember, one red marble has already been removed.",
+                 correct = FALSE),
+  learnr::answer("4/9", 
+                 message="Correct! After drawing one red marble, there are 4 red marbles left out of 9 total marbles.",
+                 correct = TRUE),
+  learnr::answer("5/10", 
+                 message="Not quite. Remember, one red marble has already been removed.",
+                correct = FALSE),
+  learnr::answer("1/2", 
+                 message="Not quite. Remember, one red marble has already been removed.",
+                correct = FALSE),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+
+You roll a die twice. Does the outcome of the first roll affect the probability of the second roll?
+
+```{r question-dice, echo=FALSE}
+learnr::question(
+  "Does the outcome of the first die roll affect the probability of the second die roll?",
+  learnr::answer("Yes", 
+                 message="Not quite. Die rolls are independent events.", 
+                 correct = FALSE),
+  learnr::answer("No", 
+                 message="Correct! Die rolls are independent trials. The outcome of one roll does not affect the other.",
+                 correct = TRUE),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+</div>
+
+
+## Sequences of Bernoulli Trials
+
+<div class="alert alert-success" role="alert">
+We can extend the idea of a **Bernoulli trial** (a random experiment with **two possible outcomes**) to **sequences of independent trials**, such as consecutive coin flips or dice rolls.
+</div>
+
+**Example**
+
+Consider rolling a fair six-sided dice. We define **success** as rolling a 6:
+
+- Probability of success: \( p = 1/6 \)  
+- Probability of failure: \( q = 1 - p = 5/6 \)
+
+We can compute probabilities for **sequences of outcomes**:
+
+- Probability of two consecutive successes:  \(P(\text{success, success}) = p \cdot p = p^2\)
+
+- Probability of two consecutive failures:  \(P(\text{failure, failure}) = q \cdot q = q^2\)
+
+- Probability of `x` consecutive successes:  \(P(\text{x successes}) = p^x\)
+
+- Probability of `x` consecutive failures:  \(P(\text{x failures}) = q^x\)
+
+- Probability of a specific sequence, e.g., failure, failure, success, failure, failure:  
+\[
+P(\text{sequence}) = q \cdot q \cdot p \cdot q \cdot q = q^4 \cdot p
+\]
+
+```{r bernoulli-exercise, echo=FALSE}
+library(learnr)
+
+question(
+  "Rolling a fair die, what is the probability of the sequence: success (6), failure (not 6), success (6)?",
+  answer("1/6 + 5/6 + 1/6", correct = FALSE),
+  answer("(1/6)^3", correct = FALSE),
+  answer("1/6 * 5/6 * 1/6", correct = TRUE),
+  answer("(5/6)^3", correct = FALSE),
+  allow_retry = TRUE
+)
+```
+
+```{r bernoulli-exercise_2, echo=FALSE}
+question(
+  "If the probability of success is p, what is the probability of three consecutive failures?",
+  answer("p^3", correct = FALSE),
+  answer("(1-p)^3", correct = TRUE),
+  answer("3*(1-p)", correct = FALSE),
+  answer("p*(1-p)^2", correct = FALSE),
+  allow_retry = TRUE
+)
+```
+```{r bernoulli-exercise_3, echo=FALSE}
+library(learnr)
+question(
+  "For a Bernoulli trial with success probability p, what is the probability of the sequence: failure, success, success, failure?",
+  answer("(1-p) * p * p * (1-p)", correct = TRUE),
+  answer("p^4", correct = FALSE),
+  answer("(1-p)^2 * p^2", correct = TRUE),
+  answer("p*(1-p)", correct = FALSE),
+  allow_retry = TRUE
+)
+```
+
+## Combining successes
+
+### Combinations and Binomial Coefficients
+
+When doing n independent Bernoulli trials, we would like to **count how many different sequences can contain exactly k successes**. 
+
+**Example**
+
+- Consider a sequence of 5 trials: `1, 2, 3, 4, 5`
+- We want to place **2 successes** in this sequence.
+
+The diagram below display all possible ways to place 2 successes (`S`) and 3 failures (`F`) in 5 trials:
+
+```{r choose-example, echo=FALSE, eval=TRUE}
+library(ggplot2)
+library(tidyr)
+
+# Generate all combinations of 2 successes in 5 trials
+combinations <- combn(5, 2, simplify = FALSE)
+
+# Create a data frame for the binary matrix
+binary_matrix <- data.frame(
+  Trial = rep(1:5, times = length(combinations)),
+  Sequence = rep(1:length(combinations), each = 5),
+  Outcome = 0
+)
+
+# Fill the binary matrix
+for (i in 1:length(combinations)) {
+  binary_matrix$Outcome[binary_matrix$Sequence == i &
+                         binary_matrix$Trial %in% combinations[[i]]] <- 1
+}
+binary_matrix$Sequence <- as.factor(binary_matrix$Sequence)
+# Plot using ggplot2
+ggplot(binary_matrix, aes(x = Trial, y = Sequence, fill = factor(Outcome))) +
+  geom_tile(color = "grey") +
+  scale_fill_manual(values = c("0" = "White", "1" = "orange"), 
+                    labels = c("F", "S")) +
+  labs(title = "All solutions to place 2 \n successes in 5 trials",
+        y = "Sequence number",
+        x = "Position of Successes",
+        fill = "Outcome") +
+  theme_minimal() +
+  theme(legend.position = "top", panel.grid = element_blank()) + coord_equal() 
+```
+
+<div class="alert alert-success" role="alert">
+The binomial coefficient \(\binom{n}{k}\) can be used to calculate the number of ways to arrange k (here 2) successes in n trials (here 5).
+
+\[
+\binom{n}{k} = \frac{n!}{k! (n-k)!}
+\]
+
+- n! = factorial of n
+- k! = factorial of k
+- (n-k)! = factorial of n-k
+
+
+- In R, you can calculate this using the `choose()` function:
+
+```{r}
+choose(5, 2)
+```
+
+</div>
+
+### Exercises
+
+<div class="exo">
+
+Use the R interpreter below to answer the following questions about combinations and binomial coefficients.
+
+```{r exo-choose, exercise=TRUE}
+
+```
+
+How many ways can you arrange 3 successes in 7 trials?
+
+```{r question-choose7, echo=FALSE}
+learnr::question(
+  "How many ways can you arrange 3 successes in 7 trials?",
+  learnr::answer("21", message = "Not quite. Try using the `choose(7, 3)` function in R."),
+  learnr::answer("35", message = "Correct! $\\binom{7}{3} = 35$.", correct = TRUE),
+  learnr::answer("70", message = "Not quite. Try using the `choose(7, 3)` function in R."),
+  learnr::answer("105", message = "Not quite. Try using the `choose(7, 3)` function in R."),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+What is the value of $\binom{10}{4}$?
+
+```{r question-choose10, echo=FALSE}
+learnr::question(
+  "What is the value of $\\binom{10}{4}$?",
+  learnr::answer("120", message = "Not quite. Try using the `choose(10, 4)` function in R."),
+  learnr::answer("210", message = "Correct! $\\binom{10}{4} = 210$.", correct = TRUE),
+  learnr::answer("252", message = "Not quite. Try using the `choose(10, 4)` function in R."),
+  learnr::answer("330", message = "Not quite. Try using the `choose(10, 4)` function in R."),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+What does the `combn(4, 2)` function return?
+
+```{r question-combn2, echo=FALSE}
+learnr::question(
+  "What does the `combn(4, 2)` function return?",
+  learnr::answer("A vector of length 6", message = "Not quite. Try running `combn(4, 2)` in R to see the output."),
+  learnr::answer("A matrix with 6 columns and 2 rows", message = "Correct! `combn(4, 2)` returns a matrix with all combinations of 2 elements from 4 items.", correct = TRUE),
+  learnr::answer("A list of 6 combinations", message = "Not quite. Try running `combn(4, 2)` in R to see the output."),
+  learnr::answer("A single number", message = "Not quite. Try running `combn(4, 2)` in R to see the output."),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+How many combinations does `combn(5, 3)` generate?
+
+```{r question-combn, echo=FALSE}
+learnr::question(
+  "How many combinations does `combn(5, 3)` generate?",
+  learnr::answer("5", message = "Not quite. Try running `combn(5, 3)` in R to see the number of combinations."),
+  learnr::answer("10", message = "Correct! `combn(5, 3)` generates 10 combinations.", correct = TRUE),
+  learnr::answer("15", message = "Not quite. Try running `combn(5, 3)` in R to see the number of combinations."),
+  learnr::answer("20", message = "Not quite. Try running `combn(5, 3)` in R to see the number of combinations."),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+</div>
+
+## The Binomial Distribution
+
+### Definition
+
+<div class="alert alert-success" role="alert">
+Repeating **n independent Bernoulli trials** with the same probability of success `p` we can define a random variable that counts the **number of successes**.  
+This random variable can be modeled using a **binomial distribution</strong>**:
+
+`X ~ Bin(n, p)`
+
+The **binomial probability** gives the likelihood of observing exactly `k` successes in `n` independent Bernoulli trials with success probability `p`:
+
+\[
+P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}
+\]
+
+- \(\binom{n}{k} = \frac{n!}{k!(n-k)!}\) is the number of ways to choose `k` successes among `n` trials
+- \(p^k\) is the probability of `k` successes
+- \((1-p)^{n-k}\) is the probability of `n-k` failures
+</div>
+
+<div class="exo">
+
+```{r binomial-quiz, echo=FALSE}
+learnr::question(
+  "Which component of the binomial formula represents the number of ways to choose `k` successes from `n` trials?",
+  learnr::answer("p^k", correct = FALSE),
+  learnr::answer("(1-p)^(n-k)", correct = FALSE),
+  learnr::answer("C(n, k) = n! / (k!(n-k)!)", correct = TRUE),
+  learnr::answer("None of the above", correct = FALSE),
+  allow_retry = TRUE
+)
+```
+
+```{r binomial-quiz2, echo=FALSE}
+question(
+  "In the formula P(X = k) = C(n,k) p^k (1-p)^(n-k), what does (1-p)^(n-k) represent?",
+  answer("The probability of successes", correct = FALSE),
+  answer("The probability of failures", correct = TRUE),
+  answer("The total number of trials", correct = FALSE),
+  answer("The expected value", correct = FALSE),
+  allow_retry = TRUE
+)
+```
+
+```{r binomial-quiz3, echo=FALSE}
+question(
+  "If n = 10 and p = 0.25, what is the probability of observing exactly 3 successes?",
+  answer("0.25^3 * 0.75^7", correct = FALSE),
+  answer("C(10,3) * 0.25^3 * 0.75^7", correct = TRUE),
+  answer("10 * 0.25^3", correct = FALSE),
+  answer("0.25^10", correct = FALSE),
+  allow_retry = TRUE
+)
+```
+
+</div>
+
+### Displaying the binomial distribution
+
+```{r binomial-ui, echo=FALSE}
+# UI: inputs and output placeholders
+sliderInput("n", "Number of trials (n):", min = 1, max = 50, value = 10)
+sliderInput("p", "Probability of success (p):", min = 0, max = 1, value = 0.5, step = 0.01)
+checkboxInput("show_probabilities", "Show probabilities", value = TRUE)
+plotOutput("binomialPlot")
+verbatimTextOutput("probabilities")
+```
+
+```{r binomial-server, context="server"}
+# Server: reactive code that populates the output placeholders
+output$binomialPlot <- renderPlot({
+  k <- 0:input$n
+  probabilities <- dbinom(k, size = input$n, prob = input$p)
+  data <- data.frame(k = k, probabilities = probabilities)
+
+  ggplot(data, aes(x = k, y = probabilities)) +
+    geom_col(fill = "skyblue", color = "black") +
+    labs(title = paste("Binomial Distribution (n =", input$n, ", p =", input$p, ")"),
+         x = "Number of Successes (k)",
+         y = "Probability") +
+    theme_minimal()
+})
+
+output$probabilities <- renderPrint({
+  if (input$show_probabilities) {
+    k <- 0:input$n
+    probabilities <- dbinom(k, size = input$n, prob = input$p)
+    data.frame(k = k, Probability = probabilities)
+  }
+})
+```
+
+<div class="exo">
+
+Using the shiny application above and its output table, answer the question.
+
+```{r binomial-hist1, echo=FALSE}
+learnr::question(
+  "If n = 15 and p = 0.7, what is the probability of observing exactly 12 successes? Use the Shiny app to find the answer.",
+  learnr::answer("~0.10", message = "Not quite. Check the output table in the Shiny app for n=15 and p=0.7."),
+  learnr::answer("~0.17", message = "Correct! The probability of observing exactly 12 successes is approximately 0.17.", correct=TRUE),
+  learnr::answer("~0.25", message = "Not quite. Check the output table in the Shiny app for n=15 and p=0.7."),
+  learnr::answer("~0.30", message = "Not quite. Check the output table in the Shiny app for n=15 and p=0.7."),
+  correct = "0.17",
+  allow_retry = TRUE
+)
+```
+
+```{r binomial-hist4, echo=FALSE}
+learnr::question(
+  "If n = 15 and p = 0.7, what is the probability to obtain 12 successes or more? Use the Shiny app to find the answer.",
+  learnr::answer("~0.18", message = "Not quite. Check the output table in the Shiny app for n=15 and p=0.7, and sum the probabilities for 12, 13, 14, and 15 successes."),
+  learnr::answer("~0.40", message = "Not quite. Check the output table in the Shiny app for n=15 and p=0.7, and sum the probabilities for 12, 13, 14, and 15 successes."),
+  learnr::answer("~0.50", message = "Not quite. Check the output table in the Shiny app for n=15 and p=0.7, and sum the probabilities for 12, 13, 14, and 15 successes."),
+  learnr::answer("~0.30", message = "Correct! The probability of obtaining 12 successes or more is approximately 0.30.", correct = TRUE),
+  correct = "0.30",
+  allow_retry = TRUE
+)
+```
+
+</div>
+
+## R functions for the binomial distribution
+
+<div class="alert alert-success" role="alert">
+In R, you can compute binomial probabilities using the following functions:
+
+- **`rbinom(num, size = n, prob = p)`**: Random samples generated from the binomial distribution.
+- **`dbinom(k, size = n, prob = p)`**: Probability mass function (PMF) for observing exactly `k` successes.
+- **`pbinom(q, size = n, prob = p)`**: Cumulative distribution function (CDF) for observing up to `q` successes or more than k successes. **Look at the `lower.tail` argument to change the direction**. 
+</div>
+
+<div class="alert alert-danger" role="alert">
+**NB**
+
+- When using `pbinom()` to compute the probability of observing **more than k successes**, you can use the argument `lower.tail = FALSE` or compute it as `1 - pbinom(k, size = n, prob = p)`.
+- When using `pbinom()` to compute the probability of observing **at least k successes**, you can use the argument `lower.tail = FALSE` with `k - 1` or compute it as `1 - pbinom(k - 1, size = n, prob = p)`.
+</div>
+
+<div class="exo">
+Complete the following exercises using the binomial distribution functions in R. Store your results in the specified variables.
+
+```{r binomial_exo, exercise=TRUE}
+# 1. Compute the probability of observing exactly 3 successes in 10 trials with p = 0.5 and store it in a.
+
+# 2. Compute the probability of observing up to 4 successes in 20 trials with p = 0.3 and store it in b.
+
+# 3. Compute the probability of observing more than 4 successes in 15 trials with p = 0.6 and store it in c.
+
+# 4. With set.seed(123) generate 100 values from a binomial distribution with n = 20 and p = 0.4 and store them in d.
+
+# 5. Compute the probability of observing at least to 8 successes in 10 trials with p = 0.2 and store it in e.
+
+```
+
+```{r binomial_exo-solution}
+a <- dbinom(3, size = 10, prob = 0.5)
+b <- pbinom(4, size = 20, prob = 0.3)
+c <- 1 - pbinom(4, size = 15, prob = 0.6)
+set.seed(123)
+d <- rbinom(100, size = 20, prob = 0.4)
+e <- pbinom(8-1, size = 10, prob = 0.2, lower.tail = FALSE)
+```
+
+```{r binomial_exo-check}
+gradethis::grade_result_strict(
+  gradethis::pass_if(~ abs(a - dbinom(3, size = 10, prob = 0.5)) < 1e-10),
+  gradethis::pass_if(~ abs(b - pbinom(4, size = 20, prob = 0.3)) < 1e-10),
+  gradethis::pass_if(~ abs(c - (1 - pbinom(4, size = 15, prob = 0.6))) < 1e-10),
+  gradethis::pass_if(~ length(d) == 100),
+  gradethis::pass_if(~ sum(d) == 801),
+  gradethis::pass_if(~ abs(e - pbinom(8-1, size = 10, prob = 0.2, lower.tail = FALSE)) < 1e-10 )
+)
+```
+</div>
+
+<div class="exo">
+```{r quiz1, echo=FALSE}
+learnr::question("Which instruction is the equivalent to `pbinom(8-1, size=10, prob=0.4, lower.tail=FALSE)`?",
+  learnr::answer("sum(dbinom(7:10, size=10, prob=0.4))", message = "No, this calculates the probability of more than 6 successes."),  
+  learnr::answer("1 - pbinom(7, size=10, prob=0.4)", message = "Correct! This is also equivalent to `pbinom(7, size=10, prob=0.4, lower.tail=FALSE)`.", correct = TRUE),
+  learnr::answer("sum(dbinom(0:7, size=10, prob=0.4))", message = "No, this calculates the probability of 0 to 7 successes."),
+  learnr::answer("sum(dbinom(7, size=10, prob=0.4))", message = "No, this calculates the probability of 7 successes (the sum() has no meaning...)."),
+  learnr::answer("1 - pbinom(7-1, size=10, prob=0.4)", message = "No, this calculates the p-value of 7."),  
+  learnr::answer("sum(dbinom(8:10, size=10, prob=0.4))", message = "Correct! This calculates the probability of more than 7 successes (that is 8 to 10).", correct = TRUE),
+  learnr::answer("dbinom(7, size=10, prob=0.4)", message = "No, this calculates the probability of exactly 7 successes."),
+  correct = c("sum(dbinom(8:10, size=10, prob=0.4))", "1 - pbinom(7, size=10, prob=0.4)"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+</div>
+
+## Visualizing the p-value
+
+<div class="alert alert-success" role="alert">
+The p-value represents the probability of **observing a test statistic as extreme as, or more extreme than, the one observed under the null hypothesis**. In the context of the binomial distribution, we can visualize the p-value as the area under the curve (or sum of probabilities) in the tail(s) of the distribution.
+</div>
+
+<div class="exo">
+This **interactive visualization** allows you to explore how changing the number of trials (n), probability of success (p), and number of successes (k) affects the binomial distribution and the **associated p-values for a given k**. The red bars represent the p-value area for your selected tail option.
+
+```{r binomialpval-ui, echo=FALSE}
+# UI: inputs and output placeholders
+sliderInput("n", "Number of trials (n):", min = 1, max = 50, value = 16)
+sliderInput("p", "Probability of success (p):", min = 0, max = 1, value = 0.5, step = 0.01)
+sliderInput("k", "Number of successes (k):", min = 0, max = 50, value = 11)
+selectInput("tail", "Tail of the distribution:",
+            choices = c("Upper tail (P(X ≥ k))" = "upper",
+                        "Lower tail (P(X ≤ k))" = "lower"))
+plotOutput("binomialPlot2")
+```
+
+```{r binomialpval-server, context="server"}
+# Server: reactive code that populates the output placeholders
+output$binomialPlot2 <- renderPlot({
+  k_vals <- 0:input$n
+  probabilities <- dbinom(k_vals, size = input$n, prob = input$p)
+  data <- data.frame(k = k_vals, probabilities = probabilities)
+
+  # Determine which bars to color based on the tail selection
+  if (input$tail == "lower") {
+    data$highlight <- ifelse(data$k <= input$k, "p-value", "other")
+    p_value <- pbinom(input$k, size = input$n, prob = input$p)
+    p_text <- paste0("P(X ≤ ", input$k, ") = ", sprintf("%g", p_value))
+  } else if (input$tail == "upper") {
+    data$highlight <- ifelse(data$k >= input$k, "p-value", "other")
+    p_value <- 1 - pbinom(input$k - 1, size = input$n, prob = input$p)
+    p_text <- paste0("P(X ≥ ", input$k, ") = ", sprintf("%g", p_value))
+  } 
+
+  # Plot
+  ggplot(data, aes(x = k, y = probabilities, fill = highlight)) +
+    geom_col(color = "black") +
+    scale_fill_manual(values = c("p-value" = "red", "other" = "skyblue")) +
+    labs(title = paste("Binomial Distribution (n =", input$n, ", p =", input$p, ")"),
+         x = "Number of Successes (k)",
+         y = "Probability") +
+    theme_minimal() +
+    theme(legend.position = "none") +
+    ggplot2::xlim(0, input$n) +
+    scale_x_continuous(breaks=0:(input$n)) +
+    annotate("text", x = Inf, y = Inf, label = p_text, hjust = 1.1, vjust = 1.5, size = 4)
+})
+
+output$pValue <- renderPrint({
+  if (input$tail == "lower") {
+    p_value <- pbinom(input$k, size = input$n, prob = input$p)
+    cat("P(X ≤", input$k, ") =", p_value)
+  } else if (input$tail == "upper") {
+    p_value <- 1 - pbinom(input$k - 1, size = input$n, prob = input$p)
+    cat("P(X ≥", input$k, ") =", p_value)
+  }
+})
+```
+</div>
+
+## Functional Enrichment Analysis with GREAT
+
+### Introduction to GREAT
+
+**GREAT (Genomic Regions Enrichment of Annotations Tool)** is a [web-based](https://great.stanford.edu/great/public/html/) and [R](https://jokergoo.github.io/rGREAT/index.html) package tool for interpreting **functional significance of genomic regions** (e.g. **ChIP-seq peaks**). For any given functional annotation (such as the GO term *"Cell Cycle*), GREAT first identifies all associated genes and calculates the **genomic coverage** of both their potential regulatory domains/regions (typically including **5kb upstream** and **1kb downstream** of their transcription start sites). It then employs a **binomial statistical test** to determine whether the **observed overlap** between your input genomic regions and these functionally-associated regions is **significantly greater than would be expected by random chance**. 
+
+\[ P(X = k) = \binom{n}{k} p^k (1-p)^{n-k} \]
+
+Where:
+
+- \(n\) is the total **number of input regions** (*i.e* the number of lines in the bed file).
+- \(p\) is the **proportion of genome (the "background") labeled** as associated to a biological function to be tested (*e.g.* GO term "Cell Cycle). 
+- \(k\) is the **number of input regions intersecting genes** related to a tested biological function (*e.g.* GO term "Cell Cycle).
+
+**GREAT proposes different rules to label genomic regions** as associated with a particular biological function. There are **all gene-centric** as biological functions are derived from gene annotations. If you want to know more about this rules, please go to [this page](https://great-help.atlassian.net/wiki/spaces/GREAT/pages/655443/Association+Rules).
+
+
+### Example with rGREAT
+
+In this exercise, we analyze **ChIP-Seq data** from [Theodorou et al. (2012)](https://pubmed.ncbi.nlm.nih.gov/23172872/) that systematically identified genome-wide binding sites of **[Estrogen Receptor (ESR1)](https://www.ncbi.nlm.nih.gov/gene/2099)**, a **critical transcription factor** in **estrogen receptor-positive (ER+) breast cancer**. The study used **MCF7 cells** (a model ER+ breast cancer cell line) treated with **17β-estradiol (E2)**. ChIP-seq reads were aligned onto the **hg19** human genome version. High-confidence binding site are available in this [BED file](https://zenodo.org/records/17977039/files/GSM986063_siNT_ER_E2_r3_SRX176860_peaks_hg19_c3.bed). 
+
+Our objective is to try to **reveal the biological functions of genes located in close proximity to these ESR1 binding sites** using GREAT. To this aim **we will read the BED file into a Genomic Range object** using the `rtracklayer::import()` function.
+
+```{r exercise-great-load, exercise=TRUE, exercise.lines=20}
+# Increase timeout to 300 seconds for large file downloads
+options(timeout=300) 
+
+# Create a directory to store the dataset
+dir_path <- file.path(fs::path_home(), ".rtrainer")
+dir.create(dir_path, showWarnings = FALSE)
+
+# Only download the file if it has not been downloaded yet
+bed_url <- "https://zenodo.org/records/17977039/files/GSM986063_siNT_ER_E2_r3_SRX176860_peaks_hg19_c3.bed"
+file_path <- file.path(dir_path, 
+                       "GSM986063_siNT_ER_E2_r3_SRX176860_peaks_hg19_c3.bed")
+
+if(!file.exists(file_path)) 
+  download.file(url=bed_url, 
+                destfile = file_path, 
+                quiet = TRUE)
+
+# Import the BED file as a Genomic Ranges object
+bed_object <- rtracklayer::import(bed_url)
+
+bed_object
+```
+
+The we can submit the job to the GREAT server and retrieve the results
+
+```{r exercise-great-load2, exercise=TRUE, exercise.setup="exercise-great-load", exercise.lines=20}
+library(rGREAT)
+
+# Call rGREAT::submitGreatJob only
+# if the result file does not exist yet
+file_path <- file.path(dir_path, "rGREAT_result.rds")
+
+if(!file.exists(file_path)) {
+  job <- rGREAT::submitGreatJob(gr = bed_object,
+                                species = "hg19",
+                                rule = "basalPlusExt",
+                                request_interval = 20,
+                                max_tries=10,
+                                version="4")
+  saveRDS(job, file = file_path)
+} else {
+  job <- readRDS(file_path)
+}
+
+job
+```
+
+Several ontologies are available in GREAT. You can check them using the `availableOntologies()` function.
+
+```{r exercise-great-load3, exercise=TRUE, exercise.setup="exercise-great-load2"}
+# Available ontologies
+rGREAT::availableOntologies(job)
+```
+
+<div class="alert alert-danger" role="alert">
+Below we provide the **full table of enrichment results** for the GO Biological Process ontology. While results are ordered by p-value, just looking at the table is not so informative. We can see that **the most significant terms are very obvious/high level terms** that **do not bring much biological insight** (like "single-organism cellular process"). 
+</div>
+
+```{r exercise-great-load4, exercise=TRUE, exercise.setup="exercise-great-load3"}
+# Call rGREAT::getEnrichmentTables
+# if the result file does not exist yet
+file_path <- file.path(dir_path, "rGREAT_tbl.rds")
+
+if(!file.exists(file_path)) {
+  tbl <- rGREAT::getEnrichmentTables(job)
+}else{
+  tbl <- readRDS(file_path)
+}
+
+DT::datatable(tbl[["GO Biological Process"]], 
+              class = 'cell-border stripe', 
+              rownames = FALSE)
+```
+
+Therefore, we will use **some visualization functions to better interpret the results**. We can plot the results using a **Volcano plot** that displays the **fold enrichment against the raw p-value** for each term in a given ontology. Here we will focus on the GO Biological Process ontology.
+
+```{r exercise-great-load5, exercise=TRUE, exercise.setup="exercise-great-load4", fig.height=5, fig.width=5 }
+rGREAT::plotVolcano(job, ontology = "GO Biological Process")
+```
+
+<div class="alert alert-danger" role="alert">
+**NB**: From the plot we can see that **lots of terms may have low p-values while having low fold-enrichment**. This low fold-enrichment/size effect indicates that the **biological effect may be small even if statistically significant**. Therefore, it is important to consider both p-value and fold-enrichment when interpreting GREAT results.
+</div>
+
+The rGREAT::plotVolcano() does not allow to **label specific points**. However, we can extract the data and use `ggplot2` and `ggrepel` to label specific points of interest. Here we will **label points with `abs(log2 fold-enrichment)` greater than 1 and `-log10(p-value)` greater than 10 (to restrict to highly enriched terms)**.
+
+```{r exercise-great-load6, exercise=TRUE, exercise.setup="exercise-great-load5", fig.height=5, fig.width=5 }
+library(ggplot2)
+tb_bp <- tbl[["GO Biological Process"]]
+tb_bp$log2_Binom_Fold_Enrichment <- log2(tb_bp$Binom_Fold_Enrichment)
+tb_bp$minus_log10_Binom_Raw_PValue <- -log10(tb_bp$Binom_Raw_PValue)
+tb_bp$significant <- abs(tb_bp$log2_Binom_Fold_Enrichment) >= 1 & 
+  tb_bp$minus_log10_Binom_Raw_PValue >= 10
+
+ggplot(data=tb_bp, 
+       aes(x=log2_Binom_Fold_Enrichment, 
+           y=minus_log10_Binom_Raw_PValue,
+           color=significant)) + 
+  geom_point() + 
+  ggrepel::geom_label_repel(data=subset(tb_bp,
+                                        significant == TRUE), 
+                            aes(label=name),
+                            max.overlaps=100, 
+                            force=20, 
+                            size=1.5)
+```
+
+Howver there are **too much terms that pass that filter to make it readable**. Therefore, we will use the `simplifyEnrichment` package to cluster similar GO terms (*i.e* terms that share many genes) and only display representative terms from each cluster. First we retrieve the significant terms with `log2 fold-enrichment` greater than 1 and `-log10(p-value)` greater than 10. 
+
+```{r exercise-great-load7, exercise=TRUE, exercise.setup="exercise-great-load6"}
+tb_bp <- tb_bp %>% 
+  dplyr::arrange(desc(log2_Binom_Fold_Enrichment)) %>% 
+  dplyr::filter(log2_Binom_Fold_Enrichment > 1) %>% 
+  dplyr::filter(minus_log10_Binom_Raw_PValue > 10) 
+nrow(tb_bp)
+head(tb_bp$ID)
+```
+
+Then we **compute the term similarity matrix using the `GO_similarity()`** function and finally we **simplify the results using the `simplifyGO()`** function. There function will **cluster similar GO terms** and display only representative terms from each cluster.
+
+```{r exercise-great-load8, exercise=TRUE, exercise.setup="exercise-great-load7", fig.width=7}
+# Note that this step may be a little bit 
+# long depending on the number of terms (few minutes)
+library(simplifyEnrichment)
+mat <- GO_similarity(tb_bp$ID, ont="BP")
+simplifyGO(mat)
+```
+
+From this we can clearly see that the ESR1 transcription factor tends to bind regulatory regions of genes annotated with terms **ovulation**, **mammary gland**, **placenta** (...) which is totally consistent with the known roles of ESR1. We can see also that ESR1 is probably associated with additional functions related, for instance, to **tryglyceride process**.
+
+## Re-computing rGREAT results
+
+<div class="exo">
+
+Go back to the rGREAT table of results. **Search for term "embryonic placenta development" (GO:0001892)**. Using `pbinom()`re-compute the **binomial raw p-value** : 
+
+```{r great_exo2, exercise=TRUE}
+# Calculate the binomial raw p-value for "embryonic placenta development"
+# Parameters:
+n <- ___
+k <- ___
+p <- ___
+
+# Calculate the p-value: P(X ≥ 361) = 1 - P(X ≤ 360)
+p_value <- ___
+
+# Display the result in scientific notation
+sprintf("Binomial Raw P-Value = %g", p_value)
+```
+
+```{r great_exo2-solution}
+# Calculate the binomial raw p-value for "embryonic placenta development"
+# Parameters:
+n <- 15485   # Total number of regions
+k <- 478     # Binom_Observed_Region_Hits
+p <- 0.01571379  # Region set coverage (2.33%)
+
+# Calculate the p-value: P(X ≥ 361) = 1 - P(X ≤ 360)
+p_value <- pbinom(k - 1, size = n, prob = p, lower.tail = FALSE)
+
+# Display the result in scientific notation
+sprintf("Binomial Raw P-Value = %g", p_value)
+```
+
+```{r great_exo2-check}
+grade_this_code()
+```
+
+</div>
+
+---
+
+<div class="exo">
+
+Go back to the rGREAT table of results. **Search for term "embryonic placenta development" (GO:0001892)**. Recompute :
+
+- Binom_Expected.
+- Binom_Fold_Enrichment
+
+```{r great_exercise3, exercise=TRUE}
+Binom_Expected <- ___
+Binom_Fold_Enrichment <- ___
+```
+
+```{r great_exercise3-solution}
+Binom_Expected <- 15485 * 0.01571379
+Binom_Fold_Enrichment <- 478 / Binom_Expected
+```
+
+
+```{r great_exercise3-check}
+grade_this_code()
+```
+</div>
+
+
+### End of the section
+
+Thank you for following this tutorial.
+
