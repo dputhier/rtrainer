@@ -12,13 +12,19 @@ Imports:
     data.table,
     palmerpenguins,
     ggthemes,
+    RCurl,
     png,
     sortable,
     reshape2,
     dplyr, 
     RColorBrewer,
     plotly,
-    ggrepel
+    ggrepel,
+    TxDb.Hsapiens.UCSC.hg38.knownGene,
+    simplifyEnrichment,
+    rtracklayer,
+    Gviz,
+    GenomicRanges
 Collate: utils.R datasets_doc.R extract_text.R check_tuto.R
 License: MIT + file LICENSE
 Encoding: UTF-8
