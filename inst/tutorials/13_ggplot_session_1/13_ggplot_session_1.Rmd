@@ -168,7 +168,7 @@ It is the combination of these independent components that forms a graphic. In g
 
 ```{r, echo=FALSE, fig.height=6, fig.width=6}
 library(png)
-pp <- readPNG(getURLContent("https://zenodo.org/records/15083675/files/ggbasics.png"))
+pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/15083675/files/ggbasics.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
 ```
@@ -184,7 +184,7 @@ To start, we will use the "diamonds" dataset from the **ggplot2** library. The *
 ```{r, echo=FALSE, fig.height=5}
 library(png)
 library(RCurl)
-pp <- readPNG(getURLContent("https://zenodo.org/records/15083675/files/diamonds.png"))
+pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/15083675/files/diamonds.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
 ```
@@ -273,7 +273,7 @@ The correspondences between point shapes and the numeric variables passed are sh
 ```{r, echo=FALSE, fig.height=5}
 library("png")
 library(RCurl)
-pp <- readPNG(getURLContent("https://zenodo.org/records/15083675/files/point.png"))
+pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/15083675/files/point.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
 ```
@@ -282,7 +282,7 @@ Other point shapes are possible, for example, by using the [ggstar](https://cran
 
 ```{r, echo=FALSE, fig.height=5}
 library(png)
-pp <- readPNG(getURLContent("https://zenodo.org/records/15083675/files/ggstar.png"))
+pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/15083675/files/ggstar.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
 ```
