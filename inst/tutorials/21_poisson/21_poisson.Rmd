@@ -1,0 +1,556 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "The Poisson distribution and MACS Peak Calling"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+```{=html}
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+-->
+```
+
+```{css, echo=FALSE}
+
+```
+
+```{=html}
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+```
+
+```{=html}
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+```
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(ggplot2)
+library(palmerpenguins)
+library(ggthemes)
+library(fs)
+knitr::opts_chunk$set(echo=TRUE, 
+                      eval=TRUE, 
+                      cache=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE, 
+                      comment="",
+                      exercise.timelimit="600",
+                      exercise.completion=TRUE,
+                      exercise.diagnostics=TRUE)
+gradethis::gradethis_setup()
+```
+
+## Introduction
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Simeon_Poisson_%28cropped%29.jpg" align="left" width="200px" style="margin:10px;"/> The **Poisson distribution** was introduced in 1837 by the French mathematician **Siméon Denis Poisson**. It models, under certain conditions, the number of **rare events** occurring in a **given time or space interval**. A classic example is the number of cars passing through a campus entrance every 10 minutes. This is **a single parameter distribution with parameter** $\lambda$ representing the expected number of events (here cars). For the Poisson distribution to be valid, the occurrence of **events must be independent**. If cars travel in groups or are delayed by traffic congestion, the independence assumption is violated, and the Poisson distribution no longer holds <br clear="left"/>
+
+If the average number of occurrences in a fixed time interval is $\lambda$, then the probability of observing exactly $k$ occurrences (where $k$ is a natural number, $k = 0, 1, 2, \dots$) is given by:
+
+$$
+p(k) = P(X = k) = \frac{\lambda^k}{k!} e^{-\lambda}
+$$
+
+where:
+
+-   $e$ is Euler's number ($e \approx 2.718$) ;
+-   $k!$ is the factorial of $k$ ;
+-   $\lambda$ is a strictly positive real number ($\lambda > 0$).
+
+We will try to explain this formula in the next sections.
+
+## Relation with the Binomial distribution
+
+### First intuition
+
+Let's consider that, at the campus, the **observed mean number of cars per 10 minutes is 5.3** (the expectation, $\lambda$) we could try to approximate $p(k)$ (*e.g.* $p(10 \text{ cars})$) by using the **Binomial distribution**. **Each 10 minutes**, would be a **trial with a success or failure** (*i.e* seing a car). As we have seen the expected value of the Binomial is $n*p$ so we can write:
+
+$p * n = \lambda$
+
+which allows to re-write the probability $p$ as :
+
+$p = \frac{\lambda}{n}$
+
+Replacing p in the Binomial formula would give:
+
+$$
+\begin{aligned}
+P(X = k) &= \binom{n}{k} p^k (1-p)^{n-k} \\
+&= \binom{n}{k} \left(\frac{\lambda}{n}\right)^k \left(1 - \frac{\lambda}{n}\right)^{n-k}
+\end{aligned}
+$$
+
+::: {.alert .alert-danger role="alert"}
+However, one issue is that **several events** may happen at the same time (e.g., two cars arriving simultaneously at the entrance) which is not considered in our mathematical formula. Thus the model should be **wrong if the probability of events is high**...
+:::
+
+### What happens when n is large and p is small ?
+
+::: {.alert .alert-success role="alert"}
+To address this, we can consider a **very very large number of trials**, $n$. Such as we would now measure **time in second, or µsecond or nanosecond** (...) and thus the **probability** $p$ of seeing a car in such a small time interval **would be very small too**.
+:::
+
+Now **for large** $n$ and small $k$:
+
+$$
+\binom{n}{k} = \frac{n(n-1)(n-2)...(n-k+1)}{k!} \approx \frac{n^k}{k!}
+$$
+
+Indeed when $n$ is very large and $k$ is small $n \approx (n-1) \approx(n-2) \approx ... \approx (n-k+1)$
+
+So replacing $\binom{n}{k}$ with $\frac{n^k}{k!}$ the complete formula becomes:
+
+$$
+\begin{aligned}
+P(X = k) &= \binom{n}{k} \left(\frac{\lambda}{n}\right)^k \left(1 - \frac{\lambda}{n}\right)^{n-k} \\
+&= \frac{n^k}{k!} \left(\frac{\lambda}{n}\right)^k \left(1 - \frac{\lambda}{n}\right)^{n-k}\\
+&= \frac{n^k}{k!} \frac{\lambda^k}{n^k} \left(1 - \frac{\lambda}{n}\right)^{n-k} \\
+&= \frac{\lambda^k}{k!} \left(1 - \frac{\lambda}{n}\right)^{n-k}
+\end{aligned}
+$$
+
+### 
+
+We can slightly rewrite the formula to:
+
+$$
+\begin{aligned}
+P(X = k) &= \frac{\lambda^k}{k!} \left(1 - \frac{\lambda}{n}\right)^{n-k} \\
+&= \frac{\lambda^k}{k!} \left(1 - \frac{\lambda}{n}\right)^{n} \left(1 - \frac{\lambda}{n}\right)^{-k} \\
+\end{aligned}
+$$
+
+**As** $n \to \infty$: 1. $\left(1 - \frac{\lambda}{n}\right)^{-k} \to 1$ (since $\frac{\lambda}{n} \to 0$)
+
+So our main formula again simplifies to:
+
+$$
+P(X = k) = \frac{\lambda^k}{k!} \left(1 - \frac{\lambda}{n}\right)^{n}\\
+$$
+
+This where the magic happens! We recognize one of the possible definitions of the exponential function:
+
+$$
+\lim_{n\to\infty} \left( 1-\frac{x}{n} \right)^n = \mathrm{e}^{-x} 
+$$
+
+Thus this term can simply be reduces to $e^{-\lambda}$. This allows to write the final formula of the Poisson distribution which is:
+
+$$
+P(X = k) = \frac{\lambda^k}{k!} e^{-\lambda}
+$$
+
+**Conclusion**
+
+Thus, as the number of trials $n$ approaches infinity and the probability of success $p$ becomes infinitesimally small, the Binomial distribution seamlessly converges to the Poisson distribution. This behavior simplifies the mathematical framework. Indeed, with **based solely on the average rate of occurrence**, $\lambda$, the Poisson distribution allows us to infer the entire probability distribution of event counts, whether in time, space, or other intervals. One important property of the Poisson distribution is that its **mean and variance are both equal to** $\lambda$.
+
+The **elegance and simplicity** of the Poisson formula, make it an indispensable tool across **diverse fields**, from traffic flow analysis to genomic peak calling.
+
+### Quiz
+
+::: exo
+```{r convergence-quiz, echo=FALSE}
+learnr::question(
+  "Under what conditions does the Binomial distribution converge to the Poisson distribution?",
+  learnr::answer(
+    "When the number of trials $n$ is small and the probability of success $p$ is large.",
+    correct = FALSE,
+    message = "No, the Poisson approximation is valid when $n$ is large and $p$ is small."
+  ),
+  learnr::answer(
+    "When the number of trials $n$ and the probability of success $p$ are both large.",
+    correct = FALSE,
+    message = "No, the Poisson approximation requires $p$ to be small, not large."
+  ),
+  learnr::answer(
+    "When the number of trials $n$ is fixed and the probability of success $p$ is 0.5.",
+    correct = FALSE,
+    message = "No. The Poisson approximation does not depend on a fixed $n$ or $p$ being 0.5."
+  ),
+  learnr::answer(
+    "When the number of trials $n$ approaches infinity and the probability of success $p$ becomes infinitesimally small.",
+    correct = TRUE,
+    message = "Correct! The Binomial distribution converges to the Poisson distribution when $n$ goes to infinity and $p$ goes to 0, with $n$ * $p$ = $lambda$."
+  ),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+:::
+
+------------------------------------------------------------------------
+
+::: exo
+```{r lambda-quiz, echo=FALSE}
+learnr::question(
+  "What is the single parameter that defines the Poisson distribution?",
+  learnr::answer(
+    "The number of trials n",
+    correct = FALSE,
+    message = "No, n is a parameter of the Binomial distribution, not the Poisson distribution."
+  ),
+  learnr::answer(
+    "The probability of success p",
+    correct = FALSE,
+    message = "No, p is a parameter of the Binomial distribution."
+  ),
+  learnr::answer(
+    "The average rate of occurrence lambda",
+    correct = TRUE,
+    message = "Correct! The Poisson distribution is defined solely by lambda, the average rate of events."
+  ),
+  learnr::answer(
+    "The variance sigma squared",
+    correct = FALSE,
+    message = "No, the variance of the Poisson distribution is equal to lambda, but it is not the defining parameter."
+  ),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+:::
+
+------------------------------------------------------------------------
+
+::: exo
+```{r mean-var-quiz, echo=FALSE}
+learnr::question(
+  "What is true about the mean and variance of the Poisson distribution?",
+  learnr::answer(
+    "The mean is lambda and the variance is lambda squared.",
+    correct = FALSE,
+    message = "No, both the mean and variance are equal to lambda."
+  ),
+  learnr::answer(
+    "The mean is lambda and the variance is lambda.",
+    correct = TRUE,
+    message = "Correct! Both the mean and variance of the Poisson distribution are equal to lambda."
+  ),
+  learnr::answer(
+    "The mean is lambda squared and the variance is lambda.",
+    correct = FALSE,
+    message = "No, the mean is lambda, not lambda squared."
+  ),
+  learnr::answer(
+    "The mean and variance are independent of lambda.",
+    correct = FALSE,
+    message = "No, both the mean and variance depend on lambda."
+  ),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+:::
+
+## The Poisson Distribution in R
+
+### Interactive Poisson Distribution Explorer
+
+Use the sliders below to explore how changing the average rate ($\lambda$) affects the shape of the Poisson distribution. The plot shows the probability mass function (PMF) for different values of $\lambda$. The maximum value of $k$ is set to 20 (while it can take any value from 0 to $\infty$).
+
+```{r poisson-ui, echo=FALSE}
+sliderInput("lambda", "Average rate (λ):",
+            min = 0.1, max = 20, value = 5, step = 0.1)
+
+checkboxInput("show_probabilities", 
+              "Show probabilities table", 
+              value = TRUE)
+
+plotOutput("poissonPlot")
+verbatimTextOutput("probabilities")
+```
+
+```{r poisson-server, context="server"}
+output$poissonPlot <- renderPlot({
+  
+  k <- 0:max(20, qpois(0.999, lambda = input$lambda))
+  probabilities <- dpois(k, lambda = input$lambda)
+  data <- data.frame(k = k, probabilities = probabilities)
+
+  ggplot(data, aes(x = k, y = probabilities)) +
+    geom_col(fill = "lightblue", color = "black") +
+    labs(title = paste("Poisson Distribution (λ =", input$lambda, ")"),
+         x = "Number of Events (k)",
+         y = "Probability") +
+    theme_minimal()
+})
+
+output$probabilities <- renderPrint({
+  if (input$show_probabilities) {
+    k <- 0:max(20, qpois(0.999, lambda = input$lambda))
+    probabilities <- dpois(k, lambda = input$lambda)
+    data.frame(k = k, Probability = probabilities)
+  }
+})
+```
+
+### Key R Functions for the Poisson Distribution
+
+In R, several functions are available to work with the Poisson distribution:
+
+1.  **`dpois(x, lambda)`**: Probability Mass Function (PMF)
+    -   Returns the probability of observing exactly `x` events
+    -   Example: `dpois(3, lambda = 2)` gives P(X=3) when λ=2
+2.  **`ppois(q, lambda)`**: Cumulative Distribution Function (CDF)
+    -   Returns the **cumulative probability P(X ≤ q)**
+    -   Use **`lower.tail = FALSE` for P(X \> q)**
+    -   Example: `ppois(5, lambda = 3)` gives P(X ≤ 5) when λ=3
+3.  **`qpois(p, lambda)`**: Quantile Function
+    -   Returns the smallest integer `q` such that P(X ≤ q) ≥ p
+    -   Example: `qpois(0.95, lambda = 4)` gives the 95th percentile
+4.  **`rpois(n, lambda)`**: Random Number Generation
+    -   Generates `n` random values from a Poisson distribution
+    -   Example: `rpois(100, lambda = 5)` generates 100 random Poisson values
+
+### Exercises with the Poisson Distribution
+
+Now that you've explored the Poisson distribution interactively, let's practice using R's Poisson functions.
+
+::: exo
+1.  Using the `dpois()` function, calculate the probability of observing exactly 3 events when the average rate $\lambda = 2$. Store your result in a variable called `prob_3`.
+
+2.  Calculate the cumulative probability of observing 5 or fewer events when $\lambda = 4$. Store your result in a variable called `cum_prob_5`.
+
+3.  Generate 100 random values (`set.seed(123)`) from a Poisson distribution with $\lambda = 5$. Store these values in a variable called `random_pois`.
+
+4.  Calculate the probability of observing more than 4 events when $\lambda = 3$. Store your result in a variable called `prob_more_4`.
+
+5.  Calculate the probability of observing 4 events of more (the p-value of 4) when 𝜆=3 . Store your result in a variable called prob_4_or_more
+
+```{r poissonexercise, exercise=TRUE}
+# Your code here
+```
+
+```{r poissonexercise-solution}
+prob_3 <- dpois(3, lambda = 2)
+cum_prob_5 <- ppois(5, lambda = 4)
+set.seed(123)  # For reproducibility
+random_pois <- rpois(100, lambda = 5)
+prob_more_4 <- 1 - ppois(4, lambda = 3)
+prob_4_or_more <- ppois(4-1, lambda = 3, lower.tail=FALSE)
+```
+
+```{r poissonexercise-check}
+gradethis::grade_result_strict(
+  gradethis::pass_if(~ abs(prob_3 - dpois(3, lambda = 2)) < 1e-10),
+  gradethis::pass_if(~ abs(cum_prob_5 - ppois(5, lambda = 4)) < 1e-10),
+  gradethis::pass_if(~ length(random_pois) == 100),
+  gradethis::pass_if(~ sum(random_pois) == 501),
+  gradethis::pass_if(~ abs(prob_more_4 - (1 - ppois(4, lambda = 3))) < 1e-10),
+  gradethis::pass_if(~ abs(prob_4_or_more - ppois(4-1, lambda = 3, lower.tail=FALSE)) < 1e-10)
+)
+```
+:::
+
+## Example Application
+
+### Peak Calling with MACS
+
+The Poisson distribution is frequently used in bioinformatic algorithms. This is, for instance, the case of **MACS (Model-based Analysis of ChIP-Seq)** a very popular tool to perform **Peak Calling** (*i.e* identify protein-DNA binding sites) when working with **ChIP-Seq data analysis**.
+
+MACS implements a **rather simple peak calling strategy** based on sliding a window (~300nt) across the genome. For each window (*i.e* thus at each position) MACS will compute the number of reads ($n_{control}$) in the input/control track. This number will be considered as a **local λ parameter ($\lambda_{local}$)** of a Poisson distribution. However, note that MACS is conservative and that it will always ensure that :
+
+\[ 
+\lambda_{local} = max(\lambda_{local}, \lambda_{1k}, \lambda_{5k}, \lambda_{10k}, \lambda_{genome}). 
+\]
+
+It will then compare $\lambda_{local}$ to the number of reads observed in the ChIP/treatment track at the same position ($n_{chip}$) and compute the probability of observing $n_{chip}$ or more  reads in the control track  given a Poisson model with this  $\lambda_{local}$ parameter (p-value). 
+
+
+```{r examplepeak, echo=FALSE, fig.width=8}
+library(png)
+library(RCurl)
+pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/17977022/files/example_chip.png"))
+plot.new() 
+rasterImage(pp, 0, 0, 1, 1)
+```
+
+### Exercise
+
+Let's practice implementing the core statistical calculation that MACS performs for peak calling. We'll work with simulated ChIP-Seq data to compute p-values for genomic windows.
+
+#### Setup: Simulated Data
+
+We'll use these simulated vectors representing read counts in 20 genomic windows:
+
+- `input_counts`: Control/input sample read counts
+- `chip_counts`: Treatment/ChIP sample read counts
+
+```{r setupexercisepeak, exercise=TRUE}
+# Simulated data for 20 genomic windows
+set.seed(123)
+input_counts <- c(5, 7, 3, 8, 4, 6, 5, 9, 4, 5,
+                  3, 6, 7, 4, 5, 8, 6, 7, 5, 4)
+
+# ChIP data with some enriched windows (peaks)
+chip_counts <- c(6, 8, 3, 25, 5, 7, 6, 10, 4, 5,
+                 3, 6, 7, 4, 5, 30, 6, 7, 5, 4)
+```
+
+#### Your Task
+
+Complete the following code to:
+
+1. Loop through each window
+2. For each window, use the input count as λ (local Poisson parameter)
+3. Calculate the p-value for observing the ChIP count or more using the Poisson distribution
+4. Store the p-values in a vector
+
+<div class="exo">
+```{r pvalueexercise, exercise=TRUE, exercise.setup="setupexercisepeak"}
+# Initialize a vector to store p-values
+window_pvalues <- rep(NA, length(input_counts))
+
+# Loop through each window and calculate p-values
+for (i in 1:length(input_counts)) {
+  lambda_local <- ___
+  observed <- ___
+  window_pvalues[i] <- ___
+}
+```
+
+```{r pvalueexercise-solution}
+# Initialize a vector to store p-values
+window_pvalues <- rep(NA, length(input_counts))
+
+# Loop through each window and calculate p-values
+for (i in 1:length(input_counts)) {
+  lambda_local <- input_counts[i]  # Local Poisson parameter
+  observed <- chip_counts[i]       # Observed ChIP count
+  window_pvalues[i] <- ppois(observed - 1, lambda = lambda_local, lower.tail = FALSE)
+}
+```
+
+```{r pvalueexercise-check}
+# Check if student computed the p-values correctly
+
+gradethis::grade_result_strict(
+  gradethis::pass_if(~ all(abs(window_pvalues - (1 - ppois(chip_counts - 1, lambda = input_counts))) < 0.0001) == TRUE),
+  gradethis::pass_if(~ length(window_pvalues) == 20)
+)
+```
+</div>
+
+### End of the section
+
+Thank you for following this tutorial.
+
+
+
+
+
