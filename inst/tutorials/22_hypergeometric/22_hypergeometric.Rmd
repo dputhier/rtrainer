@@ -503,7 +503,7 @@ gradethis::grade_result_strict(
 ```
 </div>
 
-## Functional enrichment test
+## Using ClusterProfiler
 
 ### The dataset
 
@@ -614,7 +614,7 @@ class(enrich_res)
 is(enrich_res@result)
 ```
 
-### Checking we agree with the results
+## Checking we agree...
 
 The first line show the most highly enriched gene ontology terms for gene module 6. The **t()** function allows to transpose the row into a column for better readability.  
 
@@ -661,17 +661,17 @@ answer("The number of genes from the input list annotated to this GO term", corr
 
 We obtained the following results for **GO:0042113**:
 
-**GO ID:** GO:0042113
-**Description:** B cell activation
-**GeneRatio:** 16 / 47
-**BgRatio:** 278 / 18888
-**RichFactor:** 0.0576
-**FoldEnrichment:** 23.13
-**zScore:** 18.57
-**pvalue:** 3.14e-18
-**p.adjust:** 2.74e-15
-**qvalue:** 2.29e-15
-**Count: 16**
+- **GO ID:** GO:0042113
+- **Description:** B cell activation
+- **GeneRatio:** 16 / 47
+- **BgRatio:** 278 / 18888
+- **RichFactor:** 0.0576
+- **FoldEnrichment:** 23.13
+- **zScore:** 18.57
+- **pvalue:** 3.14e-18
+- **p.adjust:** 2.74e-15
+- **qvalue:** 2.29e-15
+- **Count: 16**
 
 - Using the hypergeometric formula, **recompute the p-value** for the first enriched GO term displayed above. Store the result in `pval_hypergeo`.
 
@@ -699,11 +699,54 @@ gradethis::grade_result(
 )
 ```
 
+- Given the relationship between the hypergeometric and the Fisher's exact test, **recompute the p-value** for GO term **GO:0042113** above using the `fisher.test()` function which takes a contingency matrix as input. Store the result in `pval_fisher`.
+
+```{r fisher, exercise=TRUE, exercise.setup="reload"}
+# Parameters for the hypergeometric test
+m <- ___
+n <- ___
+k <- ___
+x <- ___
+
+# The contingency matrix
+a <- 
+b <- 
+c <- 
+d <- 
+
+mat <- matrix(c(a, b, c, d), nrow=2, byrows=TRUE)  
+
+pval_fisher <- ___
+```
+
+```{r fisher-solution}
+m <- 278
+n <- 18888-278
+k <- 47
+x <- 16
+
+# The contingency matrix
+a <- x
+b <- k - x
+c <- m - x
+d <- n - (k - x)
+mat <- matrix(c(a, b, c, d), nrow=2, byrow=TRUE)
+
+# 
+pval_fisher <- fisher.test(mat, alternative="greater")$p.value
+```
+
+```{r fisher-check }
+gradethis::grade_result(
+  pass_if(~ abs(pval_fisher - phyper(16-1, 278, 18888-278, 47, lower.tail = FALSE)) < 1e-10)
+)
+```
+
 - Use R code to recompute the **RichFactor** for **GO:0042113** (see above). Store the result in `rich_factor`.
 
 
 ```{r rich_factor, exercise=TRUE, exercise.setup="reload"}
-rich_factor <- 
+rich_factor <- ___
 ```
 
 ```{r rich_factor-solution}
@@ -775,8 +818,11 @@ $$z = \frac{x - \mathbb{E}[X]}{\sqrt{\mathrm{Var}(X)}}$$
 With:
 
 - $x$: observed count (here 16)
-- $\mathbb{E}[X]$: expected count ($k \times \frac{m}{m+n}$)
-- $\mathrm{Var}(X)$: variance of the hypergeometric distribution ($k \cdot \frac{m}{m+n} \cdot (1 - \frac{m}{m+n}) \cdot \frac{m+n-k}{m+n-1}$
+- $\mathbb{E}[X]$: expected count
+- $\mathrm{Var}(X)$:  variance of the hypergeometric distribution
+
+$$\mathbb{E}[X] = k \cdot \frac{m}{m+n}$$
+$$ \mathrm{Var}(X) = k \cdot \frac{m}{m+n} \cdot (1 - \frac{m}{m+n}) \cdot \frac{m+n-k}{m+n-1}$$
 
 <div class="exo">
 
