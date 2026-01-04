@@ -29,8 +29,7 @@ Imports:
     clusterProfiler,
     enrichplot,
     AnnotationDbi,
-    GOSemSim,
-    rGREAT
+    GOSemSim
 Collate: utils.R datasets_doc.R extract_text.R check_tuto.R
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -40,3 +39,4 @@ Depends: R (>= 2.10)
 LazyData: true
 Remotes: 
     rstudio/gradethis@502af700437db1b648a35200ce7b940db0cc3d45
+    jokergoo/rGREAT@97c712f52c35fb6550fa2aff1bf5766cbbb4e9a0
