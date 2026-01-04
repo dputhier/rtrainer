@@ -875,24 +875,26 @@ DT::datatable(tbl[["GO Biological Process"]],
 
 Therefore, we will use **some visualization functions to better interpret the results**. We can plot the results using a **Volcano plot** that displays the **fold enrichment against the raw p-value** for each term in a given ontology. Here we will focus on the GO Biological Process ontology.
 
-```{r exercise-great-load5, exercise=TRUE, exercise.setup="exercise-great-load3", fig.height=5, fig.width=5 }
-rGREAT::plotVolcano(job, ontology = "GO Biological Process")
-```
+While a function exists (`rGREAT::plotVolcano()`) to displays, for each term in a given ontology, the **fold enrichment against the raw p-value**, this function  does not allow to **label specific points**. We will use `ggplot2` and `ggrepel` to create this plot and label specific points **with `abs(log2 fold-enrichment)` greater than 1 and `-log10(p-value)` greater than 10 (to restrict to highly enriched terms)**.
 
-<div class="alert alert-danger" role="alert">
-**NB**: From the plot we can see that **lots of terms may have low p-values while having low fold-enrichment**. This low fold-enrichment/size effect indicates that the **biological effect may be small even if statistically significant**. Therefore, it is important to consider both p-value and fold-enrichment when interpreting GREAT results.
-</div>
 
-The rGREAT::plotVolcano() does not allow to **label specific points**. However, we can extract the data and use `ggplot2` and `ggrepel` to label specific points of interest. Here we will **label points with `abs(log2 fold-enrichment)` greater than 1 and `-log10(p-value)` greater than 10 (to restrict to highly enriched terms)**.
-
-```{r exercise-great-load6, exercise=TRUE, exercise.setup="exercise-great-load5", fig.height=5, fig.width=5 }
+```{r exercise-great-load6, exercise=TRUE, exercise.setup="exercise-great-load4", fig.height=5, fig.width=5 }
+# Load ggplot2 and ggrepel
 library(ggplot2)
+library(ggrepel)
+
+# Extract data from rGREAT result
 tb_bp <- tbl[["GO Biological Process"]]
+
+# Convert fold-enrichment to log2 scale and p-value to -log10 scale
 tb_bp$log2_Binom_Fold_Enrichment <- log2(tb_bp$Binom_Fold_Enrichment)
 tb_bp$minus_log10_Binom_Raw_PValue <- -log10(tb_bp$Binom_Raw_PValue)
+
+# Define significant terms based on thresholds
 tb_bp$significant <- abs(tb_bp$log2_Binom_Fold_Enrichment) >= 1 & 
   tb_bp$minus_log10_Binom_Raw_PValue >= 10
 
+# Create a diagram
 ggplot(data=tb_bp, 
        aes(x=log2_Binom_Fold_Enrichment, 
            y=minus_log10_Binom_Raw_PValue,
@@ -905,6 +907,10 @@ ggplot(data=tb_bp,
                             force=20, 
                             size=1.5)
 ```
+
+<div class="alert alert-danger" role="alert">
+**NB**: From the plot we can see that **lots of terms may have low p-values while having low fold-enrichment**. This low fold-enrichment/size effect indicates that the **biological effect may be small even if statistically significant**. Therefore, it is important to consider both p-value and fold-enrichment when interpreting GREAT results.
+</div>
 
 Howver there are **too much terms that pass that filter to make it readable**. Therefore, we will use the `simplifyEnrichment` package to cluster similar GO terms (*i.e* terms that share many genes) and only display representative terms from each cluster. First we retrieve the significant terms with `log2 fold-enrichment` greater than 1 and `-log10(p-value)` greater than 10. 
 
