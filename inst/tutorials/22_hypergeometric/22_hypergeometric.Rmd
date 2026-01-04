@@ -159,7 +159,7 @@ knitr::opts_chunk$set(echo=TRUE,
                       message=FALSE, 
                       warning=FALSE, 
                       comment="",
-                      exercise.timelimit="600",
+                      exercise.timelimit=600,
                       exercise.completion=TRUE,
                       exercise.diagnostics=TRUE)
 gradethis::gradethis_setup()
