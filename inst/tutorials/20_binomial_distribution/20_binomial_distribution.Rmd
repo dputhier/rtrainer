@@ -941,7 +941,17 @@ DT::datatable(head(tbl[["GO Biological Process"]], 30),
 
 <div class="exo">
 
-Go back to the rGREAT table of results. **Search for term "embryonic placenta development" (GO:0001892)**. Using `pbinom()`re-compute the **binomial raw p-value** : 
+The results of GREAT for **term "placenta development" (GO:0001892)** are presented below: Using `pbinom()`re-compute the **binomial raw p-value** : 
+
+- **ID**: "GO:0001890"          
+- **name**: "placenta development"
+- **Binom_Genome_Fraction**: "0.01571379"          
+- **Binom_Expected**: "243.3280"            
+- **Binom_Observed_Region_Hits**: "478"                 
+- **Binom_Fold_Enrichment**: "1.964427"            
+- **Binom_Region_Set_Coverage**: "0.03086858"          
+- **Binom_Raw_PValue**: "3.385134e-41"        
+- **Binom_Adjp_BH**: "1.483253e-38"    
 
 ```{r great_exo2, exercise=TRUE}
 # Calculate the binomial raw p-value for "embryonic placenta development"
