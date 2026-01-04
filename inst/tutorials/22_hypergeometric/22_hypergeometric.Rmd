@@ -1,0 +1,931 @@
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "The hypergeometric distribution and functional enrichment test"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+
+.figure img {
+  margin: 0 !important;
+  padding: 0 !important;
+  vertical-align:middle;
+}
+
+blockquote{
+font-size: 1em !important;
+}
+
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(ggplot2)
+library(palmerpenguins)
+library(ggthemes)
+library(fs)
+knitr::opts_chunk$set(echo=TRUE, 
+                      eval=TRUE, 
+                      cache=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE, 
+                      comment="",
+                      exercise.timelimit="600",
+                      exercise.completion=TRUE,
+                      exercise.diagnostics=TRUE)
+gradethis::gradethis_setup()
+
+```
+
+## Principle
+
+<div class="alert alert-success" role="alert">
+The hypergeometric distribution stands as **a very important statistical concepts to master in genomic research**. This powerful distribution serves as the **statistical foundation for numerous genomic analysis tools** and methodologies including:
+
+- Gene set enrichment (DAVID, ...).
+- Genomic region overlaps (BEDTools Fisher, GREAT...).
+- Motif enrichment in regulatory sequences (e.g. MEME suite...).
+- Variant enrichment in specific genomic features
+- ...
+
+Before diving into genomic applications, let's present the classic "urn model" that illustrates the hypergeometric distribution:
+
+Imagine an urn containing:
+
+- **N** total balls
+- **m** white balls (**m**arked balls)
+- **n** black balls (**n**on marked balls)
+
+We want to draw **k** balls from the urn **without replacement** and want to know the probability of getting exactly **x** white balls. 
+</div>
+
+```{r examplepeak, echo=FALSE, fig.width=5, fig.height=4.7, fig.cap="**Figure 1**: Illustration of the urn model."}
+library(png)
+library(RCurl)
+pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/18144510/files/urn.png"))
+plot.new() 
+rasterImage(pp, 0, 0, 1, 1)
+```
+
+<div class="alert alert-danger" role="alert">
+**NB**:
+If considering that **getting a white ball is a success** we can already see an important difference with the binomial model. Indeed, here, each draw are made **without replacement** and thus are not independant since each of them changes the composition of the remaining urn and thus. Thus the probability of success is not constant.
+</div>
+
+## Mathematical formulation
+
+### Formula of the hypergeometric distribution 
+
+<div class="alert alert-success" role="alert">
+We can translate the urn story into a mathematical formula. The probability of getting exactly $x$ white balls when drawing $k$ balls without replacement from the urn is given by:
+
+$$P(X = x) = \frac{{m \choose x} \times{n \choose k-x}}{{m+n \choose k}} $$
+</div>
+
+At first glance, this formula may look intimidating. Let’s deconstruct it carefully:
+
+- ${m+n \choose k}$ represent the **total number of possible ways to draw $k$ balls from $N=m+n$ balls**, regardless of the color. Out of this number we want to know how much of them correspond to drawing exactly $x$ white balls.  
+- ${m \choose x}$ represents the **total number of ways to choose $x$ white balls from the total of $m$** white balls.
+- ${n \choose k-x}$ represents the total number of ways to choose **the remaining $k-x$ balls from the $n$ black balls**. Indeed, if one gets $x$ white balls from a draw of size $k$ then it also gets $k-x$ black balls from the urn.
+- ${m \choose x} \times{n \choose k-x}$ thus represents the total **number of ways to draw exactly $x$ white balls and $k-x$ black balls from the urn**. 
+
+> **Example**: Let say: $k=5, m=10, n=10, x=3$. When getting $x=3$ white balls from the urn (*e.g* white balls $1,5,10$ or $3,4,9$) then there are multiple ways to combine them with $k-x=2$ black balls (*e.g* black balls $1,4$ or black balls $2,5$ etc...). Thus the total number of ways to draw exactly $x$ white balls is the product of the number of ways to draw white balls and the number of ways to draw black balls.
+
+- $\frac{{m \choose x} \times{n \choose k-x}}{{m+n \choose k}}$ thus represents the proportion of ways to draw exactly $x$ white balls out of all the possible ways to draw $k$ balls from the urn.
+
+### Support of the hypergeometric funtion
+
+Note that the support of the hypergeometric distribution is given by the formula below:
+
+$$\max(0, k-n) \leq x \leq \min(k, m) $$
+
+Indeed, **regarding the maximum**:
+
+- One cannot draw more white balls than the total number of white balls in the urn: $x \leq m$.
+- One cannot draw more white balls than the total number of drawn balls: $x \leq k$.
+
+And finally $x \leq \min(k, m)$.
+
+> **Example**: If $m=10, k=5, n=20$ then you can never draw more than 5 white balls, so max = 5.
+> **Example**: If $m=5, k=10, n=20$ then you can never draw more than 5 white balls, so max = 5.
+
+Regarding **the minimum:**
+
+- Frequently, the minimum value of $x$ is $0$ since it is possible to draw no white balls at all.
+- However, if the number of drawn balls from the urn $k$ is greater than the number of black balls $n$, then one is forced to draw at least $k-n$ white balls.
+
+> **Example:** $ m=20, n = 8, k = 10$ then you have to draw at least 2 white balls, so min = 2.
+
+Thus: $x \geq \max(0, k-n)$.
+
+### Expected value of the hypergeometric distribution
+
+The expected value (mean) of the hypergeometric distribution is given by:
+$$E(X) = k \times \frac{m}{m+n} $$
+
+> **Example:** If you draw $k=10$ balls from an urn with $m=30$ white balls and $n=70$ black balls, the expected number of white balls drawn is simply $k=10$ times the fraction of white balls in the urn: $E(X) = 10 \times \frac{30}{100} = 3$.
+
+### Variance of the hypergeometric distribution
+
+The variance of the hypergeometric distribution is given by:
+
+$$\mathrm{Var}(X)
+= k \cdot \frac{m}{m+n} \cdot \left(1 - \frac{m}{m+n}\right)
+\cdot \frac{m+n-k}{m+n-1}$$
+
+## Quizz
+
+<div class="exo">
+```{r quizz_hypergeo, echo=FALSE }
+question("Which of the following statements about the hypergeometric distribution is TRUE?",
+answer("It describes independent trials with replacement.", FALSE),
+answer("It is used when sampling without replacement.", TRUE),
+answer("It assumes the probability of success remains constant across draws.", FALSE),
+answer("It is identical to the binomial distribution.", FALSE), 
+allow_retry = TRUE,
+random_answer_order = TRUE
+)
+```
+</div>
+
+<div class="exo">
+```{r quizz_hypergeo_2, echo=FALSE }
+question("Which formula correctly represents the hypergeometric probability of drawing exactly x white balls?",
+answer("P(X=x) = (m choose x) * (n choose k-x) / (m+n choose k)", TRUE),
+answer("P(X=x) = (m choose x) * (n choose k-x) / k!", FALSE),
+answer("P(X=x) = (m choose x) * (n choose k-x) / (m choose k)", FALSE),
+answer("P(X=x) = (m+n choose k) / (m choose x) * (n choose k-x)", FALSE), 
+allow_retry = TRUE,
+random_answer_order = TRUE
+)
+```
+</div>
+
+<div class="exo">
+```{r quizz_hypergeo_4, echo=FALSE }
+learnr::question(
+  "Which condition holds for the support of a hypergeometric random variable X?",
+  learnr::answer("0 ≤ X ≤ n", FALSE),
+  learnr::answer("0 ≤ X ≤ k", FALSE),
+  learnr::answer("X can take any integer value", FALSE),
+  learnr::answer("max(0, k-n) ≤ X ≤ min(k, m)", TRUE),
+  learnr::answer("max(0, k-n) ≤ X ≤ min(m, k)", TRUE),
+  learnr::answer("max(0, n-k) ≤ X ≤ min(m, k)", FALSE),
+  learnr::answer("max(0, n-k) ≤ X ≤ min(k, m)", FALSE),
+  allow_retry = TRUE,
+  random_answer_order = TRUE,
+  type = "multiple"
+)
+```
+</div>
+
+<div class="exo">
+```{r quizz_hypergeo_5, echo=FALSE }
+
+question("If X ~ Hypergeometric(m, n, k), what is the expected value E[X]?",
+answer("m / (m+n)", FALSE),
+answer("k / (m+n)", FALSE),
+answer("k * (m / (m+n))", TRUE),
+answer("k * (n / (m+n))", FALSE), 
+allow_retry = TRUE,
+random_answer_order = TRUE
+)
+```
+</div>
+
+## R functions for the hypergeometric distribution
+
+R provides a set of functions to work with the hypergeometric distribution. These functions follow a consistent naming convention, similar to other probability distributions in R:
+
+- `dhyper(x, m, n, k)`: This function computes the probability mass function (PMF) of the hypergeometric distribution. It gives the probability of drawing exactly `x` white balls when drawing `k` balls from an urn with `m` white balls and `n` black balls.
+- `phyper(q, m, n, k)`: This function computes the cumulative distribution function (CDF) of the hypergeometric distribution. 
+- `rhyper(nn, m, n, k)`: This function generates random samples from the hypergeometric distribution. It generates `nn` random draws of white balls when drawing `k` balls from an urn with `m` white balls and `n` black balls.
+
+
+```{r hypergo-ui, echo=FALSE}
+library(shiny)
+library(plotly)
+
+fluidPage(fluidRow(
+  column(
+    width = 4,
+    h4("Urn parameters"),
+    sliderInput(
+      "m",
+      "Number of white balls (m)",
+      min = 1,
+      max = 100,
+      value = 20
+    ),
+    sliderInput(
+      "n",
+      "Number of black balls (n)",
+      min = 1,
+      max = 200,
+      value = 80
+    ),
+    sliderInput(
+      "k",
+      "Number of draws (k)",
+      min = 1,
+      max = 50,
+      value = 10
+    ),
+    helpText("Hover over bars to see exact probabilities.")
+  ),
+  column(
+    width = 8,
+    plotlyOutput("distPlot", height = "400px"),
+    verbatimTextOutput("summary")
+  )
+))
+```
+
+```{r hypergo-server, context="server"}
+output$distPlot <- plotly::renderPlotly({
+  m <- input$m
+  n <- input$n
+  k <- input$k
+  
+  xmin <- 0
+  xmax <- min(k, m)
+  x <- xmin:xmax
+  
+  df <- data.frame(x = x, p = dhyper(x, m = m, n = n, k = k))
+  
+  plot_ly(
+    data = df,
+    x = ~ x,
+    y = ~ p,
+    type = "bar",
+    text = ~ paste0("P(X = ", x, ") = ", signif(p, 4)),
+    hoverinfo = "text",
+    textposition = "none"
+  ) %>%
+    layout(
+      title = list(
+        text = paste(
+          "Hypergeometric distribution",
+          "",
+          "m =",
+          m,
+          "| n =",
+          n,
+          "| k =",
+          k,
+          ""
+        )
+      ),
+      xaxis = list(title = "Number of white balls drawn (x)", tickmode = "linear"),
+      yaxis = list(title = "P(X = x)")
+    ) %>%
+    config(displayModeBar = FALSE) 
+})
+
+output$summary <- renderText({
+  m <- input$m
+  n <- input$n
+  k <- input$k
+  
+  mean <- k * m / (m + n)
+  var <- k * (m / (m + n)) * (n / (m + n)) *
+    ((m + n - k) / (m + n - 1))
+  
+  paste0(
+    "Theoretical mean: ",
+    round(mean, 3),
+    "\n",
+    "Theoretical variance: ",
+    round(var, 3),
+    "\n",
+    "Support: x ∈ [",
+    max(0, k - n),
+    ", ",
+    min(k, m),
+    "]"
+  )
+})
+```
+
+<div class="exo">
+
+Consider an urn containing:
+
+- 30 white balls  
+- 70 black balls  
+
+We draw 15 balls *without replacement*. Complete the tasks below using R hypergeometric functions.
+
+- 1) Compute the probability of drawing exactly 5 white balls. Store the result in `prob_5_white`.
+- 2) Compute the probability of drawing at most 5 white balls. Store the result in `p_at_most_5`.
+- 3) Compute the probability of drawing  5 or more white balls. Store the result in `p_5_or_more`.
+- 4) Simulate 10,000 draws from the distribution. Store the simulated values in `x_sim`.
+- 5) Compute the empirical mean of the simulation and the theoretical mean. Store them in `mean_empirical` and `mean_theoretical`.
+
+```{r hypergeo_all, exercise=TRUE, }
+# Parameters
+
+m <- 30
+n <- 70
+k <- 15
+
+prob_5_white <- ___
+p_at_most_5 <- ___
+p_5_or_more <- ___
+set.seed(123)
+x_sim <- ___
+mean_empirical <- ___
+mean_theoretical <- ___
+```
+
+```{r hypergeo_all-solution}
+prob_5_white <- dhyper(5, m, n, k)
+p_at_most_5 <- phyper(5, m, n, k)
+p_5_or_more <- phyper(5-1, m, n, k, lower.tail = FALSE)
+set.seed(123)
+x_sim <- rhyper(10000, m, n, k)
+mean_empirical <- mean(x_sim)
+mean_theoretical <- k * m / (m + n)
+```
+
+```{r hypergeo_all-check }
+library(gradethis)
+
+gradethis::grade_result_strict(
+
+  # 1. Probability of exactly 5 white balls
+  gradethis::pass_if(~ abs(prob_5_white - dhyper(5, m, n, k)) < 1e-10),
+  
+  # 2. Probability of at most 5 white balls
+  gradethis::pass_if(~ abs(p_at_most_5 - phyper(5, m, n, k)) < 1e-10),
+  
+  # 3. Probability of 5 or more white balls
+  gradethis::pass_if(~ abs(p_5_or_more - phyper(5-1, m, n, k, lower.tail = FALSE)) < 1e-10),
+  
+  # 4. Empirical simulation: check length only (simulation will vary)
+  gradethis::pass_if(~ length(x_sim) == 10000),
+  
+  # 5. Empirical mean: allow small tolerance
+  gradethis::pass_if(~ abs(mean_empirical - mean(x_sim)) < 1e-2),
+  
+  # 6. Theoretical mean
+  gradethis::pass_if(~ abs(mean_theoretical - (k * m / (m + n))) < 1e-10)
+)
+```
+</div>
+
+## Functional enrichment test
+
+### The dataset
+
+In genomics, the hypergeometric distribution is commonly used in functional enrichment analysis. This analysis helps identify whether a specific set of genes (e.g., genes differentially expressed in a condition) is overrepresented in certain biological categories (e.g., pathways, Gene Ontology terms) compared to what would be expected by chance. 
+
+Here we will apply it to functionnal enrichment analysis of gene sets obtained after applying **gene module analysis** with [scigenex](https://dputhier.github.io/scigenex/articles/usage.html) to a single cell dataset of **3000 human PBMCs** (Peripheral Blood Mononuclear Cells). The analysis led to the identification of **13 gene modules**, each associated with a set of genes (see \ref{fig:scigenex}). As these gene modules tend to group genes with similar expression patterns across different cell populations, **these genes are expected to be functionally related**. We will test **whether these gene modules are enriched in specific biological pathways** using the hypergeometric test.
+
+```{r scigenex, echo=FALSE, fig.height=5, fig.width=6, fig.cap="**Figure 2**: The results from scigenex. Each row is a gene and column a cell (out of 3k PBMC). The genes are clustered into 13 modules (left bar) based on their expression patterns across cell population (top colored clusters)."}
+library(png)
+pp <- readPNG(RCurl::getURLContent("https://dputhier.github.io/scigenex/articles/usage_files/figure-html/plot_ggheatmap-1.png"))
+plot.new() 
+rasterImage(pp,0,0,1,1)
+```
+
+### Preparing the gene modules
+
+We will **download the gene modules** using the following code:
+
+```{r get_modules, echo=TRUE, exercise=TRUE, exercise.lines=20}
+# Use options() to increase timeout settings to prevent interruptions during download
+options(timeout=10000)
+# Create a directory to store the dataset
+dir_path <- file.path(fs::path_home(), ".rtrainer")
+dir.create(dir_path, showWarnings = FALSE)
+
+## The URL pointing to the dataset
+url <- "https://zenodo.org/records/18146537/files/cluster_scigenex.txt"
+
+# Download or read from local file if already exists
+file_path <- file.path(dir_path, "cluster_scigenex.txt")
+if(!file.exists(file_path)) download.file(url=url, destfile = file_path, quiet = TRUE)
+clust <- read.table(file=file_path, header=FALSE, sep="\t")
+
+# Rename the columns
+colnames(clust) <- c("gene", "module")
+
+# Display the first lines of the data.frame
+head(clust)
+```
+
+We can now **split this data.frame into a list** of gene modules:
+
+```{r split_modules, echo=TRUE, exercise=TRUE, exercise.setup="get_modules"}
+# The split() function allows to split based on a vector (here the genes) on a factor (here the modules)
+gene_modules <- split(clust$gene, clust$module)
+
+# Display the first gene modules
+head(gene_modules)
+```
+
+We can now **have access to the gene names** of each gene module using `gene_modules[[1]]` for module 1, `gene_modules[[2]]` for module 2...
+
+### Applying functional enrichment with clusterProfiler
+
+<div class="alert alert-success" role="alert">
+The clusterProfiler R package provides a convenient function **named `enrichGO()` to perform Gene Ontology (GO)** enrichment analysis using the **hypergeometric test**. This function requires gene identifiers in the form of **Entrez IDs**. However, our gene modules are currently represented by gene symbols. Therefore, we need to convert these gene symbols to Entrez IDs before performing the enrichment analysis. We will also use the `org.Hs.eg.db` Bioconductor package that provide mappings between different gene identifiers for human genes. 
+</div>
+
+Don't be overwelmed by the code below which can be viewed as a cooking recipe where each step is **provided in the [clusterProfiler package documentation](https://yulab-smu.top/biomedical-knowledge-mining-book/021-go.html)**.
+
+We will work on **gene module 6** as an example and search for enrichment in the **Biological Process (BP)** ontology:
+
+<div class="alert alert-danger" role="alert">
+**NB:** Please be patient and wait for the following code to complete.
+</div>
+
+```{r callclusterprofiler, exercise=TRUE, exercise.setup="split_modules", exercise.lines=30}
+# Set the gene module of interest
+gene_set <- gene_modules[[6]]
+
+# Set the ontology to use (BP: Biological Process, MF: Molecular Function, CC: Cellular Component)
+annotation_src <- "BP"
+
+# Load the required Bioconductor package for converting gene symbols to Entrez IDs
+library(org.Hs.eg.db)
+
+# Load AnnotationDbi package for selecting gene annotations
+library(AnnotationDbi)
+
+# Get the entrez IDs for a given gene set (here for module 1)
+query_entrezid <- AnnotationDbi::select(get("org.Hs.eg.db"),
+                                        keys = gene_set,
+                                        columns = c("ENTREZID", "SYMBOL"),
+                                        keytype = "SYMBOL")
+
+# Perform GO enrichment analysis using clusterProfiler
+enrich_res <- clusterProfiler::enrichGO(query_entrezid[,"ENTREZID"],
+                                        OrgDb = get("org.Hs.eg.db"),
+                                        ont = annotation_src,
+                                        readable = TRUE)
+
+# Serialize the result (i.e store the object as a file) for later use
+dir_path <- file.path(fs::path_home(), ".rtrainer")
+file_path <- file.path(dir_path, "enrich_res_module6.rds")
+clust <- saveRDS(object=enrich_res, file=file_path)
+```
+
+```{r reload, echo=FALSE}
+dir_path <- file.path(fs::path_home(), ".rtrainer")
+file_path <- file.path(dir_path, "enrich_res_module6.rds")
+enrich_res <- readRDS(file=file_path)
+```
+
+The result is an **enrichResult object** containing the enriched GO terms for gene module 6 in a data.frame stored in the  **`@result slot`**. 
+
+```{r displayobj, exercise=TRUE, exercise.setup="reload"}
+class(enrich_res)
+is(enrich_res@result)
+```
+
+### Checking we agree with the results
+
+The first line show the most highly enriched gene ontology terms for gene module 6. The **t()** function allows to transpose the row into a column for better readability.  
+
+```{r displaytable, exercise=TRUE, exercise.setup="reload"}
+t(enrich_res@result[1, ])
+```
+
+<div class="exo">
+```{r quizz_clusterprofiler, echo=FALSE }
+question(
+"What does the GeneRatio represent?",
+answer("The proportion of genes in the input gene list associated with this GO term", correct = TRUE),
+answer("The proportion of genes in the whole genome associated with this GO term"),
+answer("The fold enrichment of the GO term"),
+answer("The number of genes annotated to this GO term in the database"))
+```
+</div>
+
+<div class="exo">
+```{r quizz_clusterprofiler_2, echo=FALSE }
+question(
+"What does the BgRatio describe?",
+answer("The proportion of differentially expressed genes"),
+answer("The enrichment score used by clusterProfiler"),
+answer("The number of GO terms tested"),
+answer("The proportion of genes (out of all annotated genes in BP ontology) annotated to the GO term of interest", correct = TRUE)
+)
+```
+</div>
+
+<div class="exo">
+```{r quizz_clusterprofiler_3, echo=FALSE }
+question(
+"What does the Count value correspond to?",
+answer("The total number of genes associated with the GO term"),
+answer("The number of significant GO terms"),
+answer("The number of genes after multiple testing correction"),
+answer("The number of genes from the input list annotated to this GO term", correct = TRUE)
+)
+```
+</div>
+
+<div class="exo">
+
+We obtained the following results for **GO:0042113**:
+
+**GO ID:** GO:0042113
+**Description:** B cell activation
+**GeneRatio:** 16 / 47
+**BgRatio:** 278 / 18888
+**RichFactor:** 0.0576
+**FoldEnrichment:** 23.13
+**zScore:** 18.57
+**pvalue:** 3.14e-18
+**p.adjust:** 2.74e-15
+**qvalue:** 2.29e-15
+**Count: 16**
+
+- Using the hypergeometric formula, **recompute the p-value** for the first enriched GO term displayed above. Store the result in `pval_hypergeo`.
+
+```{r exohypergeo, exercise=TRUE, exercise.setup="reload"}
+# Parameters for the hypergeometric test
+m <- ___
+n <- ___
+k <- ___
+x <- ___
+
+pval_hypergeo <- ___
+```
+
+```{r exohypergeo-solution}
+m <- 278
+n <- 18888-278
+k <- 47
+x <- 16
+pval_hypergeo <- phyper(x-1, m, n, k, lower.tail = FALSE)
+```
+
+```{r exohypergeo-check }
+gradethis::grade_result(
+  pass_if(~ abs(pval_hypergeo - phyper(16-1, 278, 18888-278, 47, lower.tail = FALSE)) < 1e-10)
+)
+```
+
+- Use R code to recompute the **RichFactor** for **GO:0042113** (see above). Store the result in `rich_factor`.
+
+
+```{r rich_factor, exercise=TRUE, exercise.setup="reload"}
+rich_factor <- 
+```
+
+```{r rich_factor-solution}
+x <- 16
+m <- 278
+rich_factor <- x / m
+```
+
+```{r rich_factor-check }
+gradethis::grade_result(
+  pass_if(~ abs(rich_factor - 16/278) < 1e-10)
+)
+```
+
+```{r quizz_clusterprofiler_4, echo=FALSE }
+question(
+"How is the RichFactor interpreted?",
+answer("The fraction of the pathway/ontology term covered by the input gene list", correct = TRUE),
+answer("Ratio of background genes over input genes"),
+answer("Fold change in gene expression"),
+answer("Adjusted p-value")
+)
+```
+</div>
+
+
+<div class="exo">
+- Use R code to recompute the **FoldEnrichment** for **GO:0042113** (see above). Store the result in `fold_enrichment`.
+
+
+```{r FoldEnrichment, exercise=TRUE, exercise.setup="reload"}
+fold_enrichment <- ___
+```
+
+```{r FoldEnrichment-solution}
+m <- 278
+n <- 18888-278
+k <- 47
+x <- 16
+expected <- k * m / (m + n)
+observed <- x
+fold_enrichment <- observed / expected
+```
+
+```{r FoldEnrichment-check }
+gradethis::grade_result(
+  pass_if(~ abs(fold_enrichment - 16/ (47 * 278 / (278 + 18888-278))) < 1e-10)
+)
+```
+
+```{r quizz_clusterprofiler_5, echo=FALSE }
+question(
+"A FoldEnrichment of ~23 means:",
+answer("23 genes are differentially expressed"),
+answer("The z-score is high"),
+answer("The GO term is ~23 times more frequent in the input gene list than expected by chance", correct = TRUE),
+answer("The GO term appears in 23 experiments")
+)
+```
+</div>
+
+### And the zscore ?
+
+The z-score is generally used to standardize values and assess how many standard deviations an observation is from the mean.
+In clusterProfiler, The zScore measures how far the observed count deviates from the expectation:
+
+$$z = \frac{x - \mathbb{E}[X]}{\sqrt{\mathrm{Var}(X)}}$$ 
+
+With:
+
+- $x$: observed count (here 16)
+- $\mathbb{E}[X]$: expected count ($k \times \frac{m}{m+n}$)
+- $\mathrm{Var}(X)$: variance of the hypergeometric distribution ($k \cdot \frac{m}{m+n} \cdot (1 - \frac{m}{m+n}) \cdot \frac{m+n-k}{m+n-1}$
+
+<div class="exo">
+
+For GO term **GO:0042113** ('B cell activation') the computed zscore was 18.57.
+Use R code to recompute the **zScore**. Store the result in `z_score`.
+
+```{r zscore, exercise=TRUE, exercise.setup="reload"}
+# Parameters
+m <- 278
+n <- 18888-278
+k <- 47
+x <- 16
+
+zscore <- ___
+```
+
+```{r zscore-solution, exercise=TRUE, exercise.setup="reload"}
+m <- 278
+n <- 18888-278
+k <- 47
+x <- 16
+expected <- k * m / (m + n)
+variance <- k * (m / (m + n)) * (n / (m + n)) * ((m + n - k) / (m + n - 1))
+zscore <- (x - expected) / sqrt(variance)
+```
+</div>
+
+## Displaying results 
+
+The `enrichplot` R package provides various visualization methods for enrichment results obtained from clusterProfiler. 
+
+<div class="alert alert-success" role="alert">
+**NB**: look carefully at the axis in the upcoming diagrams, you will see that they use various metrics (p-value, rich factor, gene counts, ...).
+</div>
+
+### Using barplot()
+
+We can visualize the results of the enrichment analysis using the `barplot()` function from clusterProfiler. To do that we have to pass the `enrichResult` object to the `barplot.enrichResult()` function from the `enrichplot` package.
+
+
+```{r barplot_enrich, echo=TRUE, exercise=TRUE, exercise.setup="reload", exercise.lines=10}
+?enrichplot::barplot.enrichResult
+```
+
+<div class="exo">
+Use R code to create a barplot of the top 10 enriched GO terms for gene module 6 (results are stored in `enrich_res`). Store the plot in `barplot_enrich_exo`.
+
+```{r barplot_enrich_exo, exercise=TRUE, exercise.setup="reload"}
+library(enrichplot)
+___
+```
+
+```{r barplot_enrich_exo-solution}
+library(enrichplot)
+enrichplot::barplot.enrichResult(enrich_res, showCategory = 10) 
+# <=> barplot(enrich_res, showCategory = 10) 
+```
+</div>
+
+
+### Using dotplot()
+
+We can also visualize the results of the enrichment analysis using the `dotplot()` function from `enrichplot`. To do that we have to pass the `enrichResult` object to the `dotplot())` function from the `enrichplot` package.
+
+```{r dotplot_enrich, echo=TRUE, exercise=TRUE, exercise.setup="reload", exercise.lines=5}
+?enrichplot::dotplot
+```
+
+<div class="exo">
+Use R code to create a dotplot of the top 10 enriched GO terms for gene module 6 (results are stored in `enrich_res`). 
+
+```{r dotplot_enrich_exo, exercise=TRUE, exercise.setup="reload"}
+library(enrichplot)
+___
+```
+
+```{r dotplot_enrich_exo-solution}
+library(enrichplot)
+enrichplot::dotplot(enrich_res, showCategory = 10, font.size = 8)
+# <=> dotplot(enrich_res, showCategory = 10)
+```
+</div>
+
+### Using the heatplot() function
+
+We can also visualize the results of the enrichment analysis using the `heatplot()` function from `enrichplot`. To do that we have to pass the `enrichResult` object to the `heatplot()` function from the `enrichplot` package.
+
+```{r heatplot_enrich, echo=TRUE, exercise=TRUE, exercise.setup="reload", exercise.lines=5}
+?enrichplot::heatplot
+```
+
+<div class="exo">
+Use R code to create a heatplot of the top 10 enriched GO terms for gene module 6 (results are stored in `enrich_res`). 
+
+```{r heatplot_enrich_exo, exercise=TRUE, exercise.setup="reload"}
+library(enrichplot)
+___
+```
+
+```{r heatplot_enrich_exo-solution}
+library(enrichplot)
+enrichplot::heatplot(enrich_res, showCategory = 10)
+```
+</div>
+
+### Using cnetplot()
+
+We can also visualize the results of the enrichment analysis using the `cnetplot()` function from `enrichplot`. To do that we have to pass the `enrichResult` object to the `cnetplot()` function from the `enrichplot` package.
+
+The cnetplot() function is very interesting as it allows to visualize the relationships between genes and enriched GO terms in a network format.
+
+```{r cnetplot_enrich, echo=TRUE, exercise=TRUE, exercise.setup="reload", exercise.lines=5}
+?enrichplot::cnetplot
+```
+
+<div class="alert alert-success" role="alert">
+Note that to use the cnetplot() function effectively, it is recommended to compute semantic similarities between GO terms using the GOSemSim package. This step enhances the visualization by grouping related GO terms together based on their semantic similarity.
+
+**NB**: computing sementic similarity can be rather time consuming so please be patient.
+</div>
+
+```{r cnetplot_enrich_exo, exercise=TRUE, exercise.setup="reload", fig.height=8, fig.width=8}
+library(enrichplot)
+library(org.Hs.eg.db)
+
+sem_sim <- GOSemSim::godata(annoDb="org.Hs.eg.db", ont="BP")
+
+cnetplot(enrich_res, 
+         showCategory = 10, 
+         color.params = list(edge = FALSE), 
+         cex.params = list(category_label = 0.5, gene_label = 0.6),
+         semData = sem_sim,
+         circular=FALSE)
+```
+
+
+```{r cnetplot_enrich_exo_2, exercise=TRUE, exercise.setup="cnetplot_enrich_exo", fig.height=8, fig.width=10}
+cnetplot(enrich_res, 
+         showCategory = 10, 
+         color.params = list(edge = TRUE), 
+         cex.params = list(category_label = 0.5, gene_label = 0.6),
+         semData = sem_sim,
+         circular=TRUE)
+```
+
+
+### End of the section
+
+Thank you for following this tutorial.
+
+
+
