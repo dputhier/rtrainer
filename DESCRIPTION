@@ -1,4 +1,4 @@
- Package: rtrainer
+Package: rtrainer
 Title: An interactive R tutorial.
 Version: 0.2.4
 Authors@R: person("Denis", "Puthier", , "denis.puthier@univ-amu.fr", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7240-5280"))
