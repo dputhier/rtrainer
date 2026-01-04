@@ -868,7 +868,8 @@ if(!file.exists(file_path)) {
   tbl <- readRDS(file_path)
 }
 
-DT::datatable(tbl[["GO Biological Process"]], 
+# Show the first lines of the GO Biological Process table
+DT::datatable(head(tbl[["GO Biological Process"]], 30), 
               class = 'cell-border stripe', 
               rownames = FALSE)
 ```
@@ -878,7 +879,8 @@ Therefore, we will use **some visualization functions to better interpret the re
 While a function exists (`rGREAT::plotVolcano()`) to displays, for each term in a given ontology, the **fold enrichment against the raw p-value**, this function  does not allow to **label specific points**. We will use `ggplot2` and `ggrepel` to create this plot and label specific points **with `abs(log2 fold-enrichment)` greater than 1 and `-log10(p-value)` greater than 10 (to restrict to highly enriched terms)**.
 
 
-```{r exercise-great-load6, exercise=TRUE, exercise.setup="exercise-great-load4", fig.height=5, fig.width=5 }
+
+```{r exercise-great-load6, exercise=TRUE, exercise.setup="exercise-great-load4", fig.height=5, fig.width=5, exercise.lines=30}
 # Load ggplot2 and ggrepel
 library(ggplot2)
 library(ggrepel)
