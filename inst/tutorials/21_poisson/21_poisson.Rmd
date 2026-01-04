@@ -150,7 +150,7 @@ knitr::opts_chunk$set(echo=TRUE,
                       message=FALSE, 
                       warning=FALSE, 
                       comment="",
-                      exercise.timelimit="600",
+                      exercise.timelimit=600,
                       exercise.completion=TRUE,
                       exercise.diagnostics=TRUE)
 gradethis::gradethis_setup()
@@ -446,13 +446,28 @@ prob_4_or_more <- ppois(4-1, lambda = 3, lower.tail=FALSE)
 ```
 
 ```{r poissonexercise-check}
+# Automatic grading using a single gradethis::grade_result_strict() call
+library(gradethis)
+
 gradethis::grade_result_strict(
-  gradethis::pass_if(~ abs(prob_3 - dpois(3, lambda = 2)) < 1e-10),
-  gradethis::pass_if(~ abs(cum_prob_5 - ppois(5, lambda = 4)) < 1e-10),
-  gradethis::pass_if(~ length(random_pois) == 100),
-  gradethis::pass_if(~ sum(random_pois) == 501),
-  gradethis::pass_if(~ abs(prob_more_4 - (1 - ppois(4, lambda = 3))) < 1e-10),
-  gradethis::pass_if(~ abs(prob_4_or_more - ppois(4-1, lambda = 3, lower.tail=FALSE)) < 1e-10)
+  
+  # 1. Probability of exactly 5 white balls
+  gradethis::pass_if(~ identical(prob_5_white, dhyper(5, m, n, k))),
+  
+  # 2. Probability of at most 5 white balls
+  gradethis::pass_if(~ identical(p_at_most_5, phyper(5, m, n, k))),
+  
+  # 3. Probability of 5 or more white balls
+  gradethis::pass_if(~ identical(p_5_or_more, phyper(5-1, m, n, k, lower.tail = FALSE))),
+  
+  # 4. Empirical simulation
+  gradethis::pass_if(~ identical(x_sim, rhyper(10000, m, n, k))),
+  
+  # 5. Empirical mean
+  gradethis::pass_if(~ identical(mean_empirical, mean(x_sim))),
+  
+  # 6. Theoretical mean
+  gradethis::pass_if(~ identical(mean_theoretical, k * m / (m + n)))
 )
 ```
 :::
