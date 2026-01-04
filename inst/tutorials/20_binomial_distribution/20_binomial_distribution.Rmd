@@ -860,7 +860,7 @@ Below we provide the **full table of enrichment results** for the GO Biological 
 ```{r exercise-great-load4, exercise=TRUE, exercise.setup="exercise-great-load3"}
 # Call rGREAT::getEnrichmentTables
 # if the result file does not exist yet
-file_path <- file.path(dir_path, "rGREAT_tbl.rds")
+file_path <- file.path(file_path, "rGREAT_tbl.rds")
 
 if(!file.exists(file_path)) {
   tbl <- rGREAT::getEnrichmentTables(job)
@@ -875,7 +875,7 @@ DT::datatable(tbl[["GO Biological Process"]],
 
 Therefore, we will use **some visualization functions to better interpret the results**. We can plot the results using a **Volcano plot** that displays the **fold enrichment against the raw p-value** for each term in a given ontology. Here we will focus on the GO Biological Process ontology.
 
-```{r exercise-great-load5, exercise=TRUE, exercise.setup="exercise-great-load4", fig.height=5, fig.width=5 }
+```{r exercise-great-load5, exercise=TRUE, exercise.setup="exercise-great-load3", fig.height=5, fig.width=5 }
 rGREAT::plotVolcano(job, ontology = "GO Biological Process")
 ```
 
