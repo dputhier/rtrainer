@@ -839,7 +839,7 @@ x <- 16
 zscore <- ___
 ```
 
-```{r zscore-solution, exercise=TRUE, exercise.setup="reload"}
+```{r zscore-solution}
 m <- 278
 n <- 18888-278
 k <- 47
@@ -848,6 +848,13 @@ expected <- k * m / (m + n)
 variance <- k * (m / (m + n)) * (n / (m + n)) * ((m + n - k) / (m + n - 1))
 zscore <- (x - expected) / sqrt(variance)
 ```
+
+```{r zscore-check}
+gradethis::grade_result_strict(
+  gradethis::pass_if(~ abs(zscore - 18.56505) < 1e-4)
+)
+```
+
 </div>
 
 ## Displaying results 
