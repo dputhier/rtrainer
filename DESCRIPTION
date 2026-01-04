@@ -1,4 +1,4 @@
-Package: rtrainer
+ Package: rtrainer
 Title: An interactive R tutorial.
 Version: 0.2.4
 Authors@R: person("Denis", "Puthier", , "denis.puthier@univ-amu.fr", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7240-5280"))
@@ -24,7 +24,13 @@ Imports:
     simplifyEnrichment,
     rtracklayer,
     Gviz,
-    GenomicRanges
+    GenomicRanges,
+    org.Hs.eg.db,
+    clusterProfiler,
+    enrichplot,
+    AnnotationDbi,
+    GOSemSim,
+    rGREAT
 Collate: utils.R datasets_doc.R extract_text.R check_tuto.R
 License: MIT + file LICENSE
 Encoding: UTF-8
