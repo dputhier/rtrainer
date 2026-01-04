@@ -875,7 +875,7 @@ We can visualize the results of the enrichment analysis using the `barplot()` fu
 ```
 
 <div class="exo">
-Use R code to create a barplot of the top 10 enriched GO terms for gene module 6 (results are stored in `enrich_res`). Store the plot in `barplot_enrich_exo`.
+Use the `barplot()` function to create a barplot of the top 10 enriched GO terms for gene module 6 (results are stored in `enrich_res`). Store the plot in `barplot_enrich_exo`.
 
 ```{r barplot_enrich_exo, exercise=TRUE, exercise.setup="reload"}
 library(enrichplot)
@@ -884,8 +884,7 @@ ___
 
 ```{r barplot_enrich_exo-solution}
 library(enrichplot)
-enrichplot::barplot.enrichResult(enrich_res, showCategory = 10) 
-# <=> barplot(enrich_res, showCategory = 10) 
+barplot(enrich_res, showCategory = 10) 
 ```
 </div>
 
@@ -954,9 +953,12 @@ Note that to use the cnetplot() function effectively, it is recommended to compu
 ```{r cnetplot_enrich_exo, exercise=TRUE, exercise.setup="reload", fig.height=8, fig.width=8}
 library(enrichplot)
 library(org.Hs.eg.db)
+library(GOSemSim)
 
+# Compute semantic similarities for GO terms in the Biological Process ontology
 sem_sim <- GOSemSim::godata(annoDb="org.Hs.eg.db", ont="BP")
 
+# Create a cnetplot with no edge colors and smaller text sizes
 cnetplot(enrich_res, 
          showCategory = 10, 
          color.params = list(edge = FALSE), 
@@ -967,6 +969,7 @@ cnetplot(enrich_res,
 
 
 ```{r cnetplot_enrich_exo_2, exercise=TRUE, exercise.setup="cnetplot_enrich_exo", fig.height=8, fig.width=10}
+# Create a cnetplot with edge colors and circular layout
 cnetplot(enrich_res, 
          showCategory = 10, 
          color.params = list(edge = TRUE), 

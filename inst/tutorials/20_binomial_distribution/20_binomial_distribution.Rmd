@@ -954,7 +954,7 @@ The results of GREAT for **term "placenta development" (GO:0001892)** are presen
 - **Binom_Adjp_BH**: "1.483253e-38"    
 
 ```{r great_exo2, exercise=TRUE}
-# Calculate the binomial raw p-value for "embryonic placenta development"
+# Calculate the binomial raw p-value for "placenta development"
 # Parameters:
 n <- ___
 k <- ___
