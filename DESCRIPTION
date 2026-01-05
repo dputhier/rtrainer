@@ -6,6 +6,7 @@ Description: An interactive R tutorial.
 Imports: 
     gradethis (>= 0.2.14),
     learnr,
+    BiocManager,
     ggplot2,
     igraph,
     fs,
