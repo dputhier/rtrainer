@@ -145,6 +145,42 @@ font-size: 1em !important;
 }
 </style>
 
+```{r echo=FALSE}
+# chunk below enables printing whole tutorial from browser e.g. to pdf
+# DO NOT put any #comments in the chunk below, that stops it from working !! 
+# from https://github.com/rstudio/learnr/issues/465
+# saving csss in a separate file print.css didn't work locally or on shinyapps because browser couldn't find file 
+```
+
+```{css echo=FALSE}
+@media print {
+  .topicsContainer,
+  .topicActions,
+  .exerciseActions .skip {
+    display: none;
+  }
+  .topics .tutorialTitle,
+  .topics .section.level2,
+  .topics .section.level3:not(.hide) {
+    display: block;
+  }
+  .topics {
+    width: 100%;
+  }
+  .tutorial-exercise, .tutorial-question {
+    page-break-inside: avoid;
+  }
+  .section.level3.done h3 {
+    padding-left: 0;
+    background-image: none;
+  }
+  .topics .showSkip .exerciseActions::before {
+    content: "Topic not yet completed...";
+    font-style: italic;
+  }
+}  
+  
+```
 
 ```{r setup, include=FALSE}
 library(learnr)
@@ -675,7 +711,7 @@ We obtained the following results for **GO:0042113**:
 
 - Using the hypergeometric formula, **recompute the p-value** for the first enriched GO term displayed above. Store the result in `pval_hypergeo`.
 
-```{r exohypergeo, exercise=TRUE, exercise.setup="reload"}
+```{r exohypergeo, exercise=TRUE}
 # Parameters for the hypergeometric test
 m <- ___
 n <- ___
@@ -701,7 +737,7 @@ gradethis::grade_result(
 
 - Given the relationship between the hypergeometric and the Fisher's exact test, **recompute the p-value** for GO term **GO:0042113** above using the `fisher.test()` function which takes a contingency matrix as input. Store the result in `pval_fisher`.
 
-```{r fisher, exercise=TRUE, exercise.setup="reload"}
+```{r fisher, exercise=TRUE}
 # Parameters for the hypergeometric test
 m <- ___
 n <- ___
@@ -745,7 +781,7 @@ gradethis::grade_result(
 - Use R code to recompute the **RichFactor** for **GO:0042113** (see above). Store the result in `rich_factor`.
 
 
-```{r rich_factor, exercise=TRUE, exercise.setup="reload"}
+```{r rich_factor, exercise=TRUE}
 rich_factor <- ___
 ```
 
@@ -777,7 +813,7 @@ answer("Adjusted p-value")
 - Use R code to recompute the **FoldEnrichment** for **GO:0042113** (see above). Store the result in `fold_enrichment`.
 
 
-```{r FoldEnrichment, exercise=TRUE, exercise.setup="reload"}
+```{r FoldEnrichment, exercise=TRUE}
 fold_enrichment <- ___
 ```
 
@@ -829,7 +865,7 @@ $$ \mathrm{Var}(X) = k \cdot \frac{m}{m+n} \cdot (1 - \frac{m}{m+n}) \cdot \frac
 For GO term **GO:0042113** ('B cell activation') the computed zscore was 18.57.
 Use R code to recompute the **zScore**. Store the result in `z_score`.
 
-```{r zscore, exercise=TRUE, exercise.setup="reload"}
+```{r zscore, exercise=TRUE}
 # Parameters
 m <- 278
 n <- 18888-278
