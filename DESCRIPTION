@@ -37,6 +37,6 @@ Remotes:
     bioc::clusterProfiler,
     bioc::enrichplot,
     bioc::AnnotationDbi,
-    bioc::GOSemSim
+    bioc::GOSemSim,
     bioc::rtracklayer
     
