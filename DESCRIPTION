@@ -39,3 +39,6 @@ RoxygenNote: 7.3.2
 Depends: R (>= 2.10)
 LazyData: true
 biocViews: Clustering, Classification, Transcriptomics, SingleCell, ReportWriting, GeneRegulation
+Remotes:
+    rstudio/gradethis@502af700437db1b648a35200ce7b940db0cc3d45,
+    jokergoo/rGREAT@97c712f52c35fb6550fa2aff1bf5766cbbb4e9a0
