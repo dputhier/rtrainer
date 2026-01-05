@@ -20,7 +20,17 @@ Imports:
     dplyr, 
     RColorBrewer,
     plotly,
-    ggrepel
+    ggrepel,
+    TxDb.Hsapiens.UCSC.hg38.knownGene,
+    simplifyEnrichment,
+    Gviz,
+    GenomicRanges,
+    org.Hs.eg.db,
+    clusterProfiler,
+    enrichplot,
+    AnnotationDbi,
+    GOSemSim,
+    rtracklayer
 Collate: utils.R datasets_doc.R extract_text.R check_tuto.R
 License: MIT + file LICENSE
 Encoding: UTF-8
