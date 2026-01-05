@@ -272,7 +272,7 @@ P(X = k) &= \frac{\lambda^k}{k!} \left(1 - \frac{\lambda}{n}\right)^{n-k} \\
 \end{aligned}
 $$
 
-**As** $n \to \infty$: 1. $\left(1 - \frac{\lambda}{n}\right)^{-k} \to 1$ (since $\frac{\lambda}{n} \to 0$)
+**As** $n \to \infty$:  $\left(1 - \frac{\lambda}{n}\right)^{-k} \to 1$ (since $\frac{\lambda}{n} \to 0$)
 
 So our main formula again simplifies to:
 
@@ -294,7 +294,7 @@ $$
 
 **Conclusion**
 
-Thus, as the number of trials $n$ approaches infinity and the probability of success $p$ becomes infinitesimally small, the Binomial distribution seamlessly converges to the Poisson distribution. This behavior simplifies the mathematical framework. Indeed, with **based solely on the average rate of occurrence**, $\lambda$, the Poisson distribution allows us to infer the entire probability distribution of event counts, whether in time, space, or other intervals. One important property of the Poisson distribution is that its **mean and variance are both equal to** $\lambda$.
+Thus, **as the number of trials $n$ approaches infinity and the probability of success $p$ becomes infinitesimally small**, the Binomial distribution converges to the Poisson distribution. This behavior simplifies the mathematical framework. Indeed, with **based solely on the average rate of occurrence**, $\lambda$, the Poisson distribution allows us to infer the entire probability distribution of event counts, whether in time, space, or other intervals. One important property of the Poisson distribution is that its **mean and variance are both equal to** $\lambda$.
 
 The **elegance and simplicity** of the Poisson formula, make it an indispensable tool across **diverse fields**, from traffic flow analysis to genomic peak calling.
 
