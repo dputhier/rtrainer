@@ -38,15 +38,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: R (>= 2.10)
 LazyData: true
-Remotes:
-    bioc::TxDb.Hsapiens.UCSC.hg38.knownGene,
-    bioc::simplifyEnrichment,
-    bioc::Gviz,
-    bioc::GenomicRanges,
-    bioc::org.Hs.eg.db,
-    bioc::clusterProfiler,
-    bioc::enrichplot,
-    bioc::AnnotationDbi,
-    bioc::GOSemSim,
-    bioc::rtracklayer
-    
+biocViews: Clustering, Classification, Transcriptomics, SingleCell, ReportWriting, GeneRegulation
