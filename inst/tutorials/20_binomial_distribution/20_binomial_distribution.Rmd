@@ -5,7 +5,7 @@
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 
-title: "The binomial distribution and (r)GREAT functional enrichment tool"
+title: "The binomial distribution and rGREAT functional enrichment tool"
 output:
   learnr::tutorial:
     includes:
