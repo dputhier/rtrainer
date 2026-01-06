@@ -189,6 +189,8 @@ library(gradethis)
 library(ggplot2)
 library(ggthemes)
 library(fs)
+library(org.Mm.eg.db)
+library(clusterProfiler)
 knitr::opts_chunk$set(echo=TRUE, 
                       eval=TRUE, 
                       cache=FALSE, 
@@ -295,7 +297,7 @@ Now we can perform GSEA analysis using the `gseGO()` function from `clusterProfi
 
 ```{r clusterprofiler, exercise=TRUE, exercise.setup="namedvect"}
 library(clusterProfiler)
-
+library(org.Mm.eg.db)
 # Let's call gseGO.
 # Please be patient, this may take 
 # some time to complete.
@@ -316,6 +318,8 @@ saveRDS(gsea_bp, file = file.path(fs::path_home(), ".rtrainer", "gsea_bp.rds"))
 The `gsea_bp`object is and S4 object of class `gseaResult` that contains the results of the GSEA analysis. You can access the slots in the object using the `@` operator.
 
 ```{r prepGSEA, echo=FALSE}
+library(clusterProfiler)
+library(org.Mm.eg.db)
 gsea_bp <- readRDS(file.path(fs::path_home(), ".rtrainer", "gsea_bp.rds"))
 ```
 
