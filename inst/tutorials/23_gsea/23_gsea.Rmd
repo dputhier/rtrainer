@@ -1,0 +1,515 @@
+
+---
+# theme
+# “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
+# “readable”, “sandstone”, “simplex”, “spacelab”, “united”, “yeti”
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+# `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
+
+title: "GSEA analysis"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+---
+
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+--> 
+
+```{css, echo=FALSE}
+
+```
+
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+
+
+
+<style>
+
+.figure img {
+  margin: 0 !important;
+  padding: 0 !important;
+  vertical-align:middle;
+}
+
+blockquote{
+font-size: 1em !important;
+}
+
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+
+```{r echo=FALSE}
+# chunk below enables printing whole tutorial from browser e.g. to pdf
+# DO NOT put any #comments in the chunk below, that stops it from working !! 
+# from https://github.com/rstudio/learnr/issues/465
+# saving csss in a separate file print.css didn't work locally or on shinyapps because browser couldn't find file 
+```
+
+```{css echo=FALSE}
+@media print {
+  .topicsContainer,
+  .topicActions,
+  .exerciseActions .skip {
+    display: none;
+  }
+  .topics .tutorialTitle,
+  .topics .section.level2,
+  .topics .section.level3:not(.hide) {
+    display: block;
+  }
+  .topics {
+    width: 100%;
+  }
+  .tutorial-exercise, .tutorial-question {
+    page-break-inside: avoid;
+  }
+  .section.level3.done h3 {
+    padding-left: 0;
+    background-image: none;
+  }
+  .topics .showSkip .exerciseActions::before {
+    content: "Topic not yet completed...";
+    font-style: italic;
+  }
+}  
+  
+```
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(ggplot2)
+library(ggthemes)
+library(fs)
+knitr::opts_chunk$set(echo=TRUE, 
+                      eval=TRUE, 
+                      cache=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE, 
+                      comment="",
+                      exercise.timelimit=600,
+                      exercise.completion=TRUE,
+                      exercise.diagnostics=TRUE)
+gradethis::gradethis_setup()
+
+```
+
+## GSEA principle
+
+<div class="alert alert-success" role="alert">
+GSEA (Gene Set Enrichment Analysis) is a statistical algorithm that tests whether a **predefined set of genes** (pathway, biological signature, GO term, etc.) is enriched in a **coordinated manner** at the top or bottom of a ranked gene list (e.g. p-value, log2FC…). 
+
+
+This ranked gene list is typically obtained from a **differential expression analysis** between two biological conditions (e.g. disease vs control). GSEA will traverse the ranked gene list from top to bottom using a **running-sum statistic** that will **increase** when encountering a gene of gene set $S$ and **decrease** otherwise. The enrichment score (ES) (or Maximum Enrichment Score, MES) is the maximum deviation from zero encountered during the process. Thus,instead of selecting "differentially expressed” genes with a cutoff, GSEA uses **all the information from the gene ranking**. It should typically be applied to detect:
+
+
+- **Strong effect at the biological pathway level**.
+- **Weak but consistent** (i.e. coordinated) effects at the biological pathway level which may allow to capture information that **could have been missed using a threshold** on p-value and/or log-fold change.
+</div>
+
+
+## Using GSEA (clusterProfiler)
+
+<div class="alert alert-danger" role="alert">
+**Several** gene set enrichment **methods** are available, the most popular being the tool developed initially **Broad Institute**. Each implementation may differ in the way to compute enrichment scores, the way to correct for multiple testing, etc.
+</div>
+
+<div class="alert alert-success" role="alert">
+Here we will use the `clusterProfiler` R package which make use of `fgsea` package that propose a fast implementation of GSEA that can be connected to **enrichPlot for visualization**. 
+
+The input to GSEA are typically:
+
+- **A ranked list of genes** (e.g., from differential expression analysis)
+- **A score** (t-value, log2FC, SNR...)
+- **Gene sets** (MSigDB, GO, KEGG, user-defined, etc.)
+</div>
+
+We will download data produced by **W. Saadi** in the article entitled **"A critical regulator of Bcl2 revealed by systematic transcript discovery of lncRNAs associated with T-cell differentiation"** ([Scientific Reports, 2019](https://www.nature.com/articles/s41598-019-41247-5).
+
+In this study, the authors use **the pro-T cell line P5424** to investigate **early T-cell differentiation**. Stimulation of P5424 cells with **the calcium ionophore ionomycin**, combined with **PMA (phorbol 12-myristate 13-acetate)**, induces **gene regulation** of **T-cell differentiation and activation markers**. This model partially mimics **the transition from CD4-CD8- double-negative (DN) cells** to **double-positive (DP) cells**, as well as some aspects of subsequent **T-cell maturation and activation**.
+
+
+```{r makedir}
+if(!dir.exists(file.path(fs::path_home(), ".rtrainer")))
+  dir.create(file.path(fs::path_home(), ".rtrainer"))
+```
+
+```{r read, exercise=TRUE, exercise.setup="makedir"}
+# The url pointing the results of differential expression analysis
+link <- "https://zenodo.org/records/18164316/files/41598_2019_41247_MOESM3_ESM_tp2.txt"
+
+# The file will be stored here (in your home directory, in a hidden folder named .rtrainer)
+dest_file <- file.path(fs::path_home(), ".rtrainer", "41598_2019_41247_MOESM3_ESM_tp2.txt")
+
+# Don't load the file from the server if it already exists on the disk
+if(!file.exists(dest_file)){
+  download.file(link, destfile = dest_file)
+}
+
+# Read the differential expression results
+deg <- read.table(dest_file, 
+                  sep="\t",  # tab-separated file
+                  header =TRUE, # the first row contains column names
+                  row.names = 1 # the first column contains row names
+                  )
+head(deg)
+```
+
+ClusterProfiler propose several functions for GSEA analysis, `gseGO()`, `gseKEGG()`, `gseWP()` (...) that respectively perform GSEA analysis using **GO terms**, **KEGG pathways**, **WikiPathways** (...). They all require a **named vector** in which value are **the score** (t-value, log2FC, SNR...), the names are the **genes IDs** (typically **Gene SYMBOLS**). The vector needs to be sorted in decreasing order. Here we can use the log2FoldChange as score.
+
+```{r foldchange, exercise=TRUE, exercise.setup="read"}
+hist(deg$log2FoldChange, breaks=100)
+```
+
+And convert it into a named vector sorted in decreasing order.
+
+```{r namedvect, exercise=TRUE, exercise.setup="read"}
+# Create a named vector
+deg_vect <- setNames(deg$log2FoldChange, 
+                          row.names(deg))
+
+# Sort the vector
+deg_vect <- sort(deg_vect, 
+                 decreasing = TRUE)
+
+# Show the first elements
+head(deg_vect)
+```
+
+The information regarding GO ontology will be obtained by the `org.Mm.eg.db` from bioconductor. We will install this package if not available.
+
+```{r installbioc, exercise=TRUE}
+if(!require(org.Mm.eg.db)){
+  BiocManager::install("org.Mm.eg.db")
+}
+```
+Now we can perform GSEA analysis using the `gseGO()` function from `clusterProfiler` package. Here we will focus on the Biological Process (BP) ontology.
+
+```{r clusterprofiler, exercise=TRUE, exercise.setup="namedvect"}
+library(clusterProfiler)
+
+# Let's call gseGO.
+# Please be patient, this may take 
+# some time to complete.
+gsea_bp <- gseGO(deg_vect,
+                OrgDb = org.Mm.eg.db,
+                ont = "BP",
+                keyType = "SYMBOL",
+                minGSSize = 100,
+                maxGSSize = 500,
+                pvalueCutoff = 0.05,
+                eps=1e-320,
+                verbose = TRUE)
+
+# Store the result onto the disk
+saveRDS(gsea_bp, file = file.path(fs::path_home(), ".rtrainer", "gsea_bp.rds"))
+```
+
+The `gsea_bp`object is and S4 object of class `gseaResult` that contains the results of the GSEA analysis. You can access the slots in the object using the `@` operator.
+
+```{r prepGSEA, echo=FALSE}
+gsea_bp <- readRDS(file.path(fs::path_home(), ".rtrainer", "gsea_bp.rds"))
+```
+
+```{r isS4, exercise=TRUE, exercise.setup="prepGSEA"}
+# This is an S4 object
+isS4(gsea_bp)
+class(gsea_bp)
+
+# Here are the Slots
+slotNames(gsea_bp)
+```
+
+The `result` slot contains a data.frame with the results of the GSEA analysis.
+
+```{r headGSEA, exercise=TRUE, exercise.setup="prepGSEA"}
+# Show the results
+head(gsea_bp@result)
+```
+
+The results enclosed in objects of class `gseaResult`  can be visualized using the `enrichplot` package.
+
+## Visualizing the results
+
+There are **numerous possible visualizations** of GSEA results using the **`enrichplot` package**. The **ridgeplot** is a **good starting point**, as it displays the **distribution of the log2 fold changes (log2FC)** associated with the top terms.
+
+For example, the plot reveals that terms such as **"CD4-positive, alpha-beta T cell activation"** and **"T cell differentiation"** are associated with genes that are **mostly upregulated (positive log2FC)** following **PMA+Ionomycin stimulation of P5424 cells**. This aligns with the **biological context**, as **PMA+Ionomycin stimulation mimics T-cell activation**.
+
+Additionally, the analysis highlights a **strong activation of genes** involved in the **"response to type II interferon"**, providing **insights into the signaling pathways** engaged in this process.
+
+```{r ridgeplot, exercise=TRUE, exercise.setup="prepGSEA"}
+library(enrichplot)
+library(ggplot2)
+ridgeplot(gsea_bp) + theme(axis.text.y=element_text(size=5))
+```
+
+The `gseaplot()` function allows to visualize the GSEA running enrichment score for a given term.
+
+```{r gseaplot, exercise=TRUE, exercise.setup="prepGSEA"}
+gseaplot(gsea_bp, 
+         geneSetID = 1, 
+         title = gsea_bp@result$Description[1])
+```
+
+The `emapplot()` function creates an enrichment map that display the relationships between enriched terms based on their gene overlap. However, it requires first, to compute the pairwise similarity between enriched terms using the `pairwise_termsim()` function.
+
+```{r pairwise_termsim, exercise=TRUE, exercise.setup="prepGSEA"}
+gsea_bp <- pairwise_termsim(gsea_bp)
+
+# Store the result onto the disk
+saveRDS(gsea_bp, file = file.path(fs::path_home(), ".rtrainer", "gsea_bp.rds"))
+```
+
+Now that we have called `pairwise_termsim()`, we can create the enrichment network using `emapplot()`.
+
+```{r emapplot, exercise=TRUE, exercise.setup="prepGSEA", fig.width=8, fig.height=8}
+gsea_bp <- pairwise_termsim(gsea_bp)
+emapplot(gsea_bp, 
+         layout.params = list(layout = 'kk'),
+         cex.params = list(category_label = 0.4))
+```
+
+We can learn from this diagram that the terms seem to originate from two main clusters. The first cluster is associated with **T cell activation and differentiation**, while the second cluster is related to the **response to pathogens**.
+
+Finally, we can create a **bipartite graph**  with some nodes related to gene and term and edges representing the membership of genes to terms. This can be achieved using the `cnetplot()` function
+
+```{r cnetplot, exercise=TRUE, exercise.setup="prepGSEA", fig.width=8, fig.height=8}
+cnetplot(gsea_bp, 
+         showCategory = 6, 
+         color.params = list(edge = TRUE), 
+         cex.params = list(category_label = 0.4, gene_label = 0.5),
+         circular=FALSE)
+```
+
+
+## Exercises
+
+<div class="exo">
+In the original article, the developpers of GSEA used the SNR (Signal to Noise Ratio) as score for ranking genes instead of the log2FC. The SNR is defined as: 
+$$ SNR = \frac{μ_A - μ_B}{σ_A + σ_B} $$
+
+Where $μ_A$ and $μ_B$ are the means of expression of a given gene in conditions A and B respectively, and $σ_A$ and $σ_B$ are the standard deviations of expression of the same gene in conditions A and B respectively.
+
+```{r quizz_snr_vs_log2fc, echo=FALSE}
+library(learnr)
+question(
+  "What is the advantage of using the SNR score over log2(Fold Change)?",
+  answer("The SNR score only considers the magnitude of expression differences, ignoring variability.", FALSE),
+  answer("The SNR score accounts for both the **magnitude of expression differences** and the **variability** between conditions, providing a more robust ranking by penalizing genes with high variability in one of the class.", TRUE),
+  answer("The SNR score is easier to compute and does not require standard deviation calculations.", FALSE),
+  answer("The SNR score is only useful for single-condition experiments, not for comparative analyses.", FALSE),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+```{r quizz_snr_similarity, echo=FALSE}
+library(learnr)
+question(
+  "To which statistical score is the SNR most similar?",
+  answer("**Pearson correlation coefficient**", FALSE),
+  answer("**t-statistic**", TRUE),
+  answer("**P-value**", FALSE),
+  answer("**Fold Change**", FALSE),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+```
+
+Given that the table contains control samples (DM1, DM2, DM3) and stimulated samples (PI1, PI2, PI3), compute the SNR for each gene. Store the result in a named vector `deg_snr_vect` sorted in decreasing order.
+
+- You can use the `apply()` function to compute the means and standard deviations for each gene across the replicates.
+
+```{r snr_exercise, exercise=TRUE, exercise.setup="read"}
+# Your code here
+```
+
+```{r snr_exercise-solution}
+# Compute means
+mean_control <- apply(deg[, c("DM1", "DM2", "DM3")], 1, mean)
+mean_stimulated <- apply(deg[, c("PI1", "PI2", "PI3")], 1, mean)
+
+# Compute standard deviations
+sd_control <- apply(deg[, c("DM1", "DM2", "DM3")], 1, sd)
+sd_stimulated <- apply(deg[, c("PI1", "PI2", "PI3")], 1, sd)
+
+# Compute SNR
+deg_snr <- (mean_stimulated - mean_control) / (sd_stimulated + sd_control)
+```
+
+```{r snr_exercise-check}
+gradethis::grade_result_strict(
+  gradethis::pass_if(~ abs(sum(deg_snr) - 4121.747) < 3)
+)
+```
+
+</div>
+
+<div class="exo">
+- Using the SNR results to perform a GSEA analysis using the `gseGO()` function from `clusterProfiler` package. Store the result in the variable `gsea_bp_snr`.
+- Compare the first terms to those obtained using the log2FC score.
+
+
+```{r prepsnr_exercise, echo=FALSE}
+library(clusterProfiler)
+library(org.Mm.eg.db)
+
+dest_file <- file.path(fs::path_home(), ".rtrainer", "41598_2019_41247_MOESM3_ESM_tp2.txt")
+deg <- read.table(dest_file, 
+                  sep="\t",  # tab-separated file
+                  header =TRUE, # the first row contains column names
+                  row.names = 1 # the first column contains row names
+                  )
+
+mean_control <- apply(deg[, c("DM1", "DM2", "DM3")], 1, mean)
+mean_stimulated <- apply(deg[, c("PI1", "PI2", "PI3")], 1, mean)
+
+# Compute standard deviations
+sd_control <- apply(deg[, c("DM1", "DM2", "DM3")], 1, sd)
+sd_stimulated <- apply(deg[, c("PI1", "PI2", "PI3")], 1, sd)
+
+# Compute SNR
+deg_snr <- (mean_stimulated - mean_control) / (sd_stimulated + sd_control)
+```
+
+```{r gsea_snr_exercise, exercise=TRUE, exercise.setup="prepsnr_exercise", exercise.lines=15}
+# Your code
+
+```
+
+
+```{r gsea_snr_exercise-solution}
+# Create a named and sorted vector
+deg_snr_vect <- sort(setNames(deg_snr, 
+                          row.names(deg)), 
+                     decreasing = TRUE)
+
+
+gsea_bp_snr <- gseGO(deg_snr_vect,
+                    OrgDb = org.Mm.eg.db,
+                    ont = "BP",
+                    keyType = "SYMBOL",
+                    minGSSize = 100,
+                    maxGSSize = 500,
+                    pvalueCutoff = 0.05,
+                    eps=1e-320,
+                    verbose = TRUE)
+
+head(gsea_bp_snr@result)
+```
+
+</div>
+### End of the section
+
+Thank you for following this tutorial.
+
+
+

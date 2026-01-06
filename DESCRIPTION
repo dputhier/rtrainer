@@ -30,7 +30,8 @@ Imports:
     enrichplot,
     AnnotationDbi,
     GOSemSim,
-    rtracklayer
+    rtracklayer,
+    ggupset
 Collate: utils.R datasets_doc.R extract_text.R check_tuto.R
 License: MIT + file LICENSE
 Encoding: UTF-8
