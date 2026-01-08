@@ -200,6 +200,8 @@ knitr::opts_chunk$set(echo=TRUE,
                       exercise.diagnostics=TRUE)
 gradethis::gradethis_setup()
 
+if(!dir.exists(file.path(fs::path_home(), ".rtrainer")))
+  dir.create(file.path(fs::path_home(), ".rtrainer"), showWarnings = FALSE, recursive = TRUE)
 ```
 
 ## Principle
@@ -225,11 +227,14 @@ We want to draw **k** balls from the urn **without replacement** and want to kno
 </div>
 
 ```{r examplepeak, echo=FALSE, fig.width=5, fig.height=4.7, fig.cap="**Figure 1**: Illustration of the urn model."}
+
 library(png)
-library(RCurl)
-pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/18144510/files/urn.png"))
+download.file("https://zenodo.org/records/18144510/files/urn.png", 
+              destfile = file.path(fs::path_home(), ".rtrainer", "urn.png"))
+pp <- readPNG(file.path(fs::path_home(), ".rtrainer", "urn.png"))
 plot.new() 
-rasterImage(pp, 0, 0, 1, 1)
+rasterImage(pp,0,0,1,1)
+
 ```
 
 <div class="alert alert-danger" role="alert">
@@ -504,6 +509,12 @@ mean_theoretical <- ___
 ```
 
 ```{r hypergeo_all-solution}
+# Parameters
+
+m <- 30
+n <- 70
+k <- 15
+
 prob_5_white <- dhyper(5, m, n, k)
 p_at_most_5 <- phyper(5, m, n, k)
 p_5_or_more <- phyper(5-1, m, n, k, lower.tail = FALSE)
@@ -548,10 +559,14 @@ In genomics, the hypergeometric distribution is commonly used in functional enri
 Here we will apply it to functionnal enrichment analysis of gene sets obtained after applying **gene module analysis** with [scigenex](https://dputhier.github.io/scigenex/articles/usage.html) to a single cell dataset of **3000 human PBMCs** (Peripheral Blood Mononuclear Cells). The analysis led to the identification of **13 gene modules**, each associated with a set of genes (see \ref{fig:scigenex}). As these gene modules tend to group genes with similar expression patterns across different cell populations, **these genes are expected to be functionally related**. We will test **whether these gene modules are enriched in specific biological pathways** using the hypergeometric test.
 
 ```{r scigenex, echo=FALSE, fig.height=5, fig.width=6, fig.cap="**Figure 2**: The results from scigenex. Each row is a gene and column a cell (out of 3k PBMC). The genes are clustered into 13 modules (left bar) based on their expression patterns across cell population (top colored clusters)."}
+
 library(png)
-pp <- readPNG(RCurl::getURLContent("https://dputhier.github.io/scigenex/articles/usage_files/figure-html/plot_ggheatmap-1.png"))
+download.file("https://dputhier.github.io/scigenex/articles/usage_files/figure-html/plot_ggheatmap-1.png", 
+              destfile = file.path(fs::path_home(), ".rtrainer", "plot_ggheatmap-1.png"))
+pp <- readPNG(file.path(fs::path_home(), ".rtrainer", "plot_ggheatmap-1.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
+
 ```
 
 ### Preparing the gene modules
@@ -616,19 +631,12 @@ annotation_src <- "BP"
 # Load the required Bioconductor package for converting gene symbols to Entrez IDs
 library(org.Hs.eg.db)
 
-# Load AnnotationDbi package for selecting gene annotations
-library(AnnotationDbi)
-
-# Get the entrez IDs for a given gene set (here for module 1)
-query_entrezid <- AnnotationDbi::select(get("org.Hs.eg.db"),
-                                        keys = gene_set,
-                                        columns = c("ENTREZID", "SYMBOL"),
-                                        keytype = "SYMBOL")
 
 # Perform GO enrichment analysis using clusterProfiler
-enrich_res <- clusterProfiler::enrichGO(query_entrezid[,"ENTREZID"],
+enrich_res <- clusterProfiler::enrichGO(gene_set,
                                         OrgDb = get("org.Hs.eg.db"),
                                         ont = annotation_src,
+                                        keyType="SYMBOL",
                                         readable = TRUE)
 
 # Serialize the result (i.e store the object as a file) for later use

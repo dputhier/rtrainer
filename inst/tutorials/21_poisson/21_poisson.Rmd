@@ -191,6 +191,9 @@ knitr::opts_chunk$set(echo=TRUE,
                       exercise.completion=TRUE,
                       exercise.diagnostics=TRUE)
 gradethis::gradethis_setup()
+
+if(!dir.exists(file.path(fs::path_home(), ".rtrainer")))
+  dir.create(file.path(fs::path_home(), ".rtrainer"), showWarnings = FALSE, recursive = TRUE)
 ```
 
 ## Introduction
@@ -215,40 +218,58 @@ We will try to explain this formula in the next sections.
 
 ### First intuition
 
-Let's consider that, at the campus, the **observed mean number of cars per 10 minutes is 5.3** (the expectation, $\lambda$) we could try to approximate $p(k)$ (*e.g.* $p(10 \text{ cars})$) by using the **Binomial distribution**. **Each 10 minutes**, would be a **trial with a success or failure** (*i.e* seing a car). As we have seen the expected value of the Binomial is $n*p$ so we can write:
+Suppose that, at a campus entrance, the **observed mean number of cars arriving during a 10-minute interval is 5.3**. We denote this expected value by \(\lambda = 5.3\).
 
-$p * n = \lambda$
+We would like to approximate the probability \(P(X = k)\) (for example, \(P(X = 10)\)) using a **Binomial distribution**. To do so, can change the time scale so that we create \(n\) **very small and equal time intervals**. Each sub-interval is treated as a **Bernoulli trial** with two possible outcomes:
 
-which allows to re-write the probability $p$ as :
+- **success**: exactly one car arrives during the sub-interval  
+- **failure**: no car arrives  
 
-$p = \frac{\lambda}{n}$
+If the **intervals are sufficiently small**, the probability of **observing more than one car in a single sub-interval is negligible**. Under this assumption, the  number of cars \(X\) arriving at the campus entrance can be modeled as a Binomial random variable with parameters \(n\) and \(p\).
 
-Replacing p in the Binomial formula would give:
+Recall that the expected value of a Binomial distribution is
+\[
+E[X] = np.
+\]
 
-$$
+Since the mean number of cars is \(\lambda\), we can write:
+\[
+np = \lambda,
+\]
+which gives
+\[
+p = \frac{\lambda}{n}.
+\]
+
+Substituting this expression into the Binomial probability mass function, we obtain
+\[
 \begin{aligned}
-P(X = k) &= \binom{n}{k} p^k (1-p)^{n-k} \\
-&= \binom{n}{k} \left(\frac{\lambda}{n}\right)^k \left(1 - \frac{\lambda}{n}\right)^{n-k}
+P(X = k)
+&= \binom{n}{k} p^k (1 - p)^{n-k} \\
+&= \binom{n}{k}
+\left(\frac{\lambda}{n}\right)^k
+\left(1 - \frac{\lambda}{n}\right)^{n-k}.
 \end{aligned}
-$$
+\]
 
-::: {.alert .alert-danger role="alert"}
-However, one issue is that **several events** may happen at the same time (e.g., two cars arriving simultaneously at the entrance) which is not considered in our mathematical formula. Thus the model should be **wrong if the probability of events is high**...
-:::
+---
 
-### What happens when n is large and p is small ?
+### What happens when \(n\) is large and \(p\) is small?
 
 ::: {.alert .alert-success role="alert"}
-To address this, we can consider a **very very large number of trials**, $n$. Such as we would now measure **time in second, or µsecond or nanosecond** (...) and thus the **probability** $p$ of seeing a car in such a small time interval **would be very small too**.
+We consider the situation where the number of trials \(n\) becomes **very large**, and thus the probability of success \(p\) becomes **very small**.
+This corresponds to measuring time using extremely fine intervals (seconds, microseconds, nanoseconds, …). In such small intervals, the probability of observing more than one car is essentially zero, and thus the binomial model is appropriate.
 :::
 
-Now **for large** $n$ and small $k$:
+As $n$ gets high the number of success stay constant and thus **for large** $n$ and small $k$:
+
+$n \approx (n-1) \approx(n-2) \approx ... \approx (n-k+1)$
+
+and thus:
 
 $$
 \binom{n}{k} = \frac{n(n-1)(n-2)...(n-k+1)}{k!} \approx \frac{n^k}{k!}
 $$
-
-Indeed when $n$ is very large and $k$ is small $n \approx (n-1) \approx(n-2) \approx ... \approx (n-k+1)$
 
 So replacing $\binom{n}{k}$ with $\frac{n^k}{k!}$ the complete formula becomes:
 
@@ -512,11 +533,15 @@ It will then compare $\lambda_{local}$ to the number of reads observed in the Ch
 
 
 ```{r examplepeak, echo=FALSE, fig.width=8}
+
 library(png)
-library(RCurl)
-pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/17977022/files/example_chip.png"))
+download.file("https://zenodo.org/records/18164316/files/example_chip.png", 
+              destfile = file.path(fs::path_home(), ".rtrainer", "example_chip.png"))
+pp <- readPNG(file.path(fs::path_home(), ".rtrainer", "example_chip.png"))
 plot.new() 
-rasterImage(pp, 0, 0, 1, 1)
+rasterImage(pp,0,0,1,1)
+
+
 ```
 
 ### Exercise

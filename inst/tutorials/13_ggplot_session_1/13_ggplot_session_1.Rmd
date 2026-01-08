@@ -139,6 +139,8 @@ library(ggplot2)
 library(RCurl)
 knitr::opts_chunk$set(echo=TRUE, eval=TRUE, cache=FALSE, message=FALSE, warning=FALSE, comment="")
 gradethis::gradethis_setup()
+if(!dir.exists(file.path(fs::path_home(), ".rtrainer")))
+  dir.create(file.path(fs::path_home(), ".rtrainer"), showWarnings = FALSE, recursive = TRUE)
 ```
 
 
@@ -168,7 +170,9 @@ It is the combination of these independent components that forms a graphic. In g
 
 ```{r, echo=FALSE, fig.height=6, fig.width=6}
 library(png)
-pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/15083675/files/ggbasics.png"))
+download.file("https://zenodo.org/records/15083675/files/ggbasics.png", 
+              destfile = file.path(fs::path_home(), ".rtrainer", "ggbasics.png"))
+pp <- readPNG(file.path(fs::path_home(), ".rtrainer", "ggbasics.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
 ```
@@ -183,10 +187,12 @@ To start, we will use the "diamonds" dataset from the **ggplot2** library. The *
 
 ```{r, echo=FALSE, fig.height=5}
 library(png)
-library(RCurl)
-pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/15083675/files/diamonds.png"))
+download.file("https://zenodo.org/records/15083675/files/diamonds.png", 
+              destfile = file.path(fs::path_home(), ".rtrainer", "diamonds.png"))
+pp <- readPNG(file.path(fs::path_home(), ".rtrainer", "diamonds.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
+
 ```
 
 Let's load the dataset.
@@ -271,20 +277,27 @@ The correspondences between point shapes and the numeric variables passed are sh
 
 
 ```{r, echo=FALSE, fig.height=5}
-library("png")
-library(RCurl)
-pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/15083675/files/point.png"))
+
+library(png)
+download.file("https://zenodo.org/records/15083675/files/point.png", 
+              destfile = file.path(fs::path_home(), ".rtrainer", "point.png"))
+pp <- readPNG(file.path(fs::path_home(), ".rtrainer", "point.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
+
 ```
 
 Other point shapes are possible, for example, by using the [ggstar](https://cran.r-project.org/web/packages/ggstar/vignettes/ggstar.html) library:
 
 ```{r, echo=FALSE, fig.height=5}
+
 library(png)
-pp <- readPNG(RCurl::getURLContent("https://zenodo.org/records/15083675/files/ggstar.png"))
+download.file("https://zenodo.org/records/15083675/files/ggstar.png", 
+              destfile = file.path(fs::path_home(), ".rtrainer", "ggstar.png"))
+pp <- readPNG(file.path(fs::path_home(), ".rtrainer", "ggstar.png"))
 plot.new() 
 rasterImage(pp,0,0,1,1)
+
 ```
 
 More generally, any image can be used as a point (using [ggimage](https://yulab-smu.top/pkgdocs/ggimage.html)).

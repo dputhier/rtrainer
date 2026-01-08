@@ -189,6 +189,15 @@ knitr::opts_chunk$set(echo=TRUE,
                       exercise.completion=TRUE,
                       exercise.diagnostics=TRUE)
 gradethis::gradethis_setup()
+
+if(!dir.exists(file.path(fs::path_home(), ".rtrainer")))
+  dir.create(file.path(fs::path_home(), ".rtrainer"), showWarnings = FALSE, recursive = TRUE)
+
+if(file.exists(file.path(fs::path_home(), ".rtrainer", "rGREAT_result.rds")))
+  file.remove(file.path(fs::path_home(), ".rtrainer", "rGREAT_result.rds"))
+
+if(file.exists(file.path(fs::path_home(), ".rtrainer", "rGREAT_tbl.rds")))
+  file.remove(file.path(fs::path_home(), ".rtrainer", "rGREAT_tbl.rds"))
 ```
 
 ## Bernoulli Trials
