@@ -1,4 +1,4 @@
-Package: rtrainer
+Git diff DESCRIPTIONPackage: rtrainer
 Title: An interactive R tutorial.
 Version: 0.2.4
 Authors@R: person("Denis", "Puthier", , "denis.puthier@univ-amu.fr", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-7240-5280"))
@@ -24,6 +24,7 @@ Imports:
     TxDb.Hsapiens.UCSC.hg38.knownGene,
     simplifyEnrichment,
     Gviz,
+    ggtree,
     GenomicRanges,
     org.Hs.eg.db,
     org.Mm.eg.db,
@@ -32,7 +33,10 @@ Imports:
     AnnotationDbi,
     GOSemSim,
     rtracklayer,
-    ggupset
+    DESeq2,
+    patchwork,
+    ggupset,
+    shiny
 Collate: utils.R datasets_doc.R extract_text.R check_tuto.R
 License: MIT + file LICENSE
 Encoding: UTF-8
