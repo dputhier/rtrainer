@@ -1511,3 +1511,14 @@ quiz(
 )
 ```
 </div>
+
+
+### Further resources
+
+- [DESeq2 original publication](https://pmc.ncbi.nlm.nih.gov/articles/PMC4302049/)
+- [DESeq2 Bioconductor page](https://bioconductor.org/packages/release/bioc/html/DESeq2.html)
+- [DESeq2 Vignette](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)
+
+### End of the section
+
+Thank you for following this tutorial.
