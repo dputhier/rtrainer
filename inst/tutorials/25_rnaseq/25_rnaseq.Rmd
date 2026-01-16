@@ -1209,13 +1209,12 @@ Use this **interactive example** to understand how **linear fold changes** are t
 library(shiny)
 
 fluidPage(
-  h3("Linear Fold Change vs log2 Fold Change"),
+  h3("Linear vs log\u2082 scale for gene expression"),
 
   p(
-    "Use this interactive example to understand how linear fold changes ",
-    "are transformed into log\u2082 fold changes, and why the log\u2082 scale ",
-    "provides a symmetric and more interpretable representation of gene ",
-    "expression differences."
+    "Use this interactive example to understand how the same gene expression ",
+    "values are represented on a linear scale and on a log\u2082 scale, ",
+    "and why log\u2082 fold change is widely used in RNA-seq analysis."
   ),
 
   fluidRow(
@@ -1246,13 +1245,13 @@ fluidPage(
   fluidRow(
     column(
       6,
-      h4("Linear scale"),
-      plotOutput("linearPlot", height = 260)
+      h4("Counts"),
+      plotOutput("countPlot", height = 260)
     ),
     column(
       6,
-      h4("log2 scale"),
-      plotOutput("logPlot", height = 260)
+      h4("Fold Changes vs log2(Fold Changes)"),
+      plotOutput("fcPlot", height = 260)
     )
   ),
 
@@ -1265,42 +1264,40 @@ fluidPage(
 ```{r log2fc-server, context="server"}
 library(ggplot2)
 
-fold_change <- reactive({
-  input$test_expr / input$ref_expr
-})
-
-log2fc <- reactive({
-  log2(fold_change())
-})
-
-output$linearPlot <- renderPlot({
-  df <- data.frame(
+df_expr <- reactive({
+  data.frame(
     condition = c("Reference", "Tested"),
     expression = c(input$ref_expr, input$test_expr)
   )
+})
 
-  ggplot(df, aes(condition, expression, fill = condition)) +
+fold_change <- reactive({
+  data.frame(y=c(input$test_expr / input$ref_expr,
+                 log2(input$test_expr / input$ref_expr)),
+             x=c("Fold Change", "Log2(Fold Change)"))
+})
+
+
+
+output$countPlot <- renderPlot({
+  ggplot(df_expr(), aes(condition, expression, fill = condition)) +
     geom_col(width = 0.6) +
     theme_bw() +
     labs(y = "Mean expression") +
-    ylim(0, max(df$expression) * 1.2) +
+    ylim(0, max(df_expr()$expression) * 1.2) +
     scale_fill_manual(values = c("grey70", "steelblue")) +
     theme(legend.position = "none")
 })
 
-output$logPlot <- renderPlot({
-  df <- data.frame(
-    condition = c("Reference", "Tested"),
-    log2expr = c(0, log2fc())
-  )
-
-  ggplot(df, aes(condition, log2expr, fill = condition)) +
-    geom_col(width = 0.6) +
+output$fcPlot <- renderPlot({
+  ggplot(fold_change(), aes(x=x, y=y)) +
+    geom_col(width = 0.6, 
+             color="white")  +
+    geom_hline(yintercept = 0, 
+               linetype = "dashed", color = "black") +
     theme_bw() +
-    labs(y = "log\u2082 fold change") +
-    ylim(-4, 4) +
-    geom_hline(yintercept = 0, linetype = "dashed") +
-    scale_fill_manual(values = c("grey70", "steelblue")) +
+    labs(y = "Value",
+         x="") +
     theme(legend.position = "none")
 })
 
@@ -1309,10 +1306,208 @@ output$values <- renderText({
     "Mean expression (Reference): ", input$ref_expr, "\n",
     "Mean expression (Tested): ", input$test_expr, "\n\n",
     "Linear fold change (Tested / Reference): ",
-    round(fold_change(), 3), "\n",
+    round(fold_change()[1, 1], 3), "\n",
     "log2 fold change: ",
-    round(log2fc(), 3)
+    round(fold_change()[2, 1], 3)
   )
 })
+```
+</div>
+
+<div class="exo">
+
+Draw the distribution of the log2 fold changes for all genes using the `hist()` function.
+Do do so:
+
+- Extract the log2 fold changes from the `res_DESeq2` data.frame (column `log2FoldChange`, use the `$` operator).
+- Use the `hist()` function to draw the histogram of the log2 fold changes.
+
+```{r log2fc-hist, exercise=TRUE, exercise.setup="dge"}
+# Extract log2 fold changes
+log2_fc <- res_DESeq2$log2FoldChange
+
+# Your code here
+```
+
+```{r log2fc-hist-solution}
+# Extract log2 fold changes
+log2_fc <- res_DESeq2$log2FoldChange
+
+# Draw histogram
+hist(log2_fc,
+     breaks=50,
+     main="Distribution of log2 fold changes",
+     xlab="log2 Fold Change",
+     col="lightblue")
+```
+
+```{r log2fc_quizz, echo=FALSE }
+library(learnr)
+quiz(
+  question("What can we say about the distribution of log2 fold changes?",
+    answer("Most genes have a log2 fold change close to 0, indicating that most of the gene expressions are unchanged.", 
+           correct = TRUE),
+    answer("The distribution is bimodal, indicating two distinct groups of genes with different expression patterns between the conditions.", 
+           correct = FALSE),
+    answer("The log2(FC) are centered around 1 indicating that most of the gene expressions are unchanged.", correct = FALSE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  question("What is the fold change corresponding to a log2 fold change of -2?",
+    answer("0.25 (expression is divided by 4).", 
+           correct = TRUE),
+    answer("2 (expression is doubled).", 
+           correct = FALSE),
+    answer("-2 (expression is reduced by 2).", correct = FALSE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE),
+    question("What is the fold change corresponding to a log2 fold change of 3?",
+      answer("8 (expression is multiplied by 8).", 
+             correct = TRUE),
+      answer("3 (expression is tripled).", 
+             correct = FALSE),
+      answer("0.33 (expression is divided by 3).", correct = FALSE),
+      allow_retry = TRUE,
+      random_answer_order = TRUE),
+    question("Given a log2(FC) of x, what is the R code to compute the corresponding linear fold change (FC)?",
+      answer("2^x", 
+             correct = TRUE),
+      answer("log2(1/x)", 
+             correct = FALSE),
+      answer("10^(x/2)", 
+             correct = FALSE),
+      answer("1 * exp(x)", 
+             correct = FALSE),
+      answer("log(x/2)", 
+             correct = FALSE),
+      allow_retry = TRUE,
+      random_answer_order = TRUE
+    ),
+  question("Why is log2 fold change preferred over log10 fold change in RNA-Seq analysis?",
+    answer("Because log2(2) = 1, making it easier to interpret fold changes in terms of doubling or halving of expression levels compare to log10(2) ≈ 0.301.", 
+           correct = TRUE),
+    answer("Log10 fold change is not defined for values less than 1, which can be problematic for downregulated genes.",
+           correct = FALSE),
+    answer("Because log2(FC) is more symetric than log10(FC).",
+           correct = FALSE),
+    answer("Log2 fold change is computationally more efficient to calculate than log10 fold change.", 
+           correct = FALSE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE 
+  )
+)
+
+```
+</div>
+
+## Volcano plot
+
+<div class="alert alert-success" role="alert">
+Volcano plot is a type of scatter plot that is used to visualize the results of differential expression analysis. It plots the **log2 fold change** on the x-axis against the **-log10 adjusted p-value** on the y-axis. This allows to easily identify genes that are both significantly differentially expressed (high -log10 adjusted p-value) and have a large effect size (high absolute log2 fold change).
+</div>
+
+
+```{r volcano_plot, exercise =TRUE, exercise.setup="dge", fig.width=8, fig.height=6, exercise.lines=57}
+# Load required libraries
+# The ggrepel library is used to
+# add labels to the plot
+# and avoid overlapping text
+library(ggplot2)
+library(ggrepel)
+library(ggpointdensity)
+
+# Significance threshold
+# for visualization purposes
+alpha <- 1e-3
+
+# Copy results into a data.frame
+df <- as.data.frame(res_DESeq2)
+
+# Handle missing / extreme p-values.
+# Somep-values may be undefined (NA)
+# we will set them to 1 (not significant)
+df$padj[is.na(df$padj)] <- 1
+
+# Some p-values may be equal to 0. 
+# We will set them to the smallest
+# positive double value representable
+# in R (.Machine$double.xmin) to allow for 
+# log10 transformation (log10(0) is undefined)
+df$pvalue[df$pvalue == 0] <- .Machine$double.xmin
+
+# Compute plotting variables
+df$log10_pvalue <- -log10(df$pvalue)
+df$gene <- rownames(df)
+
+# Define genes to label
+df$to_label <- abs(df$log2FoldChange) > 2 & df$pvalue < alpha
+
+# Draw the volcano plot
+ggplot(df, aes(x = log2FoldChange, 
+               y = log10_pvalue)) +
+  geom_pointdensity(alpha = 0.6,
+                    size = 1,
+                    show.legend = FALSE) +
+  ggplot2::scale_color_viridis_c() +
+  
+  # Vertical and horizontal thresholds
+  geom_vline(xintercept = 0, linetype = "solid", color = "grey40") +
+  geom_vline(xintercept = c(-1, 1), linetype = "dashed", color = "brown") +
+  geom_hline(yintercept = -log10(alpha), linetype = "dashed", color = "brown") +
+
+  # Gene labels (repelled)
+  geom_text_repel(
+    data = subset(df, to_label),
+    aes(label = gene),
+    size = 3,
+    max.overlaps = 50
+  ) +
+
+  # Labels and theme
+  labs(
+    title = "Volcano plot",
+    x = "Effect size: log2(fold-change)",
+    y = "-log10(p-value)"
+  ) +
+
+  theme_bw()
+```
+
+<div class="exo">
+
+```{r volcano-quiz, echo=FALSE}
+library(learnr)
+quiz(
+  question("What does the -log10(p-value) represent in the volcano plot?",
+    answer("It represents the statistical significance of the differential expression as a score, with higher values indicating more significant changes.", 
+           correct = TRUE),
+    answer("It represents the statistical significance of the differential expression as a score, with lower values indicating more significant changes.", 
+           correct = FALSE),
+    answer("It represents the average expression level of the genes across all samples.", 
+           correct = FALSE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE),
+  question("In the volcano plot, what do points located far to the left or right and high up represent?",
+    answer("Genes that are significantly differentially expressed with large effect sizes.",
+           correct = TRUE),
+    answer("Genes that are not differentially expressed.",
+           correct = FALSE),
+    answer("Genes with low expression levels across all samples.",
+           correct = FALSE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  question("Why are they some gene with large effect size (high absolute log2FC) but low -log10(p-value) ?",
+    answer("These genes may have high variability in expression levels across replicates, leading to less statistical confidence in the observed effect size.", 
+           correct = TRUE),
+    answer("These genes are likely to be false positives and should be ignored.", 
+           correct = FALSE),
+    answer("These genes are not expressed in any of the samples.", 
+           correct = FALSE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+  
+)
 ```
 </div>

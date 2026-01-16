@@ -36,7 +36,8 @@ Imports:
     DESeq2,
     patchwork,
     ggupset,
-    shiny
+    shiny,
+    ggpointdensity
 Collate: utils.R datasets_doc.R extract_text.R check_tuto.R
 License: MIT + file LICENSE
 Encoding: UTF-8
