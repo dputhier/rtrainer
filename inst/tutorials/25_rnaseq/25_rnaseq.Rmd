@@ -1,0 +1,1318 @@
+---
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+title: "Statistical analysis of bulk RNA-seq data"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{=html}
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+-->
+```
+
+```{css, echo=FALSE}
+
+```
+
+```{=html}
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+```
+
+```{=html}
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+```
+
+```{r echo=FALSE}
+# chunk below enables printing whole tutorial from browser e.g. to pdf
+# DO NOT put any #comments in the chunk below, that stops it from working !! 
+# from https://github.com/rstudio/learnr/issues/465
+# saving csss in a separate file print.css didn't work locally or on shinyapps because browser couldn't find file 
+```
+
+```{css echo=FALSE}
+@media print {
+  .topicsContainer,
+  .topicActions,
+  .exerciseActions .skip {
+    display: none;
+  }
+  .topics .tutorialTitle,
+  .topics .section.level2,
+  .topics .section.level3:not(.hide) {
+    display: block;
+  }
+  .topics {
+    width: 100%;
+  }
+  .tutorial-exercise, .tutorial-question {
+    page-break-inside: avoid;
+  }
+  .section.level3.done h3 {
+    padding-left: 0;
+    background-image: none;
+  }
+  .topics .showSkip .exerciseActions::before {
+    content: "Topic not yet completed...";
+    font-style: italic;
+  }
+}  
+  
+```
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(ggplot2)
+library(fs)
+knitr::opts_chunk$set(echo=TRUE, 
+                      eval=TRUE, 
+                      cache=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE, 
+                      comment="",
+                      exercise.timelimit=600,
+                      exercise.completion=TRUE,
+                      exercise.diagnostics=TRUE)
+
+gradethis::gradethis_setup(exercise.checker = gradethis_exercise_checker)
+
+if(!dir.exists(file.path(fs::path_home(), ".rtrainer")))
+  dir.create(file.path(fs::path_home(), ".rtrainer"), showWarnings = FALSE, recursive = TRUE)
+```
+
+
+## The Snf2 dataset
+
+The RNA-Seq dataset we will use in this practical has been produced by **Gierliński *et al*.** ([PMID:26206307](https://pubmed.ncbi.nlm.nih.gov/26206307/)).  
+The dataset is composed of **48 WT yeast samples** vs **48 Snf2 knock-out mutant cell line**.  
+
+The prepared RNA-Seq libraries (**unstranded**) were pooled and sequenced on **seven lanes of a single flow-cell** on an **Illumina HiSeq 2000**, resulting in a total of **1 billion 50-bp single-end reads** across the **96 samples**.  
+
+RNA-Seq reads have been **cleaned, mapped and counted** to generate a **count data matrix containing 7126 rows/genes**.  
+
+The **primary objective** of this study was to check whether the observed gene read count distributions were consistent with **theoretical models** (e.g. **negative binomial**).  
+
+More information can be obtained in the **original paper** ([pdf](http://bioinformatics.oxfordjournals.org/content/early/2015/08/17/bioinformatics.btv425.full.pdf)).
+
+
+## Loading the dataset
+
+**R** enables downloading data directly from the **Web**.  
+The expression matrix and phenotypic information will be loaded into **R** using the **read.table** function.  
+
+Both tables will be converted into a **data.frame** object when loaded into **R** (the return argument of the `read.table` function).  
+The **count_table** object contains counts for each **gene (row)** and each **sample (column)**.
+
+
+```{r loading, exercise=TRUE}
+# Download count data if not already done
+# and store the file in the user's home directory (~/.rtrainer).
+# The table (count_table) contains raw counts for each gene (rows) 
+# and each sample (columns).
+count_path <- file.path(fs::path_home(), ".rtrainer","Snf2_counts.txt")
+
+if(file.exists(count_path)){
+  count_table <- read.table(file=count_path, sep="\t", header=TRUE, row.names=1)
+} else {
+  url <- "https://zenodo.org/records/10451394/files/Snf2_counts.txt"
+  count_table <- read.table(file=url, sep="\t", header=TRUE, row.names=1)
+  write.table(count_table, 
+              file=count_path, 
+              sep="\t", 
+              quote=FALSE, 
+              col.names = NA)
+}
+```
+
+
+<div class="exo">
+
+When loading a new table into **R**, it is always a good idea to **inspect the data**.
+
+- What is the **class** of the count table object (**`count_table`**) ?  
+  Use the **`class()`** function.
+- Display the **first 6 rows** of the count table using the **`head()`** function.
+- What are the **row names** and **column names** of the count table ?  
+  Use the **`rownames()`** and **`colnames()`** functions.
+- How many **genes** and **samples** are in the dataset ?  
+  Use the **`nrow()`** and **`ncol()`** functions.
+
+
+```{r look, exercise=TRUE, exercise.setup="loading"}
+# Your code here
+
+```
+
+
+```{r look-solution}
+# The class of the count table object 
+class(count_table)
+# The first 6 rows of the count table
+head(count_table)
+# The row names and column names of the count table
+rownames(count_table)
+colnames(count_table)
+# The number of genes and samples in the dataset
+nrow(count_table)
+ncol(count_table)
+```
+</div>
+
+<div class="exo">
+
+```{r loading-quiz, echo=FALSE}
+library(learnr)
+quiz(
+  question(
+    "What is the class of the object `count_table`?",
+    answer("data.frame", correct = TRUE,
+           message = "Correct. `read.table()` returns a data.frame by default."),
+    answer("matrix"),
+    answer("tibble"),
+    answer("list"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+  ),
+  
+  question(
+    "Which function is used to display the first 6 rows of the count table?",
+    answer("head()", correct = TRUE,
+           message = "`head()` displays the first rows of an object."),
+    answer("top()"),
+    answer("summary()"),
+    answer("first()"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+  ),
+  
+  question(
+    "What do the rows of `count_table` represent?",
+    answer("Genes", correct = TRUE,
+           message = "Each row corresponds to one gene."),
+    answer("Samples"),
+    answer("Conditions"),
+    answer("Replicates"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+  ),
+  
+  question(
+    "Which function gives the number of genes in the dataset?",
+    answer("nrow(count_table)", correct = TRUE,
+           message = "Genes are stored as rows."),
+    answer("ncol(count_table)"),
+    answer("length(count_table)"),
+    answer("dim(count_table)[2]"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+  ),
+  
+  question(
+    "Which function returns the sample names?",
+    answer("colnames(count_table)", correct = TRUE,
+           message = "Samples are stored as columns."),
+    answer("rownames(count_table)"),
+    answer("names(count_table)"),
+    answer("levels(count_table)"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+  )
+)
+```
+</div>
+
+
+## Phenotypic data
+
+The dataset contains **RNA-Seq count data** for **WT** and **KO** samples.  
+All **phenotypic information** regarding samples is enclosed in a **dedicated file** available from the url below. We will load it into **R** using the **read.table** function store it into a **data.frame** object and also store it in a file locally (in the user's home directory) for future use.
+
+We will also create a color palette to be use later for plotting purposes.
+
+```{r loading_pheno, exercise=TRUE, exercise.setup="loading"}
+## Download phenotypic information
+
+pheno_path <- file.path(fs::path_home(), ".rtrainer","pheno_Snf2.txt")
+
+if(file.exists(pheno_path)){
+  pheno_info <- read.table(file=pheno_path, sep="\t", header=TRUE, row.names=1)
+} else {
+  url <- "https://zenodo.org/records/10451407/files/Snf2_expDesign.txt"
+  pheno_info <- read.table(file=url, sep="\t", header=TRUE, row.names=1)
+  write.table(pheno_info, 
+              file=pheno_path, 
+              sep="\t", 
+              quote=FALSE, 
+              col.names = NA)
+}
+
+pheno_palette <- rep(c("darkorange", "violetred3"), each=48)
+```
+
+
+<div class="exo">
+
+When loading a new table into **R**, it is always a good idea to **inspect the data**.
+
+- What is the **class** of the phenotypic data object (**`pheno_info`**) ?  
+  Use the **`class()`** function.
+- Display the **first 6 rows** of the phenotypic data using the **`head()`** function.
+- Use the `table()` function to count the number of samples in each condition (WT vs KO).  
+
+```{r look2, exercise=TRUE, exercise.setup="loading_pheno"}
+# Your code here
+```
+
+```{r look2-solution}
+# The class of the phenotypic data object
+class(pheno_info)
+# The first 6 rows of the phenotypic data
+head(pheno_info)
+# Count the number of samples in each condition
+table(pheno_info$strain)
+```
+
+</div>
+
+<div class="exo">
+```{r pheno-quiz, echo=FALSE}
+quiz(
+  question(
+    "What is the class of the object `pheno_info`?",
+    answer("data.frame", correct = TRUE,
+           message = "Correct. `read.table()` returns a data.frame by default."),
+    answer("matrix"),
+    answer("tibble"),
+    answer("list"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+  ),
+  question(
+    "Which function is used to display the first 6 rows of the phenotypic data?",
+    answer("head()", correct = TRUE,
+           message = "`head()` displays the first rows of an object."),
+    answer("top()"),
+    answer("summary()"),
+    answer("first()"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+  ),
+  question(
+    "Which function counts the number of samples in each condition?",
+    answer("table()", correct = TRUE,
+           message = "`table()` counts occurrences of each unique value in a vector."),
+    answer("count()"),
+    answer("number()"),
+    answer("sum()"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+  )
+)
+```
+</div>
+
+## Descriptive statistics
+
+### Distributions
+
+We will now explore the **distribution of the count values** across all **samples** to get a better **intuition of the data**. This step is **very important** before starting any **statistical analysis**.  
+It helps to identify potential **problems** (e.g. **outlier samples**, **batch effects**, etc.) that may affect the results of **downstream analyses**. It may also be useful to **choose appropriate statistical methods** for further analyses depending on the data distribution.
+
+```{r histlin, exercise=TRUE, exercise.setup="loading_pheno"}
+# Data distribution
+# Note that we need to transform the data into a matrix
+# because the hist() function does not work on data.frames that
+# may contain non-numeric columns. 
+hist(as.matrix(count_table), 
+     col="steelblue", 
+     border="white")
+```
+
+From this histogram we can see that the distribution of counts is highly **skewed to the right**. Most genes have **low to moderate counts**, while a few genes have **very high counts**. We can appreciate that using the `summary()` function:
+
+```{r summarycounts, exercise=TRUE, exercise.setup="loading_pheno"}
+# Here we use unlist() to convert the data.frame/matrix into a vector
+# before applying the summary() function.
+# Otherwise, summary() would return a summary for each column/sample.
+summary(unlist(count_table))
+```
+
+<div class="exo">
+```{r dist-quiz, echo=FALSE}
+quiz(
+  question(text = "What is the minimum count value in the dataset?",
+    answer("0", correct = TRUE,
+           message = "Correct. The minimum count value is 0."),
+    answer("1",
+           message = "Incorrect. The minimum count value is 0."),
+    answer("10",
+           message = "Incorrect. The minimum count value is 0."),
+    answer("100",
+           message = "Incorrect. The minimum count value is 0."), 
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  question(text = "What is the maximum count value in the dataset?",
+    answer("467550", correct = TRUE,
+           message = "Correct. The maximum count value is 467550"),
+    answer("345290",
+           message = "Incorrect."),
+    answer("17898",
+           message = "Incorrect."),
+    answer("2178290",
+           message = "Incorrect."), 
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  question(text = "What is the median count value in the dataset?",
+    answer("389", correct = TRUE,
+           message = "Correct. The median count value is 389."),
+    answer("765",
+           message = "Incorrect."),
+    answer("4678",
+           message = "Incorrect."),
+    answer("200",
+           message = "Incorrect."), 
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+)
+```
+</div>
+
+<div class="alert alert-success" role="alert">
+**Interpretation**:
+
+The previous histogram is not very informative so far, apparently due to the presence of a **few very high count values**, that **impose a very large scale on the $x$ axis**. A classical way to deal with this problem is to use a **logarithmic transformation** of the data. Here, for visualization we will use **logatithmic transformation in base 10** (we could have chosen another base). However base 10 is useful here because it allows to easily interpret the results in terms of **counts**: 
+
+
+- log10(100) = 2 means 10^2 = 100 counts
+- log10(1000) = 3 means 10^3 = 1000 counts
+- log10(10000) = 4 means 10^4 = 10000 counts
+
+
+Thus the log10 scale allows to easily interpret **the counts in terms of orders of magnitude**.
+
+**NB**: To avoid problems with **log(0)** (which is undefined), we will add a **pseudo-count** of value **1** to all counts before applying the logarithmic transformation. This is a classical approach when dealing with count data and will have **minimal impact** on the results as most counts are much higher than 1. 
+</div>
+
+```{r histlog10, exercise=TRUE, exercise.setup="loading_pheno"}
+## Data distribution in log 10 scale.
+epsilon <- 1 # pseudo-count to avoid problems with log(0)
+count_table_log10 <- log10(as.matrix(count_table) + epsilon)
+hist(count_table_log10, 
+     breaks=100, 
+     col="steelblue", 
+     border="white")
+```
+
+
+<div class="exo">
+
+```{r log-quiz, echo=FALSE}
+library(learnr)
+
+quiz(
+  question(
+    "Why is the logarithmic transformation useful in this context?",
+    answer("It increases the range of values.",
+           message = "Incorrect. Log transformation actually compresses the range of high values."),
+    answer("It normalizes the data to have a mean of zero.",
+           message = "Incorrect. Log transformation does not center the data."),
+    answer("It converts counts to probabilities.",
+           message = "Incorrect. Log transformation does not convert counts to probabilities."),
+    answer("Distributions become easier to interpret in histograms as differences between low and moderate counts are more visible", 
+           correct = TRUE,
+           message = "Correct. Log scaling enhances the visibility of differences among low and moderate counts."),
+    answer("It convert multiplicative effect (e.g. expression of gene A is 10 times that of gene B) between genes into additive differences.", 
+           correct = TRUE,
+           message = "Correct. Log transformation converts multiplicative changes into additive differences."),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+  )
+)
+
+```
+
+</div>
+
+### Boxplots 
+
+A boxplot is another useful way to visualize the distribution of data. It provides a summary of the data distribution, including the median, quartiles, and potential outliers. It allows to visualize all sample distributions side by side, which is useful to identify potential outlier samples. It is also possible to use violin plots for this purpose, which provide a more detailed view of the data distribution.
+
+```{r boxplotlog10, exercise=TRUE, exercise.setup="histlog10", fig.width=8, fig.height=5, message=FALSE}
+# Boxplot of log10 transformed counts
+boxplot(count_table_log10,
+        col=pheno_palette,
+        border="gray40",
+        las=2,
+        ylab="Log10(counts + 1)",
+        cex=0.5,
+        main="Boxplot of log10 transformed counts")
+```
+
+
+<div class="exo">
+```{r boxplot-quiz, echo=FALSE}
+library(learnr)
+quiz(
+  question("From the boxplot, can we say that, that gene expression counts tend to concentrate between:",
+    answer("10 and 100", correct = FALSE,
+           message = "Incorrect"),
+    answer("100 and 1000", correct = TRUE,
+           message = "Correct !"),
+    answer("1000 and 10000", correct = FALSE,
+        message = "Incorrect"),
+    answer("10000 and 100000", correct = FALSE,
+        message = "Incorrect"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+  ),
+  question("Do some outliers concentrate around :",
+    answer("1e5", correct = TRUE,
+           message = "Correct ! "),
+    answer("100000", correct = TRUE,
+           message = "Correct ! "),
+    answer("10^5", correct = TRUE,
+           message = "Correct ! "),
+    answer("10^3", correct = FALSE,
+           message = "Incorrect ! "),
+    answer("10000", correct = FALSE,
+           message = "Incorrect ! "),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+  ),
+  question("In each sample, there is only a single gene for which Log10(expression + 1) = 0 ",
+    answer("Yes", correct = FALSE,
+           message = "Incorrect. The genes are overlapping because they have same coordinates... Look at the histogram we produced before (the count at x =0 is much higher than 1)..."),
+    answer("No", correct = TRUE,
+           message = "You are right. Even if there is a single point at 0 for each sample, it corresponds to different genes (with same coordinates...)."),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+),
+  question("From the boxplot, can we say that the read coverage from sample to sample differ ?",
+    answer("Yes.", correct = TRUE,
+           message = "Correct."),
+    answer("No.", correct = FALSE,
+           message = "Incorrect. Look carefully."),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+)
+
+```
+</div>
+
+### Density plots
+
+<div class="alert alert-success" role="alert">
+On limitation of boxplots is that they **do not provide detailed information about the distribution** of the data. **Density plots** can be used to visualize the distribution of data **in more detail**. They provide a smoothed estimate of the data distribution, allowing to see the shape of the distribution more clearly.
+</div>
+
+<div class="alert alert-danger" role="alert">
+**Beware**: the R function *geom_density()* does not display the actual distribution of your values, but a **polynomial fit** to that distribution. The representation thus generally **looks smoother than the actual data**. It is important to realize that, in some particular cases, the fit can lead to **extrapolated values which can be misleading**.
+</div>
+
+```{r densitylog10, exercise=TRUE, exercise.setup="histlog10", fig.width=8, fig.height=5}
+# We need to laod the ggplot2 and reshape2 libraries
+library(ggplot2)
+library(reshape2)
+
+## For ggplot2 diagrams, we need to convert the count table into
+## the so called "long format". Each line will correspond to a single
+## observation (here a count for a given gene in a given sample).
+count_table_log10_long <- reshape2::melt(count_table_log10)
+colnames(count_table_log10_long) <- c("gene", "sample", "value")
+
+# We will also transform the sample names into the corresponding strain (WT or KO)
+count_table_log10_long$pheno <- gsub("[0-9]+$", "", count_table_log10_long$sample)
+
+# Density plot of log10 transformed counts
+# The color of the lines will correspond to the strain (WT or KO)
+# The fit is controled by the adjust parameter (you can play with it)
+ggplot(data=count_table_log10_long, 
+       mapping=aes(x = value, color=pheno, group=sample)) +
+       geom_density(adjust=0.5) +
+       theme_bw() +
+       scale_color_manual(values=c("WT"= "darkorange", "Snf"="violetred3")) 
+```
+
+<div class="exo">
+
+This is interesting to see that while boxplot and density plots both represent data distributions, they do so in different ways and can provide complementary insights. 
+
+```{r density-quiz, echo=FALSE}
+quiz(
+  question("What can we say about the distribution of gene expression counts in WT and KO samples:",
+    answer("The overall distributions of WT and Snf KO look the same but the expression values of WT seem lower", 
+           correct = TRUE),
+    answer("The overall distributions of WT and Snf KO look the same but the expression values of Snf KO seem lower",
+           correct = FALSE),
+    answer("The overall distributions of WT and Snf KO look totally different",
+           correct = FALSE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+)
+```
+</div>
+
+### Scatter plot 
+
+<div class="alert alert-success" role="alert">
+Scatter plots are yet another useful way to visualize the relationship between **two variables**. In the context of **RNA-Seq data**, scatter plots can be used to visualize the **relationship between gene expression levels in different samples**. This can help to identify potential outlier samples or genes that may be differentially expressed between conditions.
+</div>
+
+Below, the **`pairs()` function** draws a scatter plot for each pair of columns of the input dataset. The plot shows **a fairly good reproducibility between samples** of the same type (WT or KO, respectively): **all points are aligned along te diagonal**, with a relatively wider dispersion at the bottom, corresponding to small number fluctuations. 
+
+In contrast, on all the plots comparing a WT and a KO sample, we can see some points (genes) discarding from the diagonal.
+
+```{r scatterlog10, exercise=TRUE, exercise.setup="histlog10", fig.width=8, fig.height=8}
+# A function to plot points colored by local density
+plotFun <- function(x,y){ dns <- densCols(x,y); points(x,y, col=dns, pch=".") }
+
+# Pairwise scatter plots between samples.
+# We will restrict the plot to the 5 first samples from 
+# both conditions for clarity.
+pairs(count_table_log10[, c(1:5, 49:54)], panel=plotFun, lower.panel = NULL)
+```
+
+<div class="exo">
+```{r scatter-quiz, echo=FALSE}
+quiz(
+  question("Select the true statement(s) about the scatter plots:",
+    answer("Samples Snf3 and Snf4 show a high correlation in gene expression levels.", 
+           correct = TRUE),
+    answer("Samples Snf6 seems to differ from sample Snf1 to Snf5.", 
+           correct = TRUE),
+    answer("From a general point of view WT samples seem to be less correlated than samples from Snf2 KO condition (if we do not consider Snf6).", correct = TRUE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+)
+```
+</div>
+
+## Null genes
+
+### Some genes are not expressed
+
+All genes from genome the *S. cerevisiae* where quantified. However some of them **where to weakly expressed to be detected in any of the sample**. As a result the count table may contain rows with only zero values (null counts). We will now check for the presence of such genes in each sample.
+
+```{r bplotfilter, exercise=TRUE, exercise.setup="loading_pheno"}
+# Analyze the number of genes with null counts per sample.
+# For each sample (column), we will count the number of genes (rows)
+# having a count value equal to zero.
+nb_gene_null_per_sample <- apply(count_table, 2, function(x) sum(x == 0))
+
+# Percentage of genes with null counts per sample
+prop_null_per_sample <- nb_gene_null_per_sample / nrow(count_table) * 100
+
+
+# Let's convert the results into a data.frame for plotting purposes
+df <- data.frame(sample=names(prop_null_per_sample),
+                 prop_null=prop_null_per_sample)
+
+# We will also add a column indicating the phenotype (WT or KO)
+df$pheno <- gsub("[0-9]+$", "", df$sample)
+
+# Let's visulalize the results using a barplot
+p1 <- ggplot(data=df, aes(x=sample,
+                    y=prop_null,
+                    fill=pheno)) +
+      geom_col() +
+      theme_bw() +
+      coord_flip() + 
+      theme(axis.text.y = element_text(size=3)) +
+      scale_fill_manual(values=c("WT"="darkorange", "Snf"="violetred3")) +
+      labs(title="Percentage of genes with\n null counts per sample",
+           x="Samples",
+           y="% of genes with null counts") 
+
+# And using a boxplot
+p2 <- ggplot(data=df, aes(x=pheno,
+                    y=prop_null,
+                    fill=pheno)) +
+      geom_boxplot() +
+      scale_fill_manual(values=c("WT"="darkorange", "Snf"="violetred3")) +
+      labs(title="Percentage of genes with\n null counts per condition",
+           x="Condition",
+           y="% of genes with null counts")
+
+# Combine the two plots using patchwork
+library(patchwork)
+p1 + p2 
+```
+
+<div class="exo">
+```{r null-quiz, echo=FALSE}
+quiz(
+  question("Which of this hypothesis may explain that the number of gene counts is globally lower in Snf2 KO sampels than in WT samples ?",
+    answer("Snf2 is a transcriptional activator, so its deletion may lead to reduced expression of certain genes thus affecting the global number of expressed genes.", 
+           correct = TRUE),
+    answer("The deletion of Snf2 may affect chromatin structure, leading to reduced accessibility of certain genes for transcription.", 
+           correct = TRUE),
+    answer("This could be a batch effect unrelated to the biological condition. Snf2 KO samples could have been processed differently than WT samples (*e.g*. on a different sequencing run leading to less reads).", 
+           correct = TRUE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+)
+```
+
+</div>
+
+### Deleting null genes
+
+<div class="alert alert-success" role="alert">
+As we have seen previously, some genes were not detected at all in these samples. We will now discard them from the count table.
+</div>
+
+```{r discard, exercise=TRUE, exercise.setup="loading_pheno"}
+# Discard genes with null counts across all samples
+count_table <- count_table[rowSums(count_table) > 0,]
+dim(count_table)
+```
+
+## Differential expression analysis
+
+### DESeqDataSet object
+
+<div class="alert alert-success" role="alert">
+To perform **differential expression analysis** using the **DESeq2** package, we need to create a **DESeqDataSet** object from the count table and the phenotypic information. This object will be used as input for the DESeq2 functions.
+</div>
+
+```{r deseqsetup, exercise=TRUE, exercise.setup="discard", message=FALSE, warning=FALSE}
+# Load the DESeq2 library 
+library(DESeq2)
+# Create a DESeqDataSet object
+dds <- DESeq2::DESeqDataSetFromMatrix(countData = count_table,
+                                      colData = pheno_info,
+                                      design = ~ strain)
+```
+
+
+The `dds` object now contains **all the information needed for the differential expression analysis**: the count data, the phenotypic information, and the experimental design. This object is of class **`DESeqDataSet`**. It has several **slots** that store **different types of information** produced along the analysis. You can use the `slotNames()` function to see the names of the slots in the `dds` object.
+
+```{r deseqslots, exercise=TRUE, exercise.setup="deseqsetup"}
+# Show the class of the DESeqDataSet object
+class(dds)
+
+# Display the slot names of the DESeqDataSet object
+slotNames(dds)
+```
+
+
+### Size factor estimation
+
+
+<div class="alert alert-success" role="alert">
+The first step of the differential expression analysis is to **estimate size factors** for each sample. Size factors are used to normalize the counts for differences in sequencing depth between samples. The method used by DESeq2 is the **median of ratios method**.
+</div>
+
+<div class="alert alert-info" role="alert">
+<details>
+<summary>If you want more explanation about "median of ratios method" in DESeq2 (**totally optional**)</summary>
+**NB** : This section is **optional and is only for users interested in the details** of the normalization method used by DESeq2. **Feel free to skip**.
+
+Given a matrix  with $p$ columns (samples) and $n$ rows (genes) **DESeq2 estimates the size factors** as follows: 
+- Each column element is divided by the **geometric means** of the rows. 
+- For each sample, the **median** (or, if requested, another location estimator) **of these ratios** (skipping the genes with a geometric mean of zero) is used as the size factor for this column.
+
+Let $K_{g,j}$ be the count for gene $g$ in sample $j$. The geometric mean for gene $g$ across all samples is computed as:
+  $$(\prod_{j=1}^p K_{g,j})^{1/p} $$
+The scaling factor for sample $j$ is thus obtained as:
+
+
+  $$sf_{j} = median(\frac{K_{g,j}}{(\prod_{j=1}^p K_{g,j})^{1/p}}) $$
+An implementation of this method is given below for illustration purposes.
+
+```{r}
+
+### cds is a countDataset
+estimSf <- function (cds){
+    # Get the count matrix
+    cts <- DESeq2::counts(cds)
+    
+    # Compute the geometric mean
+    geomMean <- function(x) prod(x)^(1/length(x))
+
+    # Compute the geometric mean over the line
+    gm.mean  <-  apply(cts, 1, geomMean)
+    
+    # Zero values are set to NA (avoid subsequentcdsdivision by 0)
+    gm.mean[gm.mean == 0] <- NA
+    
+    # Divide each line by its corresponding geometric mean
+    # sweep(x, MARGIN, STATS, FUN = "-", check.margin = TRUE, ...)
+    # MARGIN: 1 or 2 (line or columns)
+    # STATS: a vector of length nrow(x) or ncol(x), depending on MARGIN
+    # FUN: the function to be applied
+    cts <- sweep(cts, 1, gm.mean, FUN="/")
+    
+    # Compute the median over the columns
+    med <- apply(cts, 2, median, na.rm=TRUE)
+    
+    # Return the scaling factor
+    return(med)
+}
+```
+
+</details>
+</div>
+
+
+We will now perform the differential expression analysis using the **DESeq()** function from the **DESeq2** package. This function **will estimate size factors** (normalization parameter), **dispersions** and will fit the **negative binomial model** to the data. This procedure won't be detailler in this tutorial, please refer to the **DESeq2** documentation for more information.
+
+
+```{r deseqrun, exercise=TRUE, exercise.setup="deseqsetup", message=FALSE}
+# Estimate size factors
+dds <- DESeq2::estimateSizeFactors(dds)
+```
+
+The size factors can be accessed using the **`sizeFactors()`** function.
+
+```{r deseqsizefactors, exercise=TRUE, exercise.setup="deseqrun"}
+# Display size factors for each sample
+DESeq2::sizeFactors(dds)
+```
+
+<div class="alert alert-success" role="alert">
+This size factors are the scaling factors that will be used to normalize the counts for differences in sequencing depth between samples. They are used in the **differential expression analysis** to ensure that the comparisons between samples are fair and not biased by differences in sequencing depth.
+</div>
+
+The normalized counts can be obtained using the **`counts()`** function with the argument **`normalized=TRUE`**. They correspond to the **raw counts divided by the size factors**. We will display the distribution of the counts **before and after normalization** using density plots.
+
+```{r deseqnormcounts, exercise=TRUE, exercise.setup="deseqrun", message=FALSE, fig.width=8, fig.height=6, exercise.line=40}
+## --------------------------------------------------------------
+# Density plot of counts (before and after normalization)
+## --------------------------------------------------------------
+
+# Raw counts in linear scale 
+# (plus a pseudo-count of 1 to avoid problems with log(0))
+# The matrix is converted into long format for ggplot2.
+# We add a column indicating the phenotype (WT or KO)
+raw_counts <- reshape2::melt(DESeq2::counts(dds, normalized=FALSE) + 1 )
+raw_counts <- reshape::melt(raw_counts)
+colnames(raw_counts) <- c("gene", "sample", "variable", "value")
+raw_counts$pheno <- gsub("[0-9]+$", "", raw_counts$sample)
+
+# Idem for normalized counts
+norm_counts <- reshape2::melt(DESeq2::counts(dds, normalized=TRUE) + 1 )
+norm_counts <- reshape::melt(norm_counts)
+colnames(norm_counts) <- c("gene", "sample", "variable", "value")
+norm_counts$pheno <- gsub("[0-9]+$", "", norm_counts$sample)
+
+# Now we merge the two datasets
+counts_long <- rbind(data.frame(raw_counts, type="1. Raw counts"),
+                     data.frame(norm_counts, type="2. Norm. counts"))
+
+# Transform the counts into log10 scale
+counts_long$log10_value <- log10(counts_long$value)
+
+# Density plot of log10 transformed counts
+# The color of the lines will correspond to the strain (WT or KO)
+# The fit is controled by the adjust parameter (you can play with it)
+# The diagram is facetted according to the type of counts (raw or normalized)
+ggplot(data=counts_long, 
+       mapping=aes(x = log10_value, 
+                   color=pheno, 
+                   group=sample)) +
+       geom_density(adjust=0.5) +
+       theme_bw() +
+       scale_color_manual(values=c("WT"= "darkorange", 
+                                   "Snf"="violetred3")) +
+       facet_wrap(~ type, ncol=1) 
+```
+
+
+<div class="exo">
+```{r norm-quiz, echo=FALSE}
+quiz(
+  question("What can we say about the distribution of gene expression counts before and after normalization?",
+    answer("Before normalization, WT samples tend to have lower counts than Snf2 KO samples, while after normalization, the distributions of WT and Snf2 KO samples are more similar.", 
+           correct = TRUE),
+    answer("Before normalization, Snf2 KO samples tend to have lower counts than WT samples, while after normalization, the distributions of WT and Snf2 KO samples are more similar.", 
+           correct = FALSE),
+    answer("Normalization does not affect the distributions of gene expression counts between WT and Snf2 KO samples.", 
+           correct = FALSE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+)
+```
+</div>
+
+<div class="exo">
+
+Using the **scaling factors** estimated previously and that can be accessed using the `sizeFactors()` function, we can **ensure that DESeq2 is correctly normalizing the counts**.
+
+- Compute manually the normalized counts for gene `nme1` in all samples using the formula:  
+  `normalized_count = raw_count / size_factor` 
+
+- Store the results in `norm_counts_nme1` variable.
+
+```{r exonorm, exercise=TRUE, exercise.setup="deseqrun"}
+# The target values (you should obtain the same values)
+DESeq2::counts(dds, normalized=TRUE)["nme1", ]
+
+# Manually compute normalized counts for gene nme1
+norm_counts_nme1 <- # Your code here
+```
+
+```{r exonorm-solution}
+# The target values (you should obtain the same values)
+DESeq2::counts(dds, normalized=TRUE)["nme1", ]
+
+# Manually compute normalized counts for gene nme1
+norm_counts_nme1 <- DESeq2::counts(dds, normalized=FALSE)["nme1", ] / DESeq2::sizeFactors(dds)
+```
+
+```{r exonorm-check}
+library(gradethis)
+gradethis::grade_result_strict(
+  pass_if(~ abs(sum(norm_counts_nme1) - 2542) < 5)
+)
+```
+
+</div>
+
+### Performing DGE
+
+<div class="alert alert-success" role="alert">
+**DGE (Differential Gene Expression)** analysis aims to identify **genes that are differentially expressed between two or more conditions**. In the context of RNA-Seq data, this involves **comparing the read counts** for **each gene across** different conditions to determine if there are significant differences in expression levels. Under the hood, DESeq2 models the counts for each gene using a **negative binomial distribution**. This distribution is characterized by two parameters: the **mean** (which represents the average expression level of the gene) and the **dispersion** (which captures the variability of expression levels across replicates).
+</div>
+
+<div class="alert alert-info" role="alert">
+<details>
+<summary>If you want more explanation about DGE in DESeq2 (**totally optional**)</summary>
+The DESeq2 **model and all the steps used by the software** are described in detail in the original publication ([Love *et al*, 2014](https://pmc.ncbi.nlm.nih.gov/articles/PMC4302049/))
+ 
+One problem here will be to **estimate, for each gene, the two parameters** of the negative binomial distribution:  **mean and dispersion**. 
+
+* The **mean** will be estimated from the **mean of observed normalized counts** in both conditions. 
+
+* Regarding **dispersion**, it is more difficult to estimate it accurately for each gene, especially when the number of replicates is low (as is often the case in RNA-Seq experiments). To overcome this problem, DESeq2 will **take advantage of the fact that genes** with similar expression levels tend to have **similar dispersion values**. It will thus try to **learn, the expected dispersion** given the mean of the genes. 
+
+```{r disp, exercise=TRUE, echo=FALSE, message=FALSE, exercise.setup="deseqrun"}
+# Estimate dispersions
+dds.norm <- DESeq2::estimateDispersions(dds)
+
+# Plot the estimated dispersions.
+# You can see the fitted line showing the trend
+# of dispersion as a function of the mean.
+plotDispEsts(dds.norm)
+```
+</details>
+</div>
+
+After having estimated the dispersions, DESeq2 proceed to the **hypothesis testing** step to identify differentially expressed genes between the two conditions (WT vs KO). this step is performed **using a Wald test** which can be applied using the **`nbinomWaldTest()`** function from the DESeq2 package. Roughly speaking, the **Wald test aims to determine if the estimated log fold change between the two conditions is significantly different from zero** (i.e., no change in expression).
+
+```{r dge, exercise=TRUE, exercise.setup="deseqrun", message=FALSE}
+## Performing estimation of dispersion parameter
+dds <- DESeq2::estimateDispersions(dds)
+
+## Testing for differential expression using Wald test
+dds <- DESeq2::nbinomWaldTest(dds)
+
+## Extracting the results
+## and ensure that we are comparing Snf2 KO vs WT
+## (i.e., FoldChange > 1 means gene is upregulated in Snf2 KO)
+res_DESeq2 <- DESeq2::results(dds, contrast = c("strain", "Snf", "WT"))
+
+## What is the object returned by nbinomWaldTest()
+class(res_DESeq2) # a data.frame
+
+
+## Display the first lines of the results
+## ordered by adjusted p-value
+res_DESeq2 <- res_DESeq2[order(res_DESeq2$padj), ]
+head(res_DESeq2)
+
+## Save the results into a file
+saveRDS(res_DESeq2, file=file.path(fs::path_home(), ".rtrainer", "de_results.rds"))
+saveRDS(dds, file=file.path(fs::path_home(), ".rtrainer", "dds_object.rds"))
+```
+
+## Inspecting the results
+
+### The results of the differential expression analysis
+
+<div class="alert alert-success" role="alert">
+The results of the differential expression analysis are stored in a **data.frame** object. Each row corresponds to a gene, and the columns contain various statistics related to the differential expression analysis, including:
+
+- **baseMean**: The average of the normalized counts for all samples.
+- **log2FoldChange**: The log2 fold change between the two conditions (WT
+  vs KO).
+- **lfcSE**: The standard error of the log2 fold change.
+- **stat**: The test statistic for the Wald test.
+- **pvalue**: The p-value for the Wald test.
+- **padj**: The adjusted p-value for multiple testing correction (using the Benjamini-Hochberg method).
+</div>
+
+### The limit of linear Fold Change
+
+As you have seen previously in the **result table** provided by DESeq2, one of the key statistics is the **log2 fold change** between the two conditions. Indeed, while Fold Change is classically used in biology it **suffers from several limitations**:
+
+- **Repressed values** are **compressed between 0 and 1** while **induced values are unbounded**.
+- **It is not symmetric** : a fold change of 0.5 (repression by half) is not the opposite of a fold change of 2 (induction by double).
+
+<div class="exo"> 
+
+We will take as example, **two genes from our dataset: 
+
+- `yar009c` which is repressed in Snf2 KO samples compared to WT samples.
+- `yer081w` which is induced in Snf2 KO samples compared to WT samples.
+
+There expression is shown in the barplot below:
+
+```{r, echo=FALSE, fig.height=5, fig.width=8}
+library(png)
+download.file("https://zenodo.org/records/18269189/files/example_gene_bp_2.png", 
+              destfile = file.path(fs::path_home(), ".rtrainer", "example_gene_bp.png"))
+pp <- readPNG(file.path(fs::path_home(), ".rtrainer", "example_gene_bp.png"))
+plot.new() 
+rasterImage(pp,0,0,1,1)
+```
+
+Compute the linear fold change for these two genes based on their normalized counts in WT and Snf2 KO samples:
+
+$$\mathrm{FoldChange}
+=
+\frac{\text{mean expression in Snf2 KO}}
+     {\text{mean expression in WT}}
+$$
+
+**NB** Note we generally express fold changes as ratios of tested condition over the reference condition (here "WT").
+
+<!-- ```{r examplebarplot, eval=TRUE, echo=FALSE, fig.width=8, fig.height=5, message=FALSE} -->
+<!-- # Load the ggplot2 library -->
+<!-- library(ggplot2) -->
+
+<!-- # Load the dataset -->
+<!-- #res_DESeq2 <- readRDS(file=file.path(fs::path_home(), ".rtrainer", "de_results.rds")) -->
+<!-- #dds <- readRDS(file=file.path(fs::path_home(), ".rtrainer", "dds_object.rds")) -->
+
+<!-- # Get normalized counts for the two genes -->
+<!-- gene_counts <- DESeq2::counts(dds, normalized=TRUE)[c("yar009c", "yer081w"), ] -->
+
+<!-- # Melt the data frame for ggplot2 -->
+<!-- df_melt <- reshape2::melt(gene_counts, id.vars = "sample") -->
+<!-- colnames(df_melt) <- c("gene", "sample", "value") -->
+
+<!-- # Transform sample names into phenotypes -->
+<!-- df_melt$pheno <- factor(gsub("[0-9]+$", "", df_melt$sample), -->
+<!--                         levels=c("WT", "Snf"), -->
+<!--                         ordered = TRUE) -->
+
+<!-- # Modify the gene names for better visualization -->
+<!-- df_melt$variable <- factor(df_melt$gene, -->
+<!--                              levels=c("yar009c", "yer081w"), -->
+<!--                              labels=c("yar009c (repressed)", "yer081w (induced)")) -->
+<!-- # Draw the barplots -->
+<!-- ggplot(data=df_melt, aes(x=pheno, y=value, fill=pheno)) + -->
+<!--   geom_boxplot() + -->
+<!--   scale_fill_manual(values=c("WT"= "darkorange", "Snf"="violetred3")) + -->
+<!--   labs(title="Expression levels of two example genes", -->
+<!--        x="Genes", -->
+<!--        y="Normalized counts") + -->
+<!--   theme_bw() + -->
+<!--   theme(legend.position = "none") + -->
+<!--   facet_wrap(~ variable, scales="free_y") -->
+<!-- ``` -->
+
+
+```{r fc_example, exercise=TRUE, exercise.setup="dge"}
+expression_yar009c <- counts(dds, normalized=TRUE)["yar009c", ]
+
+mean_wt_yar009c <- ___
+mean_ko_yar009c <- ___
+fc_yar009c <- ___
+
+expression_yer081w <- counts(dds, normalized=TRUE)["yer081w", ]
+
+mean_wt_yer081w <- ___
+mean_ko_yer081w <- ___
+fc_yer081w <- ___
+```
+
+```{r fc_example-solution}
+expression_yar009c <- DESeq2::counts(dds, normalized=TRUE)["yar009c", ]
+
+mean_wt_yar009c <- mean(expression_yar009c[1:48])
+mean_ko_yar009c <- mean(expression_yar009c[49:96])
+fc_yar009c <- mean_ko_yar009c / mean_wt_yar009c
+
+expression_yer081w <- DESeq2::counts(dds, normalized=TRUE)["yer081w", ]
+mean_wt_yer081w <- mean(expression_yer081w[1:48])
+mean_ko_yer081w <- mean(expression_yer081w[49:96])
+fc_yer081w <- mean_ko_yer081w / mean_wt_yer081w
+```
+
+```{r fc_example-check}
+library(gradethis)
+gradethis::grade_result_strict(
+  pass_if(~ abs(fc_yar009c - 0.1845846) < 1e-3),
+  pass_if(~ abs(fc_yer081w - 8.91086) < 1e-3)
+)
+```
+</div>
+
+### Log2 Fold Change
+
+<div class="alert alert-success" role="alert">
+The **log2 fold change** is a measure of the change in expression level of a gene. It is calculated as the logarithm (base 2) of the ratio of expression levels between two conditions. It has a lot of benefits compared to the linear fold change:
+
+- It provides a **symmetric representation** of gene expression changes: a log2 fold change of +1 indicates a doubling of expression, while a log2 fold change of -1 indicates a halving of expression.
+- In contrast to linear FC in which repression are bounded by 0 (e.g. FC = 0.5 means a reduction by half, FC = 0 means no expression at all), **log2 FC can take any negative value, allowing to better represent strong repressions**.
+- 
+
+A log2 **fold change of**:
+
+- 0 means that there is **no change** in expression level between the two conditions.
+- **1 means** that the expression level of the gene is **doubled** 
+- **-1 means** that the expression level of the gene is **halved**.
+- **2 means** that the expression level of the gene is **quadrupled**
+- **-2 means** that the expression level of the gene is **divided by 4**
+
+The formula of the log2 fold change is given by :
+
+$$
+\mathrm{log_2FoldChange}
+=
+\log_2\!\left(
+\frac{\text{mean expression in condition A}}
+     {\text{mean expression in condition B}}
+\right)
+$$
+
+</div>
+
+<div class="exo">
+
+Use this **interactive example** to understand how **linear fold changes** are transformed into **$log_{2}$ fold changes**, and why the $log_{2}$ scale provides a symmetric and more interpretable representation of gene expression differences.
+
+```{r log2fc-ui, echo=FALSE}
+library(shiny)
+
+fluidPage(
+  h3("Linear Fold Change vs log2 Fold Change"),
+
+  p(
+    "Use this interactive example to understand how linear fold changes ",
+    "are transformed into log\u2082 fold changes, and why the log\u2082 scale ",
+    "provides a symmetric and more interpretable representation of gene ",
+    "expression differences."
+  ),
+
+  fluidRow(
+    column(
+      6,
+      numericInput(
+        "ref_expr",
+        "Mean expression (Reference condition):",
+        value = 100,
+        min = 1,
+        step = 10
+      )
+    ),
+    column(
+      6,
+      numericInput(
+        "test_expr",
+        "Mean expression (Tested condition):",
+        value = 200,
+        min = 1,
+        step = 10
+      )
+    )
+  ),
+
+  br(),
+
+  fluidRow(
+    column(
+      6,
+      h4("Linear scale"),
+      plotOutput("linearPlot", height = 260)
+    ),
+    column(
+      6,
+      h4("log2 scale"),
+      plotOutput("logPlot", height = 260)
+    )
+  ),
+
+  hr(),
+
+  verbatimTextOutput("values")
+)
+```
+
+```{r log2fc-server, context="server"}
+library(ggplot2)
+
+fold_change <- reactive({
+  input$test_expr / input$ref_expr
+})
+
+log2fc <- reactive({
+  log2(fold_change())
+})
+
+output$linearPlot <- renderPlot({
+  df <- data.frame(
+    condition = c("Reference", "Tested"),
+    expression = c(input$ref_expr, input$test_expr)
+  )
+
+  ggplot(df, aes(condition, expression, fill = condition)) +
+    geom_col(width = 0.6) +
+    theme_bw() +
+    labs(y = "Mean expression") +
+    ylim(0, max(df$expression) * 1.2) +
+    scale_fill_manual(values = c("grey70", "steelblue")) +
+    theme(legend.position = "none")
+})
+
+output$logPlot <- renderPlot({
+  df <- data.frame(
+    condition = c("Reference", "Tested"),
+    log2expr = c(0, log2fc())
+  )
+
+  ggplot(df, aes(condition, log2expr, fill = condition)) +
+    geom_col(width = 0.6) +
+    theme_bw() +
+    labs(y = "log\u2082 fold change") +
+    ylim(-4, 4) +
+    geom_hline(yintercept = 0, linetype = "dashed") +
+    scale_fill_manual(values = c("grey70", "steelblue")) +
+    theme(legend.position = "none")
+})
+
+output$values <- renderText({
+  paste0(
+    "Mean expression (Reference): ", input$ref_expr, "\n",
+    "Mean expression (Tested): ", input$test_expr, "\n\n",
+    "Linear fold change (Tested / Reference): ",
+    round(fold_change(), 3), "\n",
+    "log2 fold change: ",
+    round(log2fc(), 3)
+  )
+})
+```
+</div>
