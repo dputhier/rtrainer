@@ -1,0 +1,678 @@
+---
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+title: "The Negative binomiale distribution and gene expression count distribution."
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{=html}
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+-->
+```
+
+```{css, echo=FALSE}
+
+```
+
+```{=html}
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+```
+
+```{=html}
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+```
+
+```{r echo=FALSE}
+# chunk below enables printing whole tutorial from browser e.g. to pdf
+# DO NOT put any #comments in the chunk below, that stops it from working !! 
+# from https://github.com/rstudio/learnr/issues/465
+# saving csss in a separate file print.css didn't work locally or on shinyapps because browser couldn't find file 
+```
+
+```{css echo=FALSE}
+@media print {
+  .topicsContainer,
+  .topicActions,
+  .exerciseActions .skip {
+    display: none;
+  }
+  .topics .tutorialTitle,
+  .topics .section.level2,
+  .topics .section.level3:not(.hide) {
+    display: block;
+  }
+  .topics {
+    width: 100%;
+  }
+  .tutorial-exercise, .tutorial-question {
+    page-break-inside: avoid;
+  }
+  .section.level3.done h3 {
+    padding-left: 0;
+    background-image: none;
+  }
+  .topics .showSkip .exerciseActions::before {
+    content: "Topic not yet completed...";
+    font-style: italic;
+  }
+}  
+  
+```
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(ggplot2)
+library(fs)
+knitr::opts_chunk$set(echo=TRUE, 
+                      eval=TRUE, 
+                      cache=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE, 
+                      comment="",
+                      exercise.timelimit=600,
+                      exercise.completion=TRUE,
+                      exercise.diagnostics=TRUE)
+gradethis::gradethis_setup()
+
+if(!dir.exists(file.path(fs::path_home(), ".rtrainer")))
+  dir.create(file.path(fs::path_home(), ".rtrainer"), showWarnings = FALSE, recursive = TRUE)
+```
+
+## The negative Binomial
+
+### The question
+
+In the practical about the Binomial distribution we asked the question:
+
+**If we repeat a Bernoulli experiment a fixed number of times, what is the probability of a certain number of successes ?**
+
+::: {.alert .alert-success role="alert"}
+In this tutorial, we will explore a complementary question. Instead of fixing the number of trials, we will fix the **number of successes** and ask:
+
+**What is the probability of a certain number of failures before reaching a target number of successes?**
+
+This question can be answered using the **Negative Binomial distribution**. This distribution is particularly useful in various fields, including ecology, epidemiology, and genomics, where it helps **model count data that exhibit overdispersion (i.e., variance greater than the mean)**.
+:::
+
+### The Negative Binomial Distribution
+
+The negative binomial distribution is a discrete probability distribution that models the number of failures before reaching a target number of successes in a **series of independent** Bernoulli trials with same probability of success. It is also frequently considered as distribution that model the **waiting time** before a target number of success.
+
+::: {.alert .alert-success role="alert"}
+The formula for the negative binomial distribution is given by:
+
+$$P(X = x) = \binom{x + r - 1}{x} p^r (1 - p)^x$$
+
+where:
+
+-   $x$ is the number of failures.
+
+-   $r$ is the number of target successes.
+
+-   $P(X = x)$ is the probability of observing $x$ failures before achieving $r$ successes.
+
+-   $\binom{x + r - 1}{x}$ is the binomial coefficient, representing the number of ways to arrange $x$ failures and $r$ successes. Note that the last position is always a success which explains the '-1'.
+
+-   $p$ is the probability of success in each trial.
+
+-   $1 - p$ is the probability of failure in each trial.
+
+    ::: {.alert .alert-success role="alert"}
+    :::
+:::
+
+### Properties
+
+The mean (expected value) of the negative binomial distribution is given by:
+
+$$E(X) = \frac{r(1 - p)}{p}$$ The variance of the negative binomial distribution is given by:
+
+$$Var(X) = \frac{r(1 - p)}{p^2}$$
+
+Alternatively, the variance can be expressed in terms of the mean:
+
+$$Var(X) = E(X) + \frac{E(X)^2}{r}$$
+
+This last formula highlights the fact that the variance is always greater than the mean, making the Negative Binomial distribution suitable for modeling **overdispersed** data (*i.e* 'overdispersed' compared to the Poisson model in which the variance is equal to the mean).
+
+### The geometric distribution
+
+::: {.alert .alert-success role="alert"}
+The **particular case** of the negative binomial distribution in which **$r=1$ (target number of successes is 1)** correspond to the **Geometric distribution** which models the number of failures before the first success in a sequence of independent Bernoulli trials. 
+:::
+
+The formula for this distribution is the following:
+
+\[
+P(X = x) = (1 - \text{p})^x \cdot \text{p}
+\]
+
+
+## Associated R functions
+
+### R Negative binomial functions
+
+The **Negative Binomial** distribution is implemented in R through the following functions:
+
+-   `dnbinom(x, size, prob)`: Probability mass function (PMF) - gives the probability of observing `x` failures before achieving `size` successes with success probability `prob`.
+-   `pnbinom(q, size, prob)`: Cumulative distribution function (CDF) - gives the probability of observing up to `q` failures before achieving `size` successes.
+-   `qnbinom(p, size, prob)`: Quantile function - gives the number of failures corresponding to a given cumulative probability `p` before achieving `size` successes.
+-   `rnbinom(n, size, prob)`: Random generation - generates `n` random samples from the Negative Binomial distribution with `size` successes and success probability `prob`.
+
+--- 
+
+For the **Geometric distribution** (target number of successes equal to one), the corresponding functions are: 
+
+-   `dgeom(x, prob)`: Probability mass function (PMF) for the Geometric distribution.
+-   `pgeom(q, prob)`: Cumulative distribution function (CDF) for the Geometric distribution.
+-   `qgeom(p, prob)`: Quantile function for the Geometric distribution.
+-   `rgeom(n, prob)`: Random generation for the Geometric distribution.
+
+### Exercise 1
+
+::: exo
+We have a 6-sided unbiased die:
+
+-   What is the probability of getting a six 5 times when 10 draws are made (`prob1`)?
+-   What is the probability of getting the six 5 times or more when making 10 draws (`prob2`)?
+-   What is the probability of having 20 failures before getting a six (`prob3`)?
+-   What is the probability of having 20 or more failures before getting a 6 (`prob4`)?
+-   What is the probability of having 20 or more failures before getting two 6s (`prob5`)?
+-   What is the probability of having less than 20 failures before getting two 6s (`prob6`)?
+
+```{r negbinexo, exercise=TRUE}
+# Fill the code below
+prob1 <- ___
+prob2 <- ___
+prob3 <- ___
+prob4 <- ___
+prob5 <- ___
+prob6 <- ___
+```
+
+```{r negbinexo-solution}
+p <- 1/6
+
+prob1 <- dbinom(5, size = 10, prob = p)
+prob2 <- pbinom(5-1, size = 10, prob = p, lower.tail = FALSE)
+prob3 <- dgeom(20, prob = p)
+prob3 <- dnbinom(20, prob = p, size=1)
+prob4 <- pgeom(20-1, prob = p, lower.tail = FALSE) 
+prob4 <- pnbinom(20-1, size = 1, prob = p, lower.tail = FALSE)
+prob5 <- pnbinom(20-1, size = 2, prob = p, lower.tail = FALSE)
+prob6 <- pnbinom(19, size = 2, prob = p)
+```
+
+```{r negbinexo-check}
+gradethis::grade_result_strict(
+  gradethis::pass_if(~ abs(prob1 - dbinom(5, size = 10, prob = p)) < 1e-10),
+  gradethis::pass_if(~ abs(prob2 - pbinom(5-1, size = 10, prob = p, lower.tail = FALSE)) < 1e-10),
+  gradethis::pass_if(~ abs(prob3 - dnbinom(20, prob=p)) < 1e-10),
+  gradethis::pass_if(~ abs(prob4 - pnbinom(20-1, size=1, prob=p, lower.tail=FALSE)) < 1e-10),
+  gradethis::pass_if(~ abs(prob5 - pnbinom(20-1, size=2, prob=p, lower.tail=FALSE)) < 1e-10),
+  gradethis::pass_if(~ abs(prob6 - pnbinom(19, size=2, prob=p)) < 1e-10)
+)
+```
+:::
+
+### Exercise 2
+
+::: exo
+Consider the following motif: "AGGGTCTC". The size of $s$ this motif is 10 base pairs (`nchar('AGGGTCTC')` in R). This motif can be found in a genome in which each base pair (A, C, T, G) is **equiprobable and independent from the others** (which is a simplification of reality). In a genome of length 100 millions base pairs ($l$), there are $l - s + 1$ possible positions for this motif to occur. We can call it the number of trials $n$.
+
+-   Assuming that each base pair is equiprobable (A,C,T,G), what is the probability of finding the motif 'AGGGTCTC' by chance at a given point in the genome (`a`)?
+-   What is the expected number of times we should find this motif in this genome (`b`)?
+-   What is the probability of not finding this motif in the 10000 first possible positions (`c`)?
+-   What is the probability of not finding this motif 3 times in the 10000 first possible positions (`d`) ?
+-   What is the probability of not finding this motif 3 times in the 100000 first nucleotides (`e`) ?
+
+```{r negbinexo2, exercise=TRUE}
+# Here are the parameters
+motif <- 'AGGGTCTC'
+s <- nchar(motif)
+l <- 100e6
+n <- l - s + 1
+
+# Fill the code below
+a <- ___
+b <- ___
+c <- ___
+d <- ___
+```
+
+```{r negbinexo2-solution}
+# Here are the parameters
+motif <- 'AGGGTCTC'
+s <- nchar(motif)
+l <- 100e6
+n <- l - s + 1
+
+# Fill the code below
+a <- p <-  (1/4)^s
+b <- n * p
+c <- (1 - p)^10000
+c <- pgeom(10000 - 1, prob = p, lower.tail = FALSE)
+c <- pnbinom(10000 - 1, prob = p, size=1, lower.tail = FALSE)
+d <- pnbinom(10000, prob = p, size=3, lower.tail = FALSE)
+e <- pnbinom(100000, prob = p, size=3, lower.tail = FALSE)
+```
+
+```{r negbinexo2-check}
+gradethis::grade_result_strict(
+  gradethis::pass_if(~ abs(a - (1/4)^s) < 1e-10),
+  gradethis::pass_if(~ abs(b - n * p) < 1e-5),
+  gradethis::pass_if(~ abs(c - pnbinom(10000 - 1, prob = p, size=1, lower.tail = FALSE)) < 1e10),
+  gradethis::pass_if(~ abs(d - pnbinom(10000, prob = p, size=3, lower.tail = FALSE)) < 1e10),
+  gradethis::pass_if(~ abs(e - pnbinom(100000, prob = p, size=3, lower.tail = FALSE)) < 1e10)
+)
+```
+:::
+
+## Overdispersed data
+
+### Modeling overdispersed data
+
+::: {.alert .alert-success role="alert"}
+Beyond its foundational definition, the **Negative Binomial distribution** is particularly useful for modeling **overdispersed data**. We used the term 'overdispersed' to describe **scenarios where the variance of the data exceeds the mean** and for which the **Poisson distribution** (which assumes equal mean and variance) may **not be appropriate**.
+
+This characteristic makes it indispensable in fields such as:
+
+-   **Genomics**: Modeling gene expression counts with high variability.
+-   **Ecology**: Analyzing species counts across different environments.
+-   **Traffic Modeling**: Estimating vehicle arrivals with fluctuating rates.
+-   ...
+:::
+
+::: exo
+Use the shiny app below to observe the shape of the Negative Binomial distribution for different values of the parameters `size` (number of successes) and `prob` (probability of success).
+
+```{r negbin-ui, echo=FALSE}
+library(shiny)
+
+fluidRow(
+  column(
+    width = 4,
+    sliderInput(
+      "size",
+      label = "Size (dispersion parameter)",
+      min = 0.5,
+      max = 20,
+      value = 5,
+      step = 0.5
+    ),
+    sliderInput(
+      "prob",
+      label = "Success probability (p)",
+      min = 0.05,
+      max = 0.95,
+      value = 0.4,
+      step = 0.05
+    ),
+    br(),
+    verbatimTextOutput("moments")
+  ),
+  column(
+    width = 8,
+    plotOutput("negbin_plot", height = "400px")
+  )
+)
+```
+
+```{r negbin-server, context="server"}
+library(ggplot2)
+
+output$negbin_plot <- renderPlot({
+
+  size <- input$size
+  prob <- input$prob
+
+  # Moments
+  mu  <- size * (1 - prob) / prob
+  var <- size * (1 - prob) / prob^2
+
+  # Support
+  xmax <- ceiling(mu + 4 * sqrt(var))
+  x <- 0:xmax
+
+  df <- data.frame(
+    x = x,
+    nb = dnbinom(x, size = size, prob = prob),
+    poi = dpois(x, lambda = mu)
+  )
+
+  ggplot(df, aes(x = x)) +
+
+    # Negative Binomial bars
+    geom_bar(
+      aes(y = nb),
+      stat = "identity",
+      fill = "steelblue",
+      alpha = 0.7
+    ) +
+
+    # Poisson overlay
+    geom_bar(
+      aes(y = poi),
+      stat = "identity",
+      fill = "orange",
+      alpha = 0.5
+    ) +
+
+    # Mean
+    geom_vline(
+      xintercept = mu,
+      colour = "red",
+      linetype = "dashed",
+      linewidth = 1
+    ) +
+
+    # Dispersion arrow (± sqrt(Var))
+    annotate(
+      "segment",
+      x = mu - sqrt(var),
+      xend = mu + sqrt(var),
+      y = max(df$nb) * 0.6,
+      yend = max(df$nb) * 0.6,
+      colour = "darkgreen",
+      linewidth = 1,
+      arrow = arrow(ends = "both", length = unit(0.15, "cm"))
+    ) +
+
+    annotate(
+      "text",
+      x = mu,
+      y = max(df$nb) * 0.65,
+      label = "Dispersion",
+      colour = "darkgreen"
+    ) +
+
+    labs(
+      title = "Negative Binomial vs Poisson (same mean)",
+      x = "x",
+      y = "P(X = x)"
+    ) +
+
+    theme_minimal(base_size = 14)
+
+})
+
+# Numerical values
+output$moments <- renderText({
+  size <- input$size
+  prob <- input$prob
+
+  mu  <- size * (1 - prob) / prob
+  var <- size * (1 - prob) / prob^2
+  disp <- var / mu
+
+  paste0(
+    "E(X)      = ", round(mu, 2), "\n",
+    "Var(X)    = ", round(var, 2), "\n",
+    "Var / E   = ", round(disp, 2)
+  )
+})
+```
+:::
+
+## Exercises
+
+In RNA sequencing experiments, **gene expression levels are often quantified by counting the number of reads that map to each gene**. These read counts can **exhibit overdispersion due to various biological and technical factor**, making the **Negative Binomial distribution a suitable model for such data**. However, **when the technologie appear in the 2008, the appropriate model for RNA-seq data was unknown**.
+
+To this aim, Gierliński *et al* ([PMID:26206307](https://pmc.ncbi.nlm.nih.gov/articles/PMC4754627/)) conducted a **comprehensive analysis of RNA-Seq data from yeast cells to evaluate the fit of the Negative Binomial model to gene expression counts**. The dataset was composed of **48 WT yeast samples vs 48 Snf2 knock-out mutant cell lines**. The prepared RNA-Seq libraries (unstranded) were pooled and sequenced on seven lanes of a single flow-cell on an Illumina HiSeq 2000, resulting in a **total of 1 billion 50-bp single-end reads across the 96 samples**. RNA-Seq reads have been cleaned, mapped and counted to generated a count data matrix containing **7126 rows/genes**.
+
+Given that **number of replicates in each condition**, this dataset is not conventional and offers a **unique opportunity to assess** the suitability of different statistical models for RNA-Seq data. Our objective will be **to reproduce some of the results** presented in this paper and particularly to check whether, at least on some representative genes, the observed **gene read counts distribution can be modeled using negative binomial distribution**. More information can be obtained in the original paper ([pdf](https://pmc.ncbi.nlm.nih.gov/articles/PMC4754627/))."
+
+::: exo
+
+The code below allows to:
+
+  - **Load** count data from Gierliński *et al* into R. The rows correspond to genes (7126) and the columns to samples (48 WT and 48 Snf2 KO). 
+  - **Extract** the counts for gene 'icr1' in the 'WT' condition (first 48 columns).
+  - **Convert** the counts of this gene into a vector.
+  - **Fit** a negative binomial distribution to these counts.
+  - **Create a diagram** comparing the observed counts distribution with the fitted negative binomial and Poisson distributions.
+  
+**Fill in the missing code** (___) to :
+
+- Compute the mean (`mean()`) of the observed counts.
+- Compute the variance (`var()`) of the observed counts.
+- Compute the parameters of the negative binomial distribution (`size` and `prob`) using the formulas provided in the 'Properties' section.
+
+**Check additional genes**. To you agree that the negative binomial distribution is a good model for gene counts compared to the Poisson distribution ?
+
+**NB**: While our method of estimating the parameters is straightforward, **more sophisticated methods such as maximum likelihood estimation (MLE)** are generally employed in practice for more  precise parameter estimation (see `MASS::fitdistr()`). MLE is less sensitive to outliers and provides more reliable parameter estimates, especially for small sample sizes or when the data deviates from the assumed distribution.
+
+```{r load_counts, exercise=TRUE, exercise.lines=20}
+library(ggplot2)
+
+url <- "https://zenodo.org/records/18244485/files/counts_snf2.txt"
+counts <- read.table(url, header = TRUE, row.names = 1)
+head(counts)
+
+# We will work on WT samples only and and one particular gene.
+# unlist() is used to convert the data.frame row to a vector
+gene_name <- 'icr1'
+counts_gene <- unlist(counts[gene_name, 1:48])
+
+# Your code
+mean_counts <- ___
+var_counts <- ___
+size <- ___
+prob <- ___
+
+# Create a diagram comparing the observed counts distribution with
+# the fitted negative binomial and Poisson distributions
+df <- data.frame(x = sort(counts_gene))
+
+ggplot(df, aes(x = x)) +
+  geom_histogram(
+    mapping = aes(y = ..density..),
+    bins = 10,
+    fill = "lightblue",
+    color = "black"
+  ) +
+  # Negative Binomial PMF overlay
+  stat_function(
+    aes(color = "Negative binomial"),
+    fun = function(k) {
+      # return PMF only at integers, 0 elsewhere
+      dnbinom(round(k), size = size, prob = prob)
+    },
+    size = 1
+  ) +
+  # Poisson PMF overlay
+  stat_function(
+    aes(color = "Poisson"),
+    fun = function(k) {
+      dpois(round(k), lambda = mean_counts)
+    },
+    size = 1
+  ) +
+  scale_color_manual(
+    name = "Distribution",
+    values = c(
+      "Negative binomial" = "red",
+      "Poisson" = "orange"
+    )
+  ) +
+  labs(x = "Counts", y = "Density", title = "Gene counts (WT) with fitted NB & Poisson PMFs") +
+  theme_bw()
+
+```
+
+```{r load_counts-solution}
+library(ggplot2)
+
+url <- "https://zenodo.org/records/18244485/files/counts_snf2.txt"
+counts <- read.table(url, header = TRUE, row.names = 1)
+head(counts)
+
+# We will work on WT samples only and and one particular gene.
+# unlist() is used to convert the data.frame row to a vector
+gene_name <- 'icr1'
+counts_gene <- unlist(counts[gene_name, 1:48])
+
+# Your code
+mean_counts <- mean(counts_gene)
+var_counts <- var(counts_gene)
+size <- (mean_counts^2) / (var_counts - mean_counts)
+prob <- size / (size + mean_counts)
+
+# Create a diagram comparing the observed counts distribution with
+# the fitted negative binomial and Poisson distributions
+df <- data.frame(x = sort(counts_gene))
+
+ggplot(df, aes(x = x)) +
+  geom_histogram(
+    mapping = aes(y = ..density..),
+    bins = 10,
+    fill = "lightblue",
+    color = "black"
+  ) +
+  # Negative Binomial PMF overlay
+  stat_function(
+    aes(color = "Negative binomial"),
+    fun = function(k) {
+      # return PMF only at integers, 0 elsewhere
+      dnbinom(round(k), size = size, prob = prob)
+    },
+    size = 1
+  ) +
+  # Poisson PMF overlay
+  stat_function(
+    aes(color = "Poisson"),
+    fun = function(k) {
+      dpois(round(k), lambda = mean_counts)
+    },
+    size = 1
+  ) +
+  scale_color_manual(
+    name = "Distribution",
+    values = c(
+      "Negative binomial" = "red",
+      "Poisson" = "orange"
+    )
+  ) +
+  labs(x = "Counts", y = "Density", title = "Gene counts (WT) with fitted NB & Poisson PMFs") +
+  theme_bw()
+
+```
+:::
+
+### End of the section
+
+Thank you for following this tutorial.
