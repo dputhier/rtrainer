@@ -488,7 +488,7 @@ Now that you've explored the Poisson distribution interactively, let's practice 
 
 4.  Calculate the probability of observing more than 4 events when $\lambda = 3$. Store your result in a variable called `prob_more_4`.
 
-5.  Calculate the probability of observing 4 events of more (the p-value of 4) when 𝜆=3 . Store your result in a variable called prob_4_or_more
+5.  Calculate the probability of observing 4 events or more (the p-value of 4) when 𝜆=3 . Store your result in a variable called prob_4_or_more
 
 ```{r poissonexercise, exercise=TRUE}
 # Your code here
