@@ -366,7 +366,7 @@ gseaplot(gsea_bp,
 The `emapplot()` function creates an enrichment map that display the relationships between enriched terms based on their gene overlap. However, it requires first, to compute the pairwise similarity between enriched terms using the `pairwise_termsim()` function.
 
 ```{r pairwise_termsim, exercise=TRUE, exercise.setup="prepGSEA"}
-gsea_bp <- pairwise_termsim(gsea_bp)
+gsea_bp <- enrichplot::pairwise_termsim(gsea_bp)
 
 # Store the result onto the disk
 saveRDS(gsea_bp, file = file.path(fs::path_home(), ".rtrainer", "gsea_bp.rds"))
@@ -375,7 +375,7 @@ saveRDS(gsea_bp, file = file.path(fs::path_home(), ".rtrainer", "gsea_bp.rds"))
 Now that we have called `pairwise_termsim()`, we can create the enrichment network using `emapplot()`.
 
 ```{r emapplot, exercise=TRUE, exercise.setup="prepGSEA", fig.width=8, fig.height=8}
-gsea_bp <- pairwise_termsim(gsea_bp)
+gsea_bp <- enrichplot::pairwise_termsim(gsea_bp)
 emapplot(gsea_bp, 
          layout.params = list(layout = 'kk'),
          cex.params = list(category_label = 0.4))
