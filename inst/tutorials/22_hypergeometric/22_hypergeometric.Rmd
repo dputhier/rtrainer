@@ -739,7 +739,7 @@ pval_hypergeo <- phyper(x-1, m, n, k, lower.tail = FALSE)
 
 ```{r exohypergeo-check }
 gradethis::grade_result(
-  pass_if(~ abs(pval_hypergeo - phyper(16-1, 278, 18888-278, 47, lower.tail = FALSE)) < 1e-10)
+  pass_if(~ abs(pval_hypergeo - phyper(16-1, 278, 18888-278, 47, lower.tail = FALSE)) < 1e-20)
 )
 ```
 
@@ -758,9 +758,9 @@ b <-
 c <- 
 d <- 
 
-mat <- matrix(c(a, b, c, d), nrow=2, byrows=TRUE)  
+mat <- matrix(c(a, b, c, d), nrow=2, byrow=TRUE)  
 
-pval_fisher <- ___
+pval_fisher <- fisher.test(mat, alternative="greater")$p.value
 ```
 
 ```{r fisher-solution}
@@ -776,13 +776,12 @@ c <- m - x
 d <- n - (k - x)
 mat <- matrix(c(a, b, c, d), nrow=2, byrow=TRUE)
 
-# 
 pval_fisher <- fisher.test(mat, alternative="greater")$p.value
 ```
 
 ```{r fisher-check }
 gradethis::grade_result(
-  pass_if(~ abs(pval_fisher - phyper(16-1, 278, 18888-278, 47, lower.tail = FALSE)) < 1e-10)
+  pass_if(~ abs(pval_fisher - phyper(16-1, 278, 18888-278, 47, lower.tail = FALSE)) < 1e-20)
 )
 ```
 
@@ -889,7 +888,7 @@ n <- 18888-278
 k <- 47
 x <- 16
 expected <- k * m / (m + n)
-variance <- k * (m / (m + n)) * (n / (m + n)) * ((m + n - k) / (m + n - 1))
+variance <- k * (m / (m + n)) * (1  - (m)/(m + n)) * ((m + n - k) / (m + n - 1))
 zscore <- (x - expected) / sqrt(variance)
 ```
 
