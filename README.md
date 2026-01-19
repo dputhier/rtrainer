@@ -4,7 +4,7 @@ The rtrainer package offers a collection of tutorials for learning R. Contributi
 
 # Installation
 
-Please install a recent version of R (R > 4.4.1) and RStudio.
+This version requires Bioconductor 3.22
 
 Currently use the following command:
 
