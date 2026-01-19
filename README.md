@@ -25,10 +25,16 @@ Run a tutorial using the following command:
 
     learnr::run_tutorial("04_factors", "rtrainer")
     
+# Docker file
 
-# Note for dev
+A Docker file is available in `inst/docker` to facilitate the installation of the package and its dependencies.
+Use the following command to build the Docker image:
 
-To deploy on ShinyApp these lines should be discarded from tutorials:
+    cd inst/docker
+    docker build  --progress=plain  --no-cache -t rtrainer .
 
-               includes:
-                   before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+To run the image, use the following commands:
+
+    docker run -e PASSWORD=bioc -p 8787:8787 rtrainer
+
+The default login is `rstudio` and the password is `bioc`.
