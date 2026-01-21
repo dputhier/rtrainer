@@ -135,6 +135,43 @@ https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
 </style>
 
 
+```{r echo=FALSE}
+# chunk below enables printing whole tutorial from browser e.g. to pdf
+# DO NOT put any #comments in the chunk below, that stops it from working !! 
+# from https://github.com/rstudio/learnr/issues/465
+# saving csss in a separate file print.css didn't work locally or on shinyapps because browser couldn't find file 
+```
+
+```{css echo=FALSE}
+@media print {
+  .topicsContainer,
+  .topicActions,
+  .exerciseActions .skip {
+    display: none;
+  }
+  .topics .tutorialTitle,
+  .topics .section.level2,
+  .topics .section.level3:not(.hide) {
+    display: block;
+  }
+  .topics {
+    width: 100%;
+  }
+  .tutorial-exercise, .tutorial-question {
+    page-break-inside: avoid;
+  }
+  .section.level3.done h3 {
+    padding-left: 0;
+    background-image: none;
+  }
+  .topics .showSkip .exerciseActions::before {
+    content: "Topic not yet completed...";
+    font-style: italic;
+  }
+}  
+  
+```
+
 ```{r setup, include=FALSE}
 library(learnr)
 library(gradethis)

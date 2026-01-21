@@ -631,7 +631,6 @@ annotation_src <- "BP"
 # Load the required Bioconductor package for converting gene symbols to Entrez IDs
 library(org.Hs.eg.db)
 
-
 # Perform GO enrichment analysis using clusterProfiler
 enrich_res <- clusterProfiler::enrichGO(gene_set,
                                         OrgDb = get("org.Hs.eg.db"),
