@@ -877,13 +877,13 @@ The normalized counts can be obtained using the **`counts()`** function with the
 # The matrix is converted into long format for ggplot2.
 # We add a column indicating the phenotype (WT or KO)
 raw_counts <- reshape2::melt(DESeq2::counts(dds, normalized=FALSE) + 1 )
-raw_counts <- reshape::melt(raw_counts)
+raw_counts <- reshape2::melt(raw_counts)
 colnames(raw_counts) <- c("gene", "sample", "variable", "value")
 raw_counts$pheno <- gsub("[0-9]+$", "", raw_counts$sample)
 
 # Idem for normalized counts
 norm_counts <- reshape2::melt(DESeq2::counts(dds, normalized=TRUE) + 1 )
-norm_counts <- reshape::melt(norm_counts)
+norm_counts <- reshape2::melt(norm_counts)
 colnames(norm_counts) <- c("gene", "sample", "variable", "value")
 norm_counts$pheno <- gsub("[0-9]+$", "", norm_counts$sample)
 
