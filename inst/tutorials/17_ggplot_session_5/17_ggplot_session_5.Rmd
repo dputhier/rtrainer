@@ -6,6 +6,7 @@
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 
 title: "The ggplot2 library (session 5)"
+author: "D. Puthier"
 output:
   learnr::tutorial:
     theme: default

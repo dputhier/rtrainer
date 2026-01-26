@@ -1,6 +1,7 @@
 ---
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 title: "Statistical analysis of bulk RNA-seq data"
+author: "D. Puthier"
 output:
   learnr::tutorial:
     includes:

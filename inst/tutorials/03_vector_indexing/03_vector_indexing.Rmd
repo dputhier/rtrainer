@@ -6,6 +6,7 @@
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 # Estimated time = 2h
 title: "Indexing vectors."
+author: "D. Puthier"
 output:
   learnr::tutorial:
     includes:

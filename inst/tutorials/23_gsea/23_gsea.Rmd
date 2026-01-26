@@ -1,4 +1,3 @@
-
 ---
 # theme
 # “bootstrap”, “cerulean”, “cosmo”, “darkly”, “flatly”, “journal”, “lumen”, “paper”, 
@@ -7,6 +6,7 @@
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 
 title: "GSEA analysis"
+author: "D. Puthier"
 output:
   learnr::tutorial:
     includes:
@@ -484,7 +484,7 @@ sd_stimulated <- apply(deg[, c("PI1", "PI2", "PI3")], 1, sd)
 deg_snr <- (mean_stimulated - mean_control) / (sd_stimulated + sd_control)
 ```
 
-```{r gsea_snr_exercise, exercise=TRUE, exercise.setup="prepsnr_exercise", exercise.lines=15}
+```{r gsea_snr_exercise, exercise=TRUE, exercise.setup="prepsnr_exercise", exercise.lines=20}
 # Your code
 
 ```

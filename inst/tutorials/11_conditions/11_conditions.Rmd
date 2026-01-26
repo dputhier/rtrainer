@@ -6,6 +6,7 @@
 # `haddock`, `breezedark`, `textmate`, `arrow`, or `rstudio` or a file with extension `.theme`.
 
 title: "Conditional statements"
+author: "D. Puthier"
 output:
   learnr::tutorial:
     includes:

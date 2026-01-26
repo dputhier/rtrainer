@@ -1,6 +1,7 @@
 ---
 # highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
 title: "The Negative binomiale distribution and gene expression count distribution."
+author: "D. Puthier"
 output:
   learnr::tutorial:
     includes:
@@ -295,6 +296,7 @@ We have a 6-sided unbiased die:
 -   What is the probability of having less than 20 failures before getting two 6s (`prob6`)?
 
 ```{r negbinexo, exercise=TRUE}
+p <- 1/6
 # Fill the code below
 prob1 <- ___
 prob2 <- ___
@@ -306,7 +308,7 @@ prob6 <- ___
 
 ```{r negbinexo-solution}
 p <- 1/6
-
+# Fill the code below
 prob1 <- dbinom(5, size = 10, prob = p)
 prob2 <- pbinom(5-1, size = 10, prob = p, lower.tail = FALSE)
 prob3 <- dgeom(20, prob = p)
@@ -321,7 +323,7 @@ prob6 <- pnbinom(19, size = 2, prob = p)
 gradethis::grade_result_strict(
   gradethis::pass_if(~ abs(prob1 - dbinom(5, size = 10, prob = p)) < 1e-10),
   gradethis::pass_if(~ abs(prob2 - pbinom(5-1, size = 10, prob = p, lower.tail = FALSE)) < 1e-10),
-  gradethis::pass_if(~ abs(prob3 - dnbinom(20, prob=p)) < 1e-10),
+  gradethis::pass_if(~ abs(prob3 - dnbinom(20, prob=p, size=1)) < 1e-10),
   gradethis::pass_if(~ abs(prob4 - pnbinom(20-1, size=1, prob=p, lower.tail=FALSE)) < 1e-10),
   gradethis::pass_if(~ abs(prob5 - pnbinom(20-1, size=2, prob=p, lower.tail=FALSE)) < 1e-10),
   gradethis::pass_if(~ abs(prob6 - pnbinom(19, size=2, prob=p)) < 1e-10)

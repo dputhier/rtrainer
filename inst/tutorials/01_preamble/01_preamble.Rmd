@@ -1,5 +1,6 @@
 ---
 title: "Preambles"
+author: "D. Puthier"
 output:
   learnr::tutorial:
     theme: default

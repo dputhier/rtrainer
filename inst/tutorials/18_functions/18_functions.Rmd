@@ -1,5 +1,6 @@
 ---
 title: "Functions: exercises"
+author: "D. Puthier"
 output:
   learnr::tutorial:
     theme: default
