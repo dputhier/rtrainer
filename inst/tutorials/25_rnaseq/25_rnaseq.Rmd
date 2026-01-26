@@ -234,7 +234,7 @@ if(file.exists(count_path)){
 }
 ```
 
-::: exo
+<div class="exo">
 When loading a new table into **R**, it is always a good idea to **inspect the data**.
 
 -   What is the **class** of the count table object (**`count_table`**) ?\
@@ -262,9 +262,9 @@ colnames(count_table)
 nrow(count_table)
 ncol(count_table)
 ```
-:::
+</div>
 
-::: exo
+<div class="exo">
 ```{r loading-quiz, echo=FALSE}
 library(learnr)
 quiz(
@@ -324,7 +324,7 @@ quiz(
   )
 )
 ```
-:::
+</div>
 
 ## Phenotypic data
 
@@ -353,7 +353,7 @@ if(file.exists(pheno_path)){
 pheno_palette <- rep(c("darkorange", "violetred3"), each=48)
 ```
 
-::: exo
+<div class="exo">
 When loading a new table into **R**, it is always a good idea to **inspect the data**.
 
 -   What is the **class** of the phenotypic data object (**`pheno_info`**) ?\
@@ -373,9 +373,9 @@ head(pheno_info)
 # Count the number of samples in each condition
 table(pheno_info$strain)
 ```
-:::
+</div>
 
-::: exo
+<div class="exo">
 ```{r pheno-quiz, echo=FALSE}
 quiz(
   question(
@@ -410,7 +410,7 @@ quiz(
   )
 )
 ```
-:::
+</div>
 
 ## Descriptive statistics
 
@@ -438,7 +438,7 @@ From this histogram we can see that the distribution of counts is highly **skewe
 summary(unlist(count_table))
 ```
 
-::: exo
+<div class="exo">
 ```{r dist-quiz, echo=FALSE}
 quiz(
   question(text = "What is the minimum count value in the dataset?",
@@ -479,9 +479,9 @@ quiz(
   )
 )
 ```
-:::
+</div>
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 **Interpretation**:
 
 The previous histogram is not very informative so far, apparently due to the presence of a **few very high count values**, that **impose a very large scale on the** $x$ axis. A classical way to deal with this problem is to use a **logarithmic transformation** of the data. Here, for visualization we will use **logatithmic transformation in base 10** (we could have chosen another base). However base 10 is useful here because it allows to easily interpret the results in terms of **counts**:
@@ -493,7 +493,7 @@ The previous histogram is not very informative so far, apparently due to the pre
 Thus the log10 scale allows to easily interpret **the counts in terms of orders of magnitude**.
 
 **NB**: To avoid problems with **log(0)** (which is undefined), we will add a **pseudo-count** of value **1** to all counts before applying the logarithmic transformation. This is a classical approach when dealing with count data and will have **minimal impact** on the results as most counts are much higher than 1.
-:::
+</div>
 
 ```{r histlog10, exercise=TRUE, exercise.setup="loading_pheno"}
 ## Data distribution in log 10 scale.
@@ -505,7 +505,7 @@ hist(count_table_log10,
      border="white")
 ```
 
-::: exo
+<div class="exo">
 ```{r log-quiz, echo=FALSE}
 library(learnr)
 
@@ -530,7 +530,7 @@ quiz(
 )
 
 ```
-:::
+</div>
 
 ### Boxplots
 
@@ -547,7 +547,7 @@ boxplot(count_table_log10,
         main="Boxplot of log10 transformed counts")
 ```
 
-::: exo
+<div class="exo">
 ```{r boxplot-quiz, echo=FALSE}
 library(learnr)
 quiz(
@@ -596,17 +596,17 @@ quiz(
 )
 
 ```
-:::
+</div>
 
 ### Density plots
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 On limitation of boxplots is that they **do not provide detailed information about the distribution** of the data. **Density plots** can be used to visualize the distribution of data **in more detail**. They provide a smoothed estimate of the data distribution, allowing to see the shape of the distribution more clearly.
-:::
+</div>
 
-::: {.alert .alert-danger role="alert"}
+<div class="alert alert-danger" role="alert">
 **Beware**: the R function *geom_density()* does not display the actual distribution of your values, but a **polynomial fit** to that distribution. The representation thus generally **looks smoother than the actual data**. It is important to realize that, in some particular cases, the fit can lead to **extrapolated values which can be misleading**.
-:::
+</div>
 
 ```{r densitylog10, exercise=TRUE, exercise.setup="histlog10", fig.width=8, fig.height=5}
 # We need to laod the ggplot2 and reshape2 libraries
@@ -632,7 +632,7 @@ ggplot(data=count_table_log10_long,
        scale_color_manual(values=c("WT"= "darkorange", "Snf"="violetred3")) 
 ```
 
-::: exo
+<div class="exo">
 This is interesting to see that while boxplot and density plots both represent data distributions, they do so in different ways and can provide complementary insights.
 
 ```{r density-quiz, echo=FALSE}
@@ -649,13 +649,13 @@ quiz(
   )
 )
 ```
-:::
+</div>
 
 ### Scatter plot
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 Scatter plots are yet another useful way to visualize the relationship between **two variables**. In the context of **RNA-Seq data**, scatter plots can be used to visualize the **relationship between gene expression levels in different samples**. This can help to identify potential outlier samples or genes that may be differentially expressed between conditions.
-:::
+</div>
 
 Below, the **`pairs()` function** draws a scatter plot for each pair of columns of the input dataset. The plot shows **a fairly good reproducibility between samples** of the same type (WT or KO, respectively): **all points are aligned along te diagonal**, with a relatively wider dispersion at the bottom, corresponding to small number fluctuations.
 
@@ -671,7 +671,7 @@ plotFun <- function(x,y){ dns <- densCols(x,y); points(x,y, col=dns, pch=".") }
 pairs(count_table_log10[, c(1:5, 49:54)], panel=plotFun, lower.panel = NULL)
 ```
 
-::: exo
+<div class="exo">
 ```{r scatter-quiz, echo=FALSE}
 quiz(
   question("Select the true statement(s) about the scatter plots:",
@@ -685,7 +685,7 @@ quiz(
   )
 )
 ```
-:::
+</div>
 
 ## Null genes
 
@@ -738,7 +738,7 @@ library(patchwork)
 p1 + p2 
 ```
 
-::: exo
+<div class="exo">
 ```{r null-quiz, echo=FALSE}
 quiz(
   question("Which of this hypothesis may explain that the number of gene counts is globally lower in Snf2 KO sampels than in WT samples ?",
@@ -753,13 +753,13 @@ quiz(
   )
 )
 ```
-:::
+</div>
 
 ### Deleting null genes
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 As we have seen previously, some genes were not detected at all in these samples. We will now discard them from the count table.
-:::
+</div>
 
 ```{r discard, exercise=TRUE, exercise.setup="loading_pheno"}
 # Discard genes with null counts across all samples
@@ -771,9 +771,9 @@ dim(count_table)
 
 ### DESeqDataSet object
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 To perform **differential expression analysis** using the **DESeq2** package, we need to create a **DESeqDataSet** object from the count table and the phenotypic information. This object will be used as input for the DESeq2 functions.
-:::
+</div>
 
 ```{r deseqsetup, exercise=TRUE, exercise.setup="discard", message=FALSE, warning=FALSE}
 # Load the DESeq2 library 
@@ -796,11 +796,11 @@ slotNames(dds)
 
 ### Size factor estimation
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 The first step of the differential expression analysis is to **estimate size factors** for each sample. Size factors are used to normalize the counts for differences in sequencing depth between samples. The method used by DESeq2 is the **median of ratios method**.
-:::
+</div>
 
-::: {.alert .alert-info role="alert"}
+<div class="alert alert-info" role="alert">
 <details>
 
 <summary>If you want more explanation about "median of ratios method" in DESeq2 (**totally optional**)</summary>
@@ -845,7 +845,7 @@ estimSf <- function (cds){
 ```
 
 </details>
-:::
+</div>
 
 We will now perform the differential expression analysis using the **DESeq()** function from the **DESeq2** package. This function **will estimate size factors** (normalization parameter), **dispersions** and will fit the **negative binomial model** to the data. This procedure won't be detailler in this tutorial, please refer to the **DESeq2** documentation for more information.
 
@@ -861,9 +861,9 @@ The size factors can be accessed using the **`sizeFactors()`** function.
 DESeq2::sizeFactors(dds)
 ```
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 This size factors are the scaling factors that will be used to normalize the counts for differences in sequencing depth between samples. They are used in the **differential expression analysis** to ensure that the comparisons between samples are fair and not biased by differences in sequencing depth.
-:::
+</div>
 
 The normalized counts can be obtained using the **`counts()`** function with the argument **`normalized=TRUE`**. They correspond to the **raw counts divided by the size factors**. We will display the distribution of the counts **before and after normalization** using density plots.
 
@@ -909,7 +909,7 @@ ggplot(data=counts_long,
        facet_wrap(~ type, ncol=1) 
 ```
 
-::: exo
+<div class="exo">
 ```{r norm-quiz, echo=FALSE}
 quiz(
   question("What can we say about the distribution of gene expression counts before and after normalization?",
@@ -924,9 +924,9 @@ quiz(
   )
 )
 ```
-:::
+</div>
 
-::: exo
+<div class="exo">
 Using the **scaling factors** estimated previously and that can be accessed using the `sizeFactors()` function, we can **ensure that DESeq2 is correctly normalizing the counts**.
 
 -   Compute manually the normalized counts for gene `nme1` in all samples using the formula:\
@@ -956,15 +956,15 @@ gradethis::grade_result_strict(
   pass_if(~ abs(sum(norm_counts_nme1) - 2542) < 5)
 )
 ```
-:::
+</div>
 
 ### Performing DGE
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 **DGE (Differential Gene Expression)** analysis aims to identify **genes that are differentially expressed between two or more conditions**. In the context of RNA-Seq data, this involves **comparing the read counts** for **each gene across** different conditions to determine if there are significant differences in expression levels. Under the hood, DESeq2 models the counts for each gene using a **negative binomial distribution**. This distribution is characterized by two parameters: the **mean** (which represents the average expression level of the gene) and the **dispersion** (which captures the variability of expression levels across replicates).
-:::
+</div>
 
-::: {.alert .alert-info role="alert"}
+<div class="alert alert-info" role="alert">
 <details>
 
 <summary>If you want more explanation about DGE in DESeq2 (**totally optional**)</summary>
@@ -988,7 +988,7 @@ plotDispEsts(dds.norm)
 ```
 
 </details>
-:::
+</div>
 
 After having estimated the dispersions, DESeq2 proceed to the **hypothesis testing** step to identify differentially expressed genes between the two conditions (WT vs KO). this step is performed **using a Wald test** which can be applied using the **`nbinomWaldTest()`** function from the DESeq2 package. Roughly speaking, the **Wald test aims to determine if the estimated log fold change between the two conditions is significantly different from zero** (i.e., no change in expression).
 
@@ -1022,7 +1022,7 @@ saveRDS(dds, file=file.path(fs::path_home(), ".rtrainer", "dds_object.rds"))
 
 ### The results of the differential expression analysis
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 The results of the differential expression analysis are stored in a **data.frame** object. Each row corresponds to a gene, and the columns contain various statistics related to the differential expression analysis, including:
 
 -   **baseMean**: The average of the normalized counts for all samples.
@@ -1031,11 +1031,11 @@ The results of the differential expression analysis are stored in a **data.frame
 -   **stat**: The test statistic for the Wald test.
 -   **pvalue**: The p-value for the Wald test.
 -   **padj**: The adjusted p-value for multiple testing correction (using the Benjamini-Hochberg method).
-:::
+</div>
 
-::: {.alert .alert-danger role="alert"}
+<div class="alert alert-danger" role="alert">
 When **selecting genes** for **differential expression** it is important to consider the **adjusted p-value (padj)** rather than the raw p-value. The adjusted p-value accounts for **multiple testing and helps to control the false discovery rate (FDR)** (see dedicated tutorial). A common threshold for significance is **padj \< 0.05**, but this can be adjusted based on the specific context of the analysis. It is also important to consider **the size effect (log2 fold change)** when selecting differentially expressed genes, as **small changes in expression may not be biologically meaningful** even if they are **statistically significant**.
-:::
+</div>
 
 ### The limit of linear Fold Change
 
@@ -1044,7 +1044,7 @@ As you have seen previously in the **result table** provided by DESeq2, one of t
 -   **Repressed values** are **compressed between 0 and 1** while **induced values are unbounded**.
 -   **It is not symmetric** : a fold change of 0.5 (repression by half) is not the opposite of a fold change of 2 (induction by double).
 
-::: exo
+<div class="exo">
 We will take as example, \*\*two genes from our dataset:
 
 -   `yar009c` which is repressed in Snf2 KO samples compared to WT samples.
@@ -1165,11 +1165,11 @@ gradethis::grade_result_strict(
   pass_if(~ abs(fc_yer081w - 8.91086) < 1e-3)
 )
 ```
-:::
+</div>
 
 ### Log2 Fold Change
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 The **log2 fold change** is a measure of the change in expression level of a gene. It is calculated as the logarithm (base 2) of the ratio of expression levels between two conditions. It has a lot of benefits compared to the linear fold change:
 
 -   It provides a **symmetric representation** of gene expression changes: a log2 fold change of +1 indicates a doubling of expression, while a log2 fold change of -1 indicates a halving of expression.
@@ -1194,9 +1194,9 @@ $$
      {\text{mean expression in condition B}}
 \right)
 $$
-:::
+</div>
 
-::: exo
+<div class="exo">
 Use this **interactive example** to understand how **linear fold changes** are transformed into $log_{2}$ fold changes, and why the $log_{2}$ scale provides a symmetric and more interpretable representation of gene expression differences.
 
 ```{r log2fc-ui, echo=FALSE}
@@ -1306,9 +1306,9 @@ output$values <- renderText({
   )
 })
 ```
-:::
+</div>
 
-::: exo
+<div class="exo">
 Draw the distribution of the log2 fold changes for all genes using the `hist()` function. Do do so:
 
 -   Extract the log2 fold changes from the `res_DESeq2` data.frame (column `log2FoldChange`, use the `$` operator).
@@ -1390,13 +1390,13 @@ quiz(
 )
 
 ```
-:::
+</div>
 
 ## Volcano plot
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 Volcano plot is a type of scatter plot that is used to visualize the results of differential expression analysis. It plots the **log2 fold change** on the x-axis against the **-log10 adjusted p-value** on the y-axis. This allows to easily identify genes that are both significantly differentially expressed (high -log10 adjusted p-value) and have a large effect size (high absolute log2 fold change).
-:::
+</div>
 
 ```{r volcano_plot, exercise =TRUE, exercise.setup="dge", fig.width=8, fig.height=6, exercise.lines=57}
 # Load required libraries
@@ -1464,8 +1464,7 @@ ggplot(df, aes(x = log2FoldChange,
   theme_bw()
 ```
 
-::: exo
-
+<div class="exo">
 ```{r volcano-quiz, echo=FALSE}
 library(learnr)
 quiz(
@@ -1501,15 +1500,15 @@ quiz(
   
 )
 ```
-:::
+</div>
 
 ## MA plot
 
-::: {.alert .alert-success role="alert"}
+<div class="alert alert-success" role="alert">
 A **MA** plot is a type of scatter plot that is used to **visualize the relationship between the average expression** level (A) and the **log2 fold change (M) for each gene**. It may help to ensure that the differential expression analysis is **not biased by the expression level of the genes**. It is also classically used, as the Volcano plot, to visualize the results of differential expression analysis.
 
 The **average expression level** is calculated as **the mean of the normalized counts across all samples**, while the log2 fold change is calculated **as the logarithm (base 2) of the ratio of expression levels between two conditions**. The MA plot allows to easily identify genes that are differentially expressed (high absolute log2 fold change) across a range of expression levels. The formulas for calculating A and M are given by:
-:::
+</div>
 
 \[
 A = \frac{1}{2} \left(\log_2(\text{mean expression in condition A}) + \log_2(\text{mean expression in condition B})\right) 
