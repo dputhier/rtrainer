@@ -1,0 +1,1251 @@
+---
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+title: "Welch's t-test & Multitesting corrections"
+author: "D. Puthier"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"),package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{=html}
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+-->
+```
+
+```{css, echo=FALSE}
+blockquote {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    font-size: 14px;
+    border-left: 5px solid #eee;
+}
+```
+
+```{=html}
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+```
+
+```{=html}
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+```
+
+```{r echo=FALSE}
+# chunk below enables printing whole tutorial from browser e.g. to pdf
+# DO NOT put any #comments in the chunk below, that stops it from working !! 
+# from https://github.com/rstudio/learnr/issues/465
+# saving csss in a separate file print.css didn't work locally or on shinyapps because browser couldn't find file 
+```
+
+```{css echo=FALSE}
+@media print {
+  .topicsContainer,
+  .topicActions,
+  .exerciseActions .skip {
+    display: none;
+  }
+  .topics .tutorialTitle,
+  .topics .section.level2,
+  .topics .section.level3:not(.hide) {
+    display: block;
+  }
+  .topics {
+    width: 100%;
+  }
+  .tutorial-exercise, .tutorial-question {
+    page-break-inside: avoid;
+  }
+  .section.level3.done h3 {
+    padding-left: 0;
+    background-image: none;
+  }
+  .topics .showSkip .exerciseActions::before {
+    content: "Topic not yet completed...";
+    font-style: italic;
+  }
+}  
+  
+```
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(ggplot2)
+library(fs)
+knitr::opts_chunk$set(echo=TRUE, 
+                      eval=TRUE, 
+                      cache=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE, 
+                      comment="",
+                      exercise.timelimit=600,
+                      exercise.completion=TRUE,
+                      exercise.diagnostics=TRUE)
+
+gradethis::gradethis_setup(exercise.checker = gradethis_exercise_checker)
+
+if(!dir.exists(file.path(fs::path_home(), ".rtrainer")))
+  dir.create(file.path(fs::path_home(), ".rtrainer"), showWarnings = FALSE, recursive = TRUE)
+```
+
+## Introduction
+
+When performing statistical analyses on high-throughput genomics data (e.g. **RNA-Seq**, **ChIP-Seq**, **GWAS**, etc.), it is common to perform a large number of **hypothesis tests**. For example, in an RNA-Seq experiment, we may want to test for **differential expression** of each gene between two conditions (e.g. **WT vs KO**). If the genome contains **20,000 genes**, this means that we will perform **20,000 statistical tests**. 
+
+As we have define a risk, for each individual test, of making a **Type I error** (i.e. rejecting the null hypothesis when it is true), the more tests we perform, the higher the probability of making at least one Type I error. This is known as the **multiple testing problem**.
+
+## The Welch's t-test
+
+### Objective
+
+<div class="alert alert-success" role="alert">
+Our objective will be to compare the means of two groups of data (e.g. Group 1 and 2). This two groups may correspond to **a single gene $g$ expression levels in two different conditions** (e.g. WT vs KO) across multiple samples (here $n=30$).
+
+The **code below simulates such data** and plot them using boxplots and barplots.
+
+```{r barplot, echo=FALSE, eval=TRUE, fig.width=7, fig.height=5}
+# Load necessary libraries
+library(ggplot2)
+library(patchwork)
+
+# Simulate two groups of data
+# that are normally distributed
+set.seed(123)
+group1 <- rnorm(15, mean=5, sd=1)  # Group 1: mean=5, sd=1
+group2 <- rnorm(15, mean=6, sd=1)  # Group 2: mean=6, sd=1
+
+# Create a data frame for plotting
+# Value: expression levels
+# Group: Group 1 or Group 2
+# Sample: Sample ID
+df <- data.frame(
+  value = c(group1, group2),
+  group = factor(rep(c("Group 1", "Group 2"), 
+                     each = 15)),
+  sample = factor(paste0("Sample_", 
+                         sprintf("%03d", 1:30)))
+)
+
+# Plot the data
+p1 <- ggplot(df, aes(x = group, y = value, fill = group)) +
+  geom_boxplot(show.legend = FALSE) +
+  labs(title = "Distribution of expression\n levels by group", 
+       x = "Groups", 
+       y = "Values") + 
+  theme_bw()
+
+p2 <- ggplot(df, aes(x = sample, 
+                     y=value, 
+                     fill=group)) +
+  geom_col() +
+   labs(title = "Expression level in\n each sample", 
+       x = "Samples", 
+       y = "Values") + 
+  coord_flip() +
+  theme_bw() +
+  theme(axis.text.y = element_text(size=6))
+
+# Combine the two plots
+p1 + p2
+
+```
+</div>
+
+<div class="alert alert-success" role="alert">
+To **compare the means of the two groups**, we will use the **Welch's t-test** (which is probably the most commonly used method in biology for this purpose). This test is implemented in R using the `t.test()` function. 
+
+When using the **Welch's t-test** the data in each group **should be normally distributed** (but the two groups can have different variances and sample size). As the sample size increase (say $n>30$), the normality assumption becomes less critical due to the **Central Limit Theorem** (indeed, strictly speaking we are not assuming the data themselves are normally distributed, but rather that the sample means are normally distributed).
+
+- The **null hypothesis** of the Welch's t-test is that the **two groups have the same mean**.
+- The **alternative hypothesis** is that the **two groups have different means**.
+
+The formula for the Welch's t-test is as follows:
+
+$$t = \frac{\bar{X_2} - \bar{X_1}}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$  
+
+Where: 
+
+-  $\bar{X_1}$ and $\bar{X_2}$ are the sample means of the two groups
+-  $s_1^2$ and $s_2^2$ are the sample variances of the two groups
+-  $n_1$ and $n_2$ are the sample sizes of the two groups
+-  $t$ is the **t-value** (not to be confused with the p-value).
+</div>
+
+<div class="alert alert-success" role="alert">
+As you can see **from the formula**, the objective of this score is to **compare the difference between the two sample means (denominator)** to the **variability inside each class (numerator)**. 
+
+- When **difference in means is large** and **variability** inside each class **is small**, the **t-value will be large** (in absolute value) and we will be more likely to reject the null hypothesis.
+- However, **even for a large difference in means**, if the **variability inside each class is also large**, the difference in means will be **divided by a large number**, resulting in a **small t-value** (in absolute value) and we will be less likely to reject the null hypothesis.
+</div>
+
+### Running a t-test
+
+In the example below, we simulate **two groups of data (15 samples each)** from a normal distribution with different means (5 and 6) and the same standard deviation (1). We then perform **a Welch's t-test** to **compare the two groups** and print the result. Note that we will use alternative="greater" as the mean of group2 is greater than the mean of group1.
+
+```{r exercise_tt, echo=TRUE, exercise=TRUE}
+# Simulate two groups of data
+set.seed(123)
+group1 <- rnorm(15, mean=5, sd=1)  # Group 1: mean=5, sd=1
+group2 <- rnorm(15, mean=6, sd=1)  # Group 2: mean=6, sd=1
+
+# Perform Welch's t-test
+t_test_result <- t.test(group2, group1, alternative="greater")
+
+# Print the result
+t_test_result
+```
+
+We will try to explain step by step the different components of the output of the `t.test()` function.
+
+<div class="exo">
+```{r tt-quiz, echo=FALSE, eval=TRUE}
+library(learnr)
+quiz(
+  question(
+    "In the output of the t.test() function, what does the 't' value represent?",
+    answer("The difference between the two sample means.", message = "Try again. The t value is a ratio."),
+    answer("The ratio of the difference between the two sample means to the variability within each group.", correct = TRUE),
+    answer("The p-value of the test.", message = "Try again. The p-value is a different statistic."),
+    answer("The degrees of freedom of the test.", message = "Try again. The degrees of freedom is a different statistic."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE,
+    message = "Recall that the t value is calculated using the formula: t = (mean2 - mean1) / sqrt((s1^2/n1) + (s2^2/n2))."
+  ),
+  question("What is the value of t ?",
+    answer("1.685", correct = TRUE),
+    answer("0.05", message = "Try again. 0.05 is a common significance level, not the t value."),
+    answer("15", message = "Try again. 15 is the sample size of each group, not the t value."),
+    answer("26.34", message = "Try again. 26.34 is the degrees of freedom, not the t value."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE,
+    message = "Look at the 't' value in the output of the t.test() function."
+  ),
+  question("What is the value of the degree of freedom ?",
+    answer("26.34", correct = TRUE),
+    answer("1.685", message = "Try again. 1.685 is the t value, not the degrees of freedom."),
+    answer("15", message = "Try again. 15 is the sample size of each group, not the degrees of freedom."),
+    answer("30", message = "Try again. 30 is the total sample size, not the degrees of freedom."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE,
+    message = "Look at the 'df' value in the output of the t.test() function."
+  ),
+  question("What is the associated p-value ?",
+    answer("0.0519", correct = TRUE),
+    answer("1.685", message = "Try again. 1.685 is the t value, not the p-value."),
+    answer("26.34", message = "Try again. 26.34 is the degrees of freedom, not the p-value."),
+    answer("0.05", message = "Try again. 0.05 is a common significance level, not the p-value."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE,
+    message = "Look at the 'p-value' in the output of the t.test() function."
+  )
+)
+
+```
+
+</div>
+
+### Re-computing the t-value
+
+<div class="exo">
+
+Recompute the t-value from the previous test by using the $t$ formula (see previous section). The variance can be computed using the `var()` function and the mean using the `mean()` function in R. Your result should be the same as the one obtained from the `t.test()` function.
+
+```{r ttestexo, exercise=TRUE, exercise.setup="exercise_tt"}
+# Simulate two groups of data
+set.seed(123)
+group1 <- rnorm(15, mean=5, sd=1)  # Group 1: mean=5, sd=1
+group2 <- rnorm(15, mean=6, sd=1)  # Group 2: mean=6, sd=1
+
+# Compute the t-value using the formula
+my_t_value <-  ___
+
+# The precise value for the statistics (t) is stored in the "statistic" field
+# Ensure that your computed t-value matches the one from t.test
+t_test_result$statistic == my_t_value
+```
+
+```{r ttestexo-solution}
+# Simulate two groups of data
+set.seed(123)
+group1 <- rnorm(15, mean=5, sd=1)  # Group 1: mean=5, sd=1
+group2 <- rnorm(15, mean=6, sd=1)  # Group 2: mean=6, sd=1
+
+# Compute the t-value using the formula
+my_t_value <- (mean(group2) - mean(group1)) /
+  sqrt(var(group1)/length(group1) + var(group2)/length(group2))
+
+# Ensure that your computed t-value matches the one from t.test
+print(my_t_value)
+my_t_value == t_test_result$statistic
+```
+
+```{r ttestexo-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result(
+  pass_if(~ abs(my_t_value - 1.68505) < 1e-5)
+)
+```
+</div>
+
+### Re-computing the Df
+
+<div class="alert alert-success" role="alert">
+The t distribution (see later) is characterized by its **degrees of freedom (df)**, which for the Welch's t-test is computed using the **Welch–Satterthwaite equation**. This degree of freedom controls the shape of the $t$ distribution:
+
+$$ 
+df = \frac{\left(\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}\right)^2}{\frac{\left(\frac{s_1^2}{n_1}\right)^2}{n_1 - 1} + \frac{\left(\frac{s_2^2}{n_2}\right)^2}{n_2 - 1}}
+$$
+
+Where:
+
+- $s_1^2$ and $s_2^2$ are the sample variances of the two groups
+- $n_1$ and $n_2$ are the sample sizes of the two groups
+- $df$ is the degrees of freedom
+
+> We can thus conclude that the the **shape of the t distribution** depends on the **sample sizes and variances** of the two groups being compared. 
+
+</div>
+
+<div class="exo">
+
+Recompute the degree of freedom using the Welch–Satterthwaite equation.
+
+```{r recomputedf, exercise=TRUE, echo=TRUE, eval=TRUE, fig.width=7, fig.height=5, exercise.lines=12, exercise.setup="exercise_tt"}
+# Compute sample sizes and standard deviations
+n1 <- length(group1)
+n2 <- length(group2)
+s1 <- sd(group1)
+s2 <- sd(group2)
+
+# Compute degrees of freedom using Welch–Satterthwaite equation
+
+df <- ___
+
+# Ensure df matches the one from t.test
+print(df)
+```
+
+```{r recomputedf-solution}
+# Compute sample sizes and standard deviations
+n1 <- length(group1)
+n2 <- length(group2)
+s1 <- sd(group1)
+s2 <- sd(group2)
+
+# Compute degrees of freedom using Welch–Satterthwaite equation
+
+df <- (s1^2 / n1 + s2^2 / n2)^2 / ((s1^2 / n1)^2 / (n1 - 1) + (s2^2 / n2)^2 / (n2 - 1))
+
+# Ensure df matches the one from t.test
+print(df)
+```
+
+```{r recomputedf-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result(
+  pass_if(~ abs(df - 26.33969) < 1e-4)
+)
+```
+</div>
+
+### Computing the t-distribution
+
+<div class="alert alert-success" role="alert">
+To draw the **$t$ distribution**, we can use **the `dt()` function** in R, which computes the **density of the $t$ distribution** for a given set of x values (*i.e.* $t$) and degrees of freedom. Here, because $t$ is a continuous value, **the result of `dt()` won't be a probability, but rather a density value** (i.e. the height of the curve at each $t$ value). 
+</div>
+
+<div class = "exo">
+
+**Plot the corresponding $t$ distribution** for the two groups of data simulated previously.
+
+```{r example_tdist, exercise=TRUE, echo=TRUE, eval=TRUE, fig.width=7, fig.height=5, exercise.lines=19, exercise.setup="exercise_tt"}
+# Get degrees of freedom from t.test result
+df <- t_test_result$parameter
+
+# Generate x values for t distribution
+x <- seq(-5, 5, length.out = 500)
+
+# Compute t distribution density values using dt()
+
+t_density <- ___
+
+# Plot t distribution
+plot(x, t_density, 
+     type = "l", 
+     lwd = 2, 
+     col = "steelblue", 
+     xlab = "t", 
+     ylab = "Density",
+     main = paste0("t Distribution (df = ", round(df, 2), ")"))
+
+abline(v=0)
+```
+
+```{r example_tdist-solution}
+df <- t_test_result$parameter
+
+# Generate x values for t distribution
+x <- seq(-5, 5, length.out = 500)
+
+# Compute t distribution density values using dt()
+
+t_density <- dt(x, df = df)
+
+# Plot t distribution
+plot(x, t_density, 
+     type = "l", 
+     lwd = 2, 
+     col = "steelblue", 
+     xlab = "t", 
+     ylab = "Density",
+     main = paste0("t Distribution (df = ", round(df, 2), ")"))
+
+abline(v=0)
+```
+
+```{r example_tdist-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result(
+  pass_if(~ abs(sum(t_density) - 49.89842) < 1e-4)
+)
+```
+</div>
+
+<div class="exo">
+
+Using the **Shiny app** below, **change the sample sizes and variances** of the two groups and **visualize the corresponding t distribution**. 
+
+```{r dt-ui, echo=FALSE}
+library(shiny)
+
+tagList(
+  wellPanel(
+    sliderInput(
+      "n1", "Sample size group 1 (n₁)",
+      min = 0, max = 100, value = 2, step = 1
+    ),
+    sliderInput(
+      "n2", "Sample size group 2 (n₂)",
+      min = 0, max = 100, value = 2, step = 1
+    ),
+    sliderInput(
+      "sigma1", "Variance group 1 (σ₁²)",
+      min = 0, max = 5, value = 4.8, step = 0.1
+    ),
+    sliderInput(
+      "sigma2", "Variance group 2 (σ₂²)",
+      min = 0, max = 5, value = 4.8, step = 0.1
+    )
+  ),
+  plotOutput("tdist_plot", height = "420px")
+)
+```
+
+```{r dt-server, context="server"}
+output$tdist_plot <- renderPlot({
+
+  req(input$n1, input$n2, input$sigma1, input$sigma2)
+
+  n1 <- input$n1
+  n2 <- input$n2
+  s1 <- input$sigma1
+  s2 <- input$sigma2
+
+  # Welch–Satterthwaite degrees of freedom
+  df <- (s1^2 / n1 + s2^2 / n2)^2 / ((s1^2 / n1)^2 / (n1 - 1) + (s2^2 / n2)^2 / (n2 - 1))
+
+  x <- seq(-5, 5, length.out = 500)
+
+  t_density      <- dt(x, df = df)
+  normal_density <- dnorm(x, mean = 0, sd = 1)
+
+  plot(
+    x, t_density,
+    type = "l",
+    lwd  = 2,
+    col  = "steelblue",
+    ylim = c(0, max(t_density, normal_density)),
+    xlab = "x",
+    ylab = "Density",
+    main = paste0(
+      "Two-sample t distribution (Welch)\n",
+      "df ≈ ", round(df, 2)
+    )
+  )
+
+  lines(x, normal_density, col = "darkorange", lwd = 2, lty = 2)
+
+  legend(
+    "topright",
+    legend = c("Student t", "Normal(0,1)"),
+    col    = c("steelblue", "darkorange"),
+    lwd    = 2,
+    lty    = c(1, 2),
+    bty    = "n"
+  )
+})
+```
+</div>
+
+
+<div class="exo">
+```{r tdist-quiz, echo=FALSE, eval=TRUE}
+library(learnr)
+
+quiz(
+  question(
+    "What happens to the degrees of freedom (df) when you increase the sample size of both groups (n₁ and n₂) in the Shiny app?",
+    answer("The degrees of freedom increase.", correct = TRUE),
+    answer("The degrees of freedom decrease."),
+    answer("The degrees of freedom remain unchanged."),
+    answer("The degrees of freedom become undefined."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE,
+    message = "Try adjusting the sliders for n₁ and n₂ in the Shiny app and observe the change in the degrees of freedom (df) displayed in the plot title."
+  ),
+
+  question(
+    "How does the shape of the t-distribution change as the degrees of freedom (df) increase?",
+    answer("It becomes more spread out.", message = "Try again. Observe the plot as you increase df."),
+    answer("It becomes narrower and more similar to the normal distribution.", correct = TRUE),
+    answer("It becomes skewed to the left."),
+    answer("It becomes skewed to the right."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE,
+    message = "Increase the sample sizes (n₁ and n₂) in the Shiny app and observe how the blue t-distribution curve changes relative to the orange normal distribution curve."
+  ),
+
+  question(
+    "With n₁ and n₂ set to 3, if you set the variance of Group 1 (σ₁²) to 5 and the variance of Group 2 (σ₂²) to 0.5, what do you observe about the t-distribution compared to when both variances are equal (e.g., σ₁² = σ₂² = 1)?",
+    answer("The t-distribution becomes more spread out.", correct = TRUE),
+    answer("The t-distribution becomes narrower."),
+    answer("The t-distribution becomes perfectly normal."),
+    answer("The t-distribution disappears."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE,
+    message = "Adjust the variance sliders (σ₁² and σ₂²) in the Shiny app and compare the shape of the t-distribution to the normal distribution."
+  ),
+
+  question(
+    "What is the approximate degrees of freedom (df) when n₁ = 10, n₂ = 10, σ₁² = 1, and σ₂² = 1?",
+    answer("10", message = "Try again. Use the Shiny app to check the df value in the plot title."),
+    answer("18", correct = TRUE),
+    answer("20", message = "Try again. Use the Shiny app to check the df value in the plot title."),
+    answer("25", message = "Try again. Use the Shiny app to check the df value in the plot title."),
+    allow_retry = TRUE,
+    message = "Set the sliders in the Shiny app to n₁ = 10, n₂ = 10, σ₁² = 1, and σ₂² = 1, and read the df value from the plot title."
+  ),
+
+  question(
+    "Why is it important to consider the degrees of freedom (df) when interpreting the results of a Welch's t-test?",
+    answer("Because df determines the shape of the t-distribution, which affects the critical values and p-values.", correct = TRUE),
+    answer("Because df is only used to calculate the sample size."),
+    answer("Because df is unrelated to the t-test."),
+    answer("Because df is always equal to the sample size."),
+    allow_retry = TRUE,
+    message = "Reflect on how the shape of the t-distribution changes with df and how this impacts the interpretation of the t-test results."
+  )
+)
+```
+</div>
+
+
+### Computing the p-value
+
+As we indicated before, the `dt()` function computes the density of the t distribution. In our comparison of group1 and group2, we obtained a t-value of 1.68505 with 26.33969 degrees of freedom. To compute the **p-value** associated with this t-value, we can use the **`pt()`** function in R, which computes the **cumulative distribution function (CDF) of the t distribution**. The CDF gives us the probability that a t-value is greater than or equal to a given value. Here $t$ is positive so we will compute the p-value on the right tail:
+
+```{r pvalue, echo=TRUE, eval=TRUE, exercise=TRUE, exercise.setup="exercise_tt", exercise.lines=31}
+# Retrieve some results from the t.test
+t_value <- t_test_result$statistic
+df <- t_test_result$parameter
+
+# Plot the t distribution
+x <- seq(-5, 5, length.out = 500)
+
+t_density      <- dt(x, df = df)
+normal_density <- dnorm(x, mean = 0, sd = 1)
+
+plot(
+  x, t_density,
+  type = "l",
+  lwd  = 2,
+  col  = "steelblue",
+  ylim = c(0, max(t_density, normal_density)),
+  xlab = "x",
+  ylab = "Density",
+  main = paste0(
+    "Two-sample t distribution (Welch)\n",
+    "df ≈ ", round(df, 2)
+  )
+)
+
+# Show the area corresponding to the p-value on
+# the right tail
+polygon(c(x[x >= t_value], t_value), 
+        c(t_density[x >= t_value], 0), 
+        col = rgb(1, 0, 0, 0.5))
+
+abline(h=0)
+```
+
+
+<div class="exo">
+
+Compute the **p-value associated with the t-value obtained from the Welch's t-test** comparing **group1 and group2**. Use the **`pt()` function in R** to compute the cumulative **distribution function (CDF)** of the $t$ distribution.
+
+```{r pvalue-exo, exercise=TRUE, exercise.setup="exercise_tt"}
+# Retrieve some results from the t.test
+t_value <- t_test_result$statistic
+df <- t_test_result$parameter
+
+# Compute the p-value using the pt() function
+p_value <- ___
+print(p_value)
+
+# Ensure the p-value matches the one from t.test
+p_value == t_test_result$p.value
+```
+
+```{r pvalue-exo-solution}
+# Retrieve some results from the t.test
+t_value <- t_test_result$statistic
+df <- t_test_result$parameter
+
+# Compute the p-value using the pt() function
+p_value <- pt(t_value, df = df, lower.tail = FALSE)
+print(p_value)
+
+# Ensure the p-value matches the one from t.test
+p_value == t_test_result$p.value
+```
+
+```{r pvalue-exo-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result(
+  pass_if(~ abs(p_value - 0.05196468) < 1e-5)
+)
+```
+</div>
+
+
+## Multiple testing correction
+
+### The multiple testing problem
+
+<div class="alert alert-success" role="alert">
+When performing multiple hypothesis tests, the probability of making at least one Type I error increases with the number of tests performed. 
+
+Indeed, when running a single test with a significance level of $\alpha$ (e.g. $\alpha=0.05$), the probability of making a Type I error is $\alpha$.
+
+$$ P(\text{Type I error}) = \alpha = 0.05 \\
+P(\text{No Type I error}) = 1- \alpha = 0.95 \\
+$$
+  
+However, when performing $n$ independent tests, the probability of making at least one Type I error across all tests is given by:
+
+\begin{split}
+P(\text{At least one Type I error over all tests}) &= 1 - P(\text{No Type I error in all tests}) \\
+&\begin{split}= 1 - [&P(\text{No Type I error in test 1}) \times \\
+             &P(\text{No Type I error in test 2})...  \times\\
+             &P(\text{No Type I error in test n})]\\ \end{split}\\
+
+&\begin{split}= 1 - (1- \alpha)^n\end{split}
+\end{split}
+
+</div>
+
+For example, if we perform **100 tests** with a significance level of $\alpha=0.05$, the probability of making **at least one Type I error** is **close to one**:
+
+$$ P(\text{At least one Type I error over all tests}) = 1 - (1- 0.05)^{100} \approx 0.994 $$
+Thus, when performing multiple tests, we need to account for this increased risk of Type I errors by applying **multiple testing correction methods**.
+
+
+<div class="exo">
+We can illustrate the problem by simulating 1000 t-tests between two groups of data drawn from the same normal distribution (thus the null hypothesis is true for all tests). We can then compute the proportion of tests that are significant at the $\alpha=0.05$ level.
+
+```{r multiple-testing, exercise=TRUE, echo=TRUE, eval=TRUE, exercise.lines=23}
+# Number of tests
+n_tests <- 1000
+
+# Significance level
+alpha <- 0.05
+
+# create vectors to store p-values
+p_values <- numeric(n_tests)
+
+# Simulate data and perform t-tests
+set.seed(123)
+for (i in 1:n_tests) {
+  group1 <- rnorm(15, mean=5, sd=1)
+  group2 <- rnorm(15, mean=5, sd=1)  #
+  t_test_result <- t.test(group2, group1, alternative="two.sided")
+  p_values[i] <- t_test_result$p.value
+}
+
+# Compute number, proportion and 
+# percentage of significant tests 
+significant_tests <- ___
+proportion_significant <- ___
+percentage_significant <- ___
+```
+
+```{r multiple-testing-solution}
+# Number of tests
+n_tests <- 1000
+
+# Significance level
+alpha <- 0.05
+
+# create vectors to store p-values
+p_values <- numeric(n_tests)
+
+# Simulate data and perform t-tests
+set.seed(123)
+for (i in 1:n_tests) {
+  group1 <- rnorm(15, mean=5, sd=1)
+  group2 <- rnorm(15, mean=5, sd=1)  #
+  t_test_result <- t.test(group2, group1, alternative="two.sided")
+  p_values[i] <- t_test_result$p.value
+}
+
+# Compute number, proportion and 
+# percentage of significant tests 
+significant_tests <- sum(p_values < alpha)
+proportion_significant <- significant_tests / n_tests
+percentage_significant <- proportion_significant * 100
+```
+
+```{r multiple-testing-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result(
+  pass_if(~ significant_tests == 49 &
+           abs(proportion_significant - 0.049) < 1e-4 &
+           abs(percentage_significant - 4.9) < 1e-2)
+)
+```
+
+</div>
+
+
+As you can see, when performing 1000 tests with a significance level of $\alpha=0.05$, we obtain around **50 significant tests** (i.e. around **5% of the tests**), even though the null hypothesis is true for all tests. This illustrates the multiple testing problem.
+
+### Approaches to correct for multiple testing
+
+<div class="alert alert-success" role="alert">
+To address this issue, we can use **multiple testing correction methods** to adjust the p-values obtained from the tests. There are two main types of corrections: 
+
+- Family-Wise Error Rate (FWER) control methods, such as the **Bonferroni correction**, **Šidák correction**, and **Holm-Bonferroni method**, which aim to control for the **probability of making at least one false positive among all tests**.
+
+- False Discovery Rate (FDR) control methods, such as the **Benjamini-Hochberg (BH) procedure**, which aim to control the **expected proportion of false positives among the rejected hypotheses**.   
+</div>
+
+## The Bonferroni correction
+
+<div class="alert alert-success" role="alert">
+The **Bonferroni correction** is a simple and widely used method to control the **Family-Wise Error Rate (FWER)**. This multiple testing correction has been developed by **Olive Jean Dunn** but is named after Italian mathematician **Carlo Emilio Bonferroni**. The Bonferroni correction adjusts the significance level $\alpha$ by dividing it by the number of tests $n$: 
+
+$$ \alpha_{adjusted} = \frac{\alpha}{n} $$
+Thus, a test is considered significant if its p-value is less than $\alpha_{adjusted}$.
+</div>
+
+The Type I error becomes controlled as follows:
+
+$$ P(\text{At least one Type I error over all tests}) = 1 - (1- \alpha_{adjusted})^n = 1 - \left(1- \frac{\alpha}{n}\right)^n \approx \alpha $$
+
+<div class="exo">
+
+Ensure that when performing 100 multiple tests with $alpha = 0.05$, the Bonferroni correction controls the Family-Wise Error Rate (FWER) at the desired level.
+
+```{r bonferroni-correction, exercise=TRUE, echo=TRUE, eval=TRUE, exercise.lines=12}
+# Number of tests
+n_tests <- 100
+
+# Significance level
+alpha <- 0.05
+
+# Adjusted significance level
+alpha_adj <- ___
+
+# P(At least one Type I error over all tests)
+prob <- ___
+print(prob)
+```
+
+```{r bonferroni-correction-solution}
+# Number of tests
+n_tests <- 100
+
+# Significance level
+alpha <- 0.05
+
+# Adjusted significance level
+alpha_adj <- alpha / n_tests
+
+# P(At least one Type I error over all tests)
+prob <- (1 - alpha_adj)^n_tests
+print(prob)
+```
+
+```{r bonferroni-correction-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result(
+  pass_if(~ abs(prob - 0.9512175) < 1e-4)
+)
+```
+</div>  
+
+## The Šidák correction
+
+<div class="alert alert-success" role="alert">
+The **Šidák correction** is another method to control the **Family-Wise Error Rate (FWER)**.The Šidák correction adjusts the significance level $\alpha$ using the following formula:
+
+$$ \alpha_{adjusted} = 1 - (1 - \alpha)^{\frac{1}{n}} $$
+Thus, a test is considered significant if its p-value is less than $\alpha_{adjusted}$.
+
+The Type I error becomes controlled as follows:
+
+$$ P(\text{At least one Type I error over all tests}) = 1 - (1- \alpha_{adjusted})^n = 1 - \left(1- \left(1 - (1 - \alpha)^{\frac{1}{n}}\right)\right)^n \approx \alpha $$
+
+
+</div>
+
+<div class="exo">
+
+Ensure that when performing 100 multiple tests with $alpha = 0.05$, the Šidák correction controls the Family-Wise Error Rate (FWER) at the desired level.
+
+```{r sidak-correction, exercise=TRUE, echo=TRUE, eval=TRUE, exercise.lines=12}
+# Number of tests
+n_tests <- 100
+
+# Significance level
+alpha <- 0.05
+
+# Adjusted significance level
+alpha_adj <- ___
+# P(At least one Type I error over all tests)
+prob <- ___
+print(prob)
+```
+
+```{r sidak-correction-solution}
+# Number of tests
+n_tests <- 100
+  
+# Significance level
+alpha <- 0.05
+
+# Adjusted significance level
+alpha_adj <- 1 - (1 - alpha)^(1 / n_tests)
+
+# P(At least one Type I error over all tests)
+prob <- (1 - alpha_adj)^n_tests
+print(prob)
+```
+
+```{r sidak-correction-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result(
+  pass_if(~ abs(prob - 0.9512294) < 1e-4
+)
+)
+```
+
+</div>  
+
+
+You can see that both the Bonferroni and Šidák corrections effectively control the Family-Wise Error Rate (FWER) at the desired level when performing multiple tests. The Sídák correction (\alpha_{adjusted} = 0.0005128014) is slightly less conservative than the Bonferroni correction (\alpha_{adjusted} = 0.0005) although both produce very close results.
+
+<div class="alert alert-danger" role="alert">
+One **major limit** of Bonferroni and Šidák correction is that they can be **too conservative** when the **number of tests is very large**, leading to a **high rate of false negatives** (i.e. failing to reject the null hypothesis when it is false). 
+ such cases, alternative methods such as thlse Discovery Rate (FDR) control methods may be more appropriate. These methood are widely used in the context of genomics and other high-throughput data analyses.
+</div>
+
+## The Benjamini-Hochberg (BH) procedure
+
+<div class="alert alert-success" role="alert">
+The **Benjamini-Hochberg (BH) procedure** is a widely used method to control the **False Discovery Rate (FDR)**. The FDR can be defined as follow:
+
+$$ FDR = E\left[\frac{V}{R}\right] $$
+
+Where:
+ 
+- $V$ is the number of false positives (Type I errors)
+- $R$ is the total number of rejected hypotheses (both true and false positives)
+
+The BH procedure works as follows:
+
+1. Sort the p-values from all tests in ascending order: $p_{(1)} \leq p_{(2)} \leq ... \leq p_{(n)}$
+2. For a desired FDR level $\alpha$, find the largest $k$ such that $p_{(k)} \leq \frac{k}{n} \alpha$
+3. Reject all null hypotheses corresponding to the p-values $p_{(1)}, p_{(2)}, ..., p_{(k)}$
+
+</div>
+
+<div class="exo">
+
+In the example below, we **simulate data for 10,000 genes across 100 samples**, where **1000 genes are differentially expressed between two groups of samples** (*i.e* under the alternative hypothesis). We then **perform t-tests** for each gene and apply the Benjamini-Hochberg procedure to adjust the p-values.
+
+- Correct the code to **implement whithout R builtin functions** the Benjamini-Hochberg procedure for multiple testing correction.
+- The code will also test that the result is the same as with R built-in function `p.adjust()` with method "BH".
+
+```{r bhprocedure, exercise=TRUE, echo=TRUE, eval=TRUE, exercise.lines=42}
+# Create a matrix with data under H0 hypothesis (no differential expression)
+set.seed(123)
+n_samples <- 100
+n_genes <- 10000
+data <- matrix(rnorm(n_samples*n_genes, mean = 0, sd=1),
+                 nrow=n_genes,
+                 ncol=n_samples)
+
+# Force some genes to be differentially expressed (H1 hypothesis)
+nb_H1 <- 1000
+data[1:nb_H1, 1:50] <- data[1:nb_H1, 1:50] + rnorm(nb_H1 * 50, mean=2, sd=1) 
+
+# Create a function to perform t-tests and return p-values 
+get_p_values <- function(data_matrix) {
+  n_genes <- nrow(data_matrix)
+  p_values <- numeric(n_genes)
+  
+  for (i in 1:n_genes) {
+    group1 <- data_matrix[i, 1:50]
+    group2 <- data_matrix[i, 51:100]
+    t_test_result <- t.test(group2, group1, alternative="two.sided")
+    p_values[i] <- t_test_result$p.value
+  }
+  
+  return(p_values)
+}
+
+# Get p-values for each gene
+p_values <- get_p_values(data)
+
+# Apply Benjamini-Hochberg procedure to get
+# number of significant genes at FDR alpha 
+alpha <- 0.05
+p_values <- sort(___)
+thresholds <- (1:n_genes) / n_genes * ___
+nb_signif <- max(which(p_values <= ___))
+print(nb_signif)
+
+# Ensure the result is the same
+# with R built-in function
+p.adj <- p.adjust(get_p_values(data), method = "BH")
+sum(p.adj <= alpha) == nb_signif
+```
+</div>
+
+
+```{r bhprocedure-solution}
+# Create a matrix with data under H0 hypothesis (no differential expression)
+set.seed(123)
+n_samples <- 100
+n_genes <- 10000
+data <- matrix(rnorm(n_samples*n_genes, mean = 0, sd=1),
+                 nrow=n_genes,
+                 ncol=n_samples)
+
+# Force some genes to be differentially expressed (H1 hypothesis)
+nb_H1 <- 1000
+data[1:nb_H1, 1:50] <- data[1:nb_H1, 1:50] + rnorm(nb_H1 * 50, mean=2, sd=1) 
+
+# Create a function to perform t-tests and return p-values 
+get_p_values <- function(data_matrix) {
+  n_genes <- nrow(data_matrix)
+  p_values <- numeric(n_genes)
+  
+  for (i in 1:n_genes) {
+    group1 <- data_matrix[i, 1:50]
+    group2 <- data_matrix[i, 51:100]
+    t_test_result <- t.test(group2, group1, alternative="two.sided")
+    p_values[i] <- t_test_result$p.value
+  }
+  
+  return(p_values)
+}
+
+# Get p-values for each gene
+p_values <- get_p_values(data)
+
+# Apply Benjamini-Hochberg procedure to get
+# number of significant genes at FDR alpha 
+alpha <- 0.05
+p_values <- sort(p_values)
+thresholds <- (1:n_genes) / n_genes * alpha
+nb_signif <- max(which(p_values <= thresholds))
+print(nb_signif)
+
+# Ensure the result is the same
+# with R built-in function
+p.adj <- p.adjust(get_p_values(data), method = "BH")
+sum(p.adj <= alpha) == nb_signif
+```
+
+```{r bhprocedure-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result(
+  pass_if(~ abs(nb_signif - 1057) < 2)
+)
+```
+
+## Real data example
+
+To illustrate the **multiple testing correction** methods presented above, we will use a **real dataset** from a study investigating the role of the **SNF2** gene in **yeast**. The dataset contains **normalized gene expression counts for yeast** strains with and without the **SNF2 gene**. The data have been previously normalized using the **DESeq2** package. We will convert them into **logarithmic scale** and perform **differential expression analysis between the two groups using t-tests**, followed by multiple testing correction using the Benjamini-Hochberg procedure. 
+
+**NB**: Although **DESeq2 uses more advanced statistical** methods for differential expression analysis, we will use **t-tests here for educational purposes**. Here the **number of samples in each class is 48**. This implies that we can reasonably assume (as $n > 30$) that the **distribution of the sample means will be approximately normal according to the Central Limit Theorem**. So t-test can be applied here.
+
+###  Loading the dataset
+
+**R** enables downloading data directly from the **Web**.\
+The expression matrix will be loaded into **R** using the **read.table** function.
+
+```{r loading, exercise=TRUE, exercise.lines=18}
+# Download normalized count data
+# and store the file in the user's home directory (~/.rtrainer).
+count_path <- file.path(fs::path_home(), ".rtrainer","count_norm_snf2.txt")
+
+if(file.exists(count_path)){
+  norm_counts <- read.table(file=count_path, sep="\t", header=TRUE, row.names=1)
+} else {
+  url <- "https://zenodo.org/records/18404952/files/count_norm_snf2.txt"
+  norm_counts <- read.table(file=url, sep="\t", header=TRUE, row.names=1)
+  write.table(norm_counts, 
+              file=count_path, 
+              sep="\t", 
+              quote=FALSE, 
+              col.names = NA)
+}
+
+# Convert to log2 scale
+norm_counts <- log2(norm_counts + 1)
+```
+
+
+### Performing t-tests for each gene
+
+<div class="exo">
+Perform t-tests for each gene to compare expression levels between the two groups: **SNF2 present** and **SNF2 deleted**. Store the p-values obtained from each test.
+
+```{r snf2-ttest, exercise=TRUE, echo=TRUE, eval=TRUE, exercise.lines=25, exercise.setup="loading"}
+# Create a function to perform t-tests and return p-values
+get_p_values_snf2 <- function(data_matrix) {
+  n_genes <- nrow(data_matrix)
+  p_values <- numeric(n_genes)
+  
+  for (i in 1:n_genes) {
+    group1 <- data_matrix[i, 1:48]    # SNF2 present
+    group2 <- data_matrix[i, 49:96]   # SNF2 deleted
+    t_test_result <- t.test(group2, group1, alternative="two.sided")
+    p_values[i] <- t_test_result$p.value
+  }
+  
+  return(p_values)
+}
+
+# Get p-values for each gene
+p_values_snf2 <- ___
+
+# Print the first 10 p-values
+print(head(p_values_snf2, 10))
+
+# Save the p-values
+saveRDS(p_values_snf2, 
+        file.path(fs::path_home(), 
+                  ".rtrainer","pval_ttest_snf2.txt"))
+```
+
+```{r snf2-ttest-solution}
+# Create a function to perform t-tests and return p-values
+get_p_values_snf2 <- function(data_matrix) {
+  n_genes <- nrow(data_matrix)
+  p_values <- numeric(n_genes)
+  
+  for (i in 1:n_genes) {
+    group1 <- data_matrix[i, 1:48]    # SNF2 present
+    group2 <- data_matrix[i, 49:96]   # SNF2 deleted
+    t_test_result <- t.test(group2, group1, alternative="two.sided")
+    p_values[i] <- t_test_result$p.value
+  }
+  
+  return(p_values)
+}
+
+# Get p-values for each gene
+p_values_snf2 <- get_p_values_snf2(norm_counts)
+
+# Print the first 10 p-values
+print(head(p_values_snf2, 10))
+
+# Save the p-values
+saveRDS(p_values_snf2, 
+        file.path(fs::path_home(), 
+                  ".rtrainer","pval_ttest_snf2.txt"))
+```
+
+```{r snf2-ttest-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result(
+  pass_if(~ abs(sum(log10(head(p_values_snf2, 10))) - -13.63487) < 2)
+)
+```
+</div>
+
+### Apply the Benjamini-Hochberg procedure
+
+<div class="exo">
+Use the R built-in function `p.adjust()` with method "BH" to apply p-values correction to objet `p_values_snf2`. Determine the number of significantly differentially expressed genes at a False Discovery Rate (FDR) of 0.001.  
+
+```{r load_pvalues, echo=FALSE, eval=TRUE}
+# Load p-values from previous exercise
+p_values_snf2 <- readRDS(file.path(fs::path_home(), 
+                                  ".rtrainer",
+                                  "pval_ttest_snf2.txt"))
+```
+
+```{r snf2-bhprocedure, exercise=TRUE, echo=TRUE, eval=TRUE, exercise.setup="load_pvalues"}
+# Apply Benjamini-Hochberg procedure to get
+# number of significant genes at FDR alpha
+alpha <- 0.001
+
+# Adjust p-values using Benjamini-Hochberg procedure
+p.adj_snf2 <- ___
+
+# Compute number of significant genes
+nb_signif_snf2 <- sum(p.adj_snf2 <= alpha)
+print(nb_signif_snf2)
+```
+
+```{r snf2-bhprocedure-solution}
+# Apply Benjamini-Hochberg procedure to get
+# number of significant genes at FDR alpha
+alpha <- 0.001
+
+# Adjust p-values using Benjamini-Hochberg procedure
+p.adj_snf2 <- p.adjust(p_values_snf2, method = "BH")
+
+# Compute number of significant genes
+nb_signif_snf2 <- sum(p.adj_snf2 <= alpha)
+print(nb_signif_snf2)
+```
+
+```{r snf2-bhprocedure-check, eval=TRUE, echo=FALSE}
+gradethis::grade_result(
+  pass_if(~ abs(nb_signif_snf2-3758) < 10)
+)
+```
+</div>
+
+### Note about p.adjust()
+
+The `p.adjust()` function in R provides several methods for multiple testing correction, including:
+
+- "holm": Holm-Bonferroni method
+- "hochberg": Hochberg's step-up procedure
+- "hommel": Hommel's method
+- "bonferroni": Bonferroni correction
+- "BH": Benjamini-Hochberg procedure
+- "BY": Benjamini-Yekutieli procedure
+
+### Finished
+
+Thank you for following this tutorial.
