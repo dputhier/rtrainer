@@ -387,22 +387,24 @@ class(y)
 ```
 
 <div class="exo">
+Below we use the `data()` function to load the `InsectSprays` dataset from the `datasets` package. 
 
-- Store the type of x (`class()`) in z.
+- Use the `class()` function to determine the type of object stored in `InsectSprays` and assign this to variable `z`.
 
 ```{r is, exercise=TRUE}
-x <- matrix()
+data("InsectSprays", package = "datasets")
+z <- ___
 ```
 
 ```{r is-solution}
-x <- matrix()
-z <- class(x)
+data("InsectSprays", package = "datasets")
+z <- class(InsectSprays)
 ```
 
 
 ```{r is-check}
 gradethis::grade_result_strict(
-  pass_if(~ z[1] == "matrix")
+  pass_if(~ z[1] == "data.frame")
 )
 ```
 
