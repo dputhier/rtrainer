@@ -888,13 +888,13 @@ alpha <- 0.05
 alpha_adj <- alpha / n_tests
 
 # P(At least one Type I error over all tests)
-prob <- (1 - alpha_adj)^n_tests
+prob <- 1 - (1 - alpha_adj)^n_tests
 print(prob)
 ```
 
 ```{r bonferroni-correction-check, eval=TRUE, echo=FALSE}
 gradethis::grade_result(
-  pass_if(~ abs(prob - 0.9512175) < 1e-4)
+  pass_if(~ abs(prob - 0.04878247) < 1e-4)
 )
 ```
 </div>  
@@ -943,13 +943,13 @@ alpha <- 0.05
 alpha_adj <- 1 - (1 - alpha)^(1 / n_tests)
 
 # P(At least one Type I error over all tests)
-prob <- (1 - alpha_adj)^n_tests
+prob <- 1 - (1 - alpha_adj)^n_tests
 print(prob)
 ```
 
 ```{r sidak-correction-check, eval=TRUE, echo=FALSE}
 gradethis::grade_result(
-  pass_if(~ abs(prob - 0.9512294) < 1e-4
+  pass_if(~ abs(prob - 0.05) < 1e-4
 )
 )
 ```
