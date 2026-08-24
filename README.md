@@ -2,19 +2,32 @@
 
 The rtrainer package offers a collection of tutorials for learning R. Contributions are welcome—feel free to submit an issue or a pull request. We are eager to expand the collection with new tutorials on a variety of topics.
 
-# Installation
+# Installation for R 4.5.0
 
 This version requires Bioconductor 3.22
 
-Currently use the following command:
 
-	   install.packages("devtools", dependencies=TRUE)
-	   devtools::install_github("dputhier/rtrainer")
+    install.packages(c("remotes", "devtools"), dependencies=TRUE, ask = FALSE)
+    if (!require("BiocManager", quietly = TRUE))
+        install.packages("BiocManager", dependencies=TRUE, ask = FALSE)
+    BiocManager::install(version = "3.22", ask=FALSE)
+    remotes::install_github("dputhier/rtrainer@778b6f2b47dd57dbe57ecedc169812b8a3aa4f45")
+
+
+# Installation for R 4.6.0 (skip all updates)
+
+This version requires Bioconductor 3.23
+
+
+    install.packages(c("remotes", "devtools"), dependencies=TRUE, ask = FALSE)
+    if (!require("BiocManager", quietly = TRUE))
+        install.packages("BiocManager", dependencies=TRUE, ask = FALSE)
+    BiocManager::install(version = "3.23", ask=FALSE)
+    remotes::install_github("dputhier/rtrainer@v0.2.7")
+ 
+
 
 # Running the tutorials 
-
-The tutorials can be found in `inst/tutorials/`. Only french versions
-are available at the moment.
 
 The list of available tutorials can be obtained using:
 
