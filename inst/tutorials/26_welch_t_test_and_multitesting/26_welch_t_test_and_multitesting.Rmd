@@ -728,8 +728,8 @@ p_value == t_test_result$p.value
 ```
 
 ```{r pvalue-exo-check, eval=TRUE, echo=FALSE}
-gradethis::grade_result(
-  pass_if(~ abs(p_value - 0.05196468) < 1e-5)
+gradethis::grade_result_strict(
+  pass_if(~ abs(p_value - 0.05189645) < 1e-5)
 )
 ```
 </div>

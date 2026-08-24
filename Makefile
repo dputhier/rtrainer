@@ -32,6 +32,26 @@ check: clean
 run_example:
 	@echo "devtools::run_examples(pkg = '.')" | R --slave
 
+test_tutorials: install
+	@if [ "$(QUIET)" = "1" ]; then \
+		Rscript tests/test_all_tutorials_quiet.R; \
+	else \
+		Rscript tests/test_all_tutorials.R; \
+	fi
+
+test_tutorial: install
+	@if [ -z "$(TUTORIAL)" ]; then \
+		echo "Error: Please specify TUTORIAL variable"; \
+		echo "Usage: make test_tutorial TUTORIAL=<name_or_number>"; \
+		echo "Example: make test_tutorial TUTORIAL=02_vectors"; \
+		echo "Example: make test_tutorial TUTORIAL=2"; \
+		exit 1; \
+	fi
+	@Rscript tests/test_single_tutorial.R $(TUTORIAL)
+
+list_tutorials:
+	@Rscript tests/list_tutorials.R
+
 checkfast: clean
 	@rm -rf /tmp/rtrainer; mkdir -p /tmp/rtrainer; cp -r ./* /tmp/rtrainer; cd /tmp/rtrainer; \
 	rm -f src/*.o src/*.so; rm -f rtrainer.Rcheck/dbfmcl/libs/dbfmcl.so; \

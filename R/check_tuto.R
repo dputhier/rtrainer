@@ -4,7 +4,7 @@
 #' @examples
 #' tuto <- Sys.glob(file.path(system.file(package="rtrainer"), "tutorials", "*", "*.Rmd"))
 #' check_tuto(tuto)
-#' @export extract_text
+#' @export
 #' 
 #' 
 check_tuto <- function(paths=NULL){
@@ -35,6 +35,7 @@ check_tuto <- function(paths=NULL){
       code_chunk_line <- split_at(1:length(code_chunk), chunk_name_pos)
       chunk_list <- lapply(code_chunk_line, function(x, code_chunk) code_chunk[x], code_chunk)
       chunk_list <- chunk_list[!grepl("eval=F", unlist(lapply(chunk_list,"[", 1)))]
+      chunk_list <- chunk_list[!grepl('context=', unlist(lapply(chunk_list,"[", 1)))]
       chunk_names <- stringr::str_match(unlist(lapply(chunk_list, "[", 1)), "## ----(.*)---")[,2]
       chunk_names <- gsub("---.*", "", chunk_names)
       chunk_names <- gsub(",.*", "", chunk_names)
@@ -43,7 +44,13 @@ check_tuto <- function(paths=NULL){
       # Does the chunk have a solution
       has_solution <- sapply(chunk_names, function(x,y) paste0(x, "-solution") %in% y, chunk_names)
       
-      atest <- !is.na(chunk_names) & !has_solution & !grepl("-check$", chunk_names) & !"get_aa_liste_test2" %in% chunk_names
+      # Filter out CSS, HTML, and other non-R chunks
+      has_css_or_html <- sapply(chunk_list, function(chunk) {
+        any(grepl("@media|<style>|<html>|<div>", chunk, ignore.case = TRUE))
+      })
+      
+      atest <- !is.na(chunk_names) & !has_solution & !grepl("-check$", chunk_names) & 
+               !"get_aa_liste_test2" %in% chunk_names & !has_css_or_html
       print_msg(paste0(">>> Unselected chunks : ", names(chunk_list[!atest])))
       chunk_list <- chunk_list[atest]
       print_msg(paste0(">>> Selected chunks : ", names(chunk_list)))
@@ -53,7 +60,13 @@ check_tuto <- function(paths=NULL){
       all_code <- unlist(chunk_list)
       all_code <- append(all_code, "old_cwd <- getwd()", after = 0)
       all_code <- append(all_code, "setwd(old_cwd)", after = length(all_code))
-      write(unlist(chunk_list), file = temp_file)
+      
+      # Filter out help commands that trigger interactive pagers
+      all_code <- all_code[!grepl("^\\s*\\?", all_code)]
+      all_code <- all_code[!grepl("^\\s*help\\s*\\(", all_code)]
+      all_code <- all_code[!grepl("^\\s*data\\s*\\(", all_code)]
+      
+      write(all_code, file = temp_file)
 
       print_msg(paste0(">>> Purl() output : ", tmp_path))
       print_msg(paste0(">>> Working file : ", temp_file))

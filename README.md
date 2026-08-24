@@ -38,3 +38,11 @@ To run the image, use the following commands:
     docker run -e PASSWORD=bioc -p 8787:8787 rtrainer
 
 The default login is `rstudio` and the password is `bioc`.
+
+# Test all the tutorials
+
+From the terminal run
+
+
+     make test_tutorials
+

@@ -175,6 +175,7 @@ https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf
 
 ```{r setup, include=FALSE}
 library(learnr)
+library(shiny)
 library(gradethis)
 library(ggplot2)
 library(palmerpenguins)

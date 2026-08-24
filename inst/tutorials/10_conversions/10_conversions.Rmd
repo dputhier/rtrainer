@@ -177,12 +177,15 @@ This exercise aims to demonstrate one of the key advantages of conversion. This 
 
 - Given the following matrix. Use the `boxplot()` function on the matrix and on the matrix converted to a vector (`as.vector()`).
 
-```{r boxplotas, exercise=TRUE}
+```{r mat_setup}
 set.seed(456)
 mat <- matrix(c(rnorm(n=20, mean=5, sd=2),
                 rnorm(n=20, mean=3, sd=1),
                 rnorm(n=20, mean=2, sd=2)),
                 ncol=3, byrow = FALSE)
+```
+
+```{r boxplotas, exercise=TRUE, exercise.setup="mat_setup"}
          
 ```
 
@@ -222,7 +225,7 @@ learnr::question("What is the benefit of this behavior?",
   - the first column of $mat$ passed as the sole argument (drop=TRUE).
   - the first column of $mat$ passed as the first argument and the second column of $mat$ passed as the second argument.
 
-```{r plotas_2, exercise=TRUE, exercise.setup="boxplotas"}
+```{r plotas_2, exercise=TRUE, exercise.setup="mat_setup"}
 
 ```
 

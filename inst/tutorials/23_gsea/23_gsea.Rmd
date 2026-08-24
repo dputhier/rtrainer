@@ -376,9 +376,7 @@ Now that we have called `pairwise_termsim()`, we can create the enrichment netwo
 
 ```{r emapplot, exercise=TRUE, exercise.setup="prepGSEA", fig.width=8, fig.height=8}
 gsea_bp <- enrichplot::pairwise_termsim(gsea_bp)
-emapplot(gsea_bp, 
-         layout.params = list(layout = 'kk'),
-         cex.params = list(category_label = 0.4))
+emapplot(gsea_bp)
 ```
 
 We can learn from this diagram that the terms seem to originate from two main clusters. The first cluster is associated with **T cell activation and differentiation**, while the second cluster is related to the **response to pathogens**.
@@ -386,11 +384,7 @@ We can learn from this diagram that the terms seem to originate from two main cl
 Finally, we can create a **bipartite graph**  with some nodes related to gene and term and edges representing the membership of genes to terms. This can be achieved using the `cnetplot()` function
 
 ```{r cnetplot, exercise=TRUE, exercise.setup="prepGSEA", fig.width=8, fig.height=8}
-cnetplot(gsea_bp, 
-         showCategory = 6, 
-         color.params = list(edge = TRUE), 
-         cex.params = list(category_label = 0.4, gene_label = 0.5),
-         circular=FALSE)
+cnetplot(gsea_bp)
 ```
 
 

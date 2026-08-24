@@ -695,7 +695,7 @@ p <- p + ggtitle("Flipper Lengths vs Bill Lengths") +
                plot.background = element_rect(fill="#EEDDAA"), 
                panel.grid.minor = element_blank(),  
                legend.background = element_blank(),
-               legend.box.background = element_rect(color = "black", size=1)
+               legend.box.background = element_rect(color = "black", linewidth=1)
            )
 print(p)
 ```

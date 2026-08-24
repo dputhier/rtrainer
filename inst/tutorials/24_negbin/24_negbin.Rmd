@@ -652,8 +652,7 @@ ggplot(df, aes(x = x)) +
       # return PMF only at integers, 0 elsewhere
       dnbinom(round(k), size = size, prob = prob)
     },
-    size = 1
-  ) +
+    linewidth = 1) +
   # Poisson PMF overlay
   stat_function(
     aes(color = "Poisson"),

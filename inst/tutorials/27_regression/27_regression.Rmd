@@ -1,0 +1,1349 @@
+---
+# highlight: `default`, `tango`, `pygments`, `kate`, `monochrome`, `espresso`, `zenburn`, 
+title: "Introduction to Linear Regression"
+author: "A. Gonzalez & D. Puthier"
+output:
+  learnr::tutorial:
+    includes:
+      before_body: !expr system.file(file.path("tutorials", "style.html"), package="rtrainer")
+      in_header: !expr system.file(file.path("tutorials", "mathjax.html"), package="rtrainer")
+    theme: default
+    highlight: default
+    fig_caption: yes
+    self_contained: true
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 4
+    number_sections: false
+    progressive: true
+  html_document:
+    theme: cosmo
+    fig_caption: yes
+    self_contained: yes
+    toc: yes
+    toc_float: 
+      toc_collapsed: false
+    toc_depth: 3
+    number_section: true
+  beamer_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_tex: no
+    slide_level: 2
+    theme: Montpellier
+    toc: yes
+  ioslides_presentation:
+    colortheme: dolphin
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    fonttheme: structurebold
+    highlight: tango
+    incremental: no
+    keep_md: no
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+  pdf_document:
+    fig_caption: yes
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+  slidy_presentation:
+    fig_caption: yes
+    fig_height: 4
+    fig_width: 6
+    highlight: tango
+    incremental: no
+    keep_md: no
+    self_contained: yes
+    slide_level: 2
+    smaller: yes
+    theme: cerulean
+    toc: yes
+    widescreen: yes
+font-import: http://fonts.googleapis.com/css?family=Risque
+font-family: Garamond
+transition: linear
+runtime: shiny_prerendered
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{=html}
+<!--  
+Here the parameters about the documents.
+https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf 
+-->
+```
+
+```{css, echo=FALSE}
+
+```
+
+```{=html}
+<script language="JavaScript" type="text/javascript">
+          
+          function sizeTbl2(h,i) {
+          var tbl = document.getElementById("section-" + i);
+          tbl.style.display = h;
+          }
+
+</script>
+```
+
+```{=html}
+<style>
+.exo {
+  border-radius: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: #fcede3;
+  color: rgb(51, 51,153);
+}
+.tips {
+       padding-top: 5px;
+       padding-bottom: 5px;
+       padding-left: 5px;
+       padding-right: 5px;
+       border: 1px dashed #2f6fab;
+       background-color: #EEFFEE;
+}
+.solution {
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-left: 5px;
+            padding-right: 5px;check_tuto()
+            border: 1px dashed #FFFFFF;
+            background-color: #EEEEFF;
+            color: #0000BB;
+            font-size: 11px;
+}
+</style>
+```
+
+```{r comment, echo=FALSE}
+# chunk below enables printing whole tutorial from browser e.g. to pdf
+# DO NOT put any #comments in the chunk below, that stops it from working !! 
+# from https://github.com/rstudio/learnr/issues/465
+# saving csss in a separate file print.css didn't work locally or on shinyapps because browser couldn't find file 
+```
+
+```{css csschunk, echo=FALSE}
+@media print {
+  .topicsContainer,
+  .topicActions,
+  .exerciseActions .skip {
+    display: none;
+  }
+  .topics .tutorialTitle,
+  .topics .section.level2,
+  .topics .section.level3:not(.hide) {
+    display: block;
+  }
+  .topics {
+    width: 100%;
+  }
+  .tutorial-exercise, .tutorial-question {
+    page-break-inside: avoid;
+  }
+  .section.level3.done h3 {
+    padding-left: 0;
+    background-image: none;
+  }
+  .topics .showSkip .exerciseActions::before {
+    content: "Topic not yet completed...";
+    font-style: italic;
+  }
+}  
+
+.alert-dark-custom {
+  background-color: #343a40;
+  color: white;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.alert-secondary-custom {
+  background-color: #e2e3e5;
+  color: #383d41;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  border: 1px solid #d6d8db;
+}
+
+.alert-info-custom {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  border: 1px solid #bee5eb;
+}
+
+```
+
+```{r setup, include=FALSE}
+library(learnr)
+library(gradethis)
+library(ggplot2)
+library(fs)
+library(shiny)
+knitr::opts_chunk$set(echo=TRUE, 
+                      eval=TRUE, 
+                      cache=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE, 
+                      comment="",
+                      exercise.timelimit=600,
+                      exercise.completion=TRUE,
+                      exercise.diagnostics=TRUE)
+
+gradethis::gradethis_setup(exercise.checker = gradethis_exercise_checker)
+
+if(!dir.exists(file.path(fs::path_home(), ".rtrainer")))
+  dir.create(file.path(fs::path_home(), ".rtrainer"), showWarnings = FALSE, recursive = TRUE)
+```
+
+## Introduction 
+
+<div class="alert alert-success" role="alert">
+**Linear regression** is a fundamental statistical technique used to **model the relationship** between an **explanatory variable** (independent variable) and a **response variable** (dependent variable) by fitting a **linear equation to observed data**. The simplest form of linear regression is **simple linear regression**, which involves a **single independent variable** and a **dependent variable**. **Multiple linear regression** extends this concept to include **multiple independent variables**.
+
+Linear regression is widely used in various fields, including **economics, biology, engineering, and social sciences**. There are various objectives in using **simple linear regression**, such as:
+
+- **Prediction**: Estimating the value of the dependent variable based on the independent variable.
+- **Understanding relationships**: Assessing the strength and nature of the relationship between variables.
+- **explain the variance**: Determining how much of the variability in the dependent variable can be explained by the independent variable.
+
+</div>
+
+## Mathematical formulation
+
+
+<div class="alert alert-success" role="alert">
+The mathematical formulation of a simple linear regression can be expressed as follows: 
+
+$$
+Y_{i} = \beta_{0} + \beta_{1}X_{i} + \epsilon_{i}, \text{ for } i = 1, 2, \ldots, n
+$$
+With :
+
+- $Y_{i}$: The **dependent variable (response variable)** for the *i-th* observation.
+- $X_{i}$: The **independent variable (explanatory variable)** for the *i-th* observation.
+- $\beta_{0}$: The **y-intercept of the regression line**, representing the expected value of $Y$ when $X$ is zero.
+- $\beta_{1}$: The slope of the regression line. This represent the **effect of $x$ on $y$** (**the change in Y for a one-unit change in X**). 
+- $\epsilon_{i}$: The **error term (residual)** for the *i-th* observation, representing the difference between the observed value and the value predicted by the regression line (the sum of the red dashed segments in the plot above).
+- $n$: The total number of observations in the dataset.
+<br/><br/>
+
+This model means that **for each observation $i$**, the value of the **dependent variable $Y_{i}$** is modeled as a linear function of the **independent variable \(X_{i}\)**, with an **added error term $\epsilon_{i}$ to account for variability not explained** by the linear relationship.
+</div>
+
+
+<div class="alert alert-info" role="alert">
+The terms dependent/independent variable can be replace by:
+
+- **Response variable** and **explanatory variable**.
+- **Outcome variable** and **predictor variable**.
+- **Target variable** and **feature variable**.
+- ...
+</div>
+
+<div class="exo">
+
+```{r quizz_lm, echo=FALSE, eval=TRUE}
+
+library(learnr)
+
+quiz(
+  question(
+    "In the model Yi = β0 + β1Xi + εi, what does β1 represent?",
+    answer("The change in Y for a one-unit change in X.", correct = TRUE),
+    answer("The value of Y when X equals zero."),
+    answer("The residual error for each observation."),
+    answer("The number of observations in the dataset."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "What does β0 represent in a simple linear regression model?",
+    answer("The expected value of Y when X equals zero.", correct = TRUE),
+    answer("The slope of the regression line."),
+    answer("The unexplained variability in the model."),
+    answer("The average of all Y values."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "What is the role of the error term εi?",
+    answer("It accounts for the variability in Y not explained by X.", correct = TRUE),
+    answer("It measures the strength of the relationship between X and Y."),
+    answer("It represents the slope of the regression line."),
+    answer("It is always equal to zero."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "What does Yi represent?",
+    answer("The observed value of the dependent variable for observation i.", correct = TRUE),
+    answer("The predicted value from the regression line."),
+    answer("The independent variable."),
+    answer("The intercept of the regression line."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "What does Xi represent?",
+    answer("The independent (explanatory) variable for observation i.", correct = TRUE),
+    answer("The error term."),
+    answer("The predicted value of Y."),
+    answer("The slope of the regression line."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+)
+```
+
+
+</div>
+
+## Visualization of simple linear regression
+
+ Visualization is a crucial step in understanding the relationship between variables in linear regression. Common visualization techniques include:
+ 
+ - **Scatter Plots**: Plotting the **independent variable on the x-axis** and the **dependent variable on the y-axis** to visualize the relationship.
+ - **Regression Line**: **Overlaying the fitted regression line** on the scatter plot **to illustrate the linear relationship**.
+ 
+Below, is a Shiny app that generates a set of normally distributed $X$ values and a response variable $Y$ defined by :
+
+
+$$
+Y_{i} = \beta_{0} + \beta_{1}X_{i} + \epsilon_{i}, \text{ for } i = 1, 2, \ldots, n
+$$
+The user can set the slope $\beta_{1}$ and the intercept $\beta_{0}$ while the noise term $\epsilon_{i}$ follows a normal distribution whose mean and standard deviation can be adjusted by the user. 
+
+```{r covshin-ui, echo=FALSE}
+fluidRow(
+  column(
+    4,
+    sliderInput("beta",
+                "Slope (β1)",
+                min = -5, 
+                max = 5,
+                value = 2, step = 0.1),
+    sliderInput("beta1",
+                "Intercept (β0)",
+                min = -10, 
+                max = 10,
+                value = 3, step = 0.1),
+    sliderInput("noise_mean",
+                "Noise mean",
+                min = 0, max = 10,
+                value = 0, step = 0.1),
+    sliderInput("noise_sd",
+                "Noise SD",
+                min = 0, 
+                max = 5,
+                value = 1, step = 0.1)
+  ),
+  column(
+    8,
+    plotOutput("center_plot", height = "500px")
+  )
+)
+```
+
+```{r covshin-server, context="server"}
+output$center_plot <- renderPlot({
+
+  # Reproducibility
+  set.seed(42)
+
+  # Number of observations
+  n <- 10
+
+  # Predictor
+  X <- rnorm(n, mean = 5, sd = 2)
+
+  # Outcome with controlable slope and noise
+  Y <- input$beta1 + input$beta * X + rnorm(
+    n,
+    mean = input$noise_mean,
+    sd   = input$noise_sd
+  )
+
+  df <- data.frame(X, Y)
+
+  # Plot points
+  plot(df$X, df$Y,
+       xlab = "X",
+       ylab = "Y",
+       pch = 19,
+       col = "blue")
+
+  # Regression line
+  fit <- lm(Y ~ X)
+  abline(fit, col = "black", lwd = 2)
+
+  # Means
+  abline(v = mean(df$X), col = "red", lty = 2)
+  abline(h = mean(df$Y), col = "red", lty = 2)
+
+  resid <- residuals(fit)
+  
+  # Residuals
+  segments(x0 = df$X, 
+           y0 = df$Y,
+           x1 = df$X,
+           y1 = df$Y - resid,
+           col = "orange", 
+           lty = 1)
+  
+
+  # Legend
+  legend("topleft",
+         legend = c("Data points",
+                    "Regression line",
+                    "Mean(X), Mean(Y)",
+                    "Residuals"),
+         col = c("blue", "black", "red", "orange"),
+         pch = c(19, NA, NA, NA),
+         lty = c(NA, 1, 2, 1),
+         lwd = c(NA, 2, 1, 1))
+  
+})
+```
+<div class="exo">
+```{r quizz2, echo=FALSE, eval=TRUE}
+library(learnr)
+
+quiz(
+  
+  question(
+    "Set Noise SD to 0. What do you observe about the points and the regression line?",
+    answer("All points lie perfectly on the regression line.", correct = TRUE),
+    answer("The regression line disappears."),
+    answer("The points become more scattered."),
+    answer("The slope becomes zero."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "Increase Noise SD to a large value (e.g., 4 or 5). What happens?",
+    answer("The points become more dispersed around the regression line.", correct = TRUE),
+    answer("The regression line becomes horizontal."),
+    answer("The intercept changes automatically."),
+    answer("The number of points increases."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "Change the slope (β1) from a positive value to a negative value. What happens to the regression line?",
+    answer("The line tilts in the opposite direction.", correct = TRUE),
+    answer("The line stays the same."),
+    answer("The intercept becomes zero."),
+    answer("The residuals disappear."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "Set the slope (β1) and Noise SD to 0. What do you observe?",
+    answer("The regression line becomes horizontal.", correct = TRUE),
+    answer("The points disappear."),
+    answer("The intercept becomes negative."),
+    answer("The noise becomes zero."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "Modify the intercept (β0) while keeping other parameters constant. What changes?",
+    answer("The regression line moves up or down without changing its tilt.", correct = TRUE),
+    answer("The regression line rotates."),
+    answer("The residuals become zero."),
+    answer("The scatter plot disappears."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  
+  question(
+    "Look at the red dashed lines (Mean(X) and Mean(Y)). Where does the regression line pass?",
+    answer("Through the point (Mean(X), Mean(Y)).", correct = TRUE),
+    answer("Through the origin (0,0)."),
+    answer("Through the highest point."),
+    answer("Through the lowest point."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+)
+
+```
+
+</div>
+
+## Ordinary Least Squares (OLS)
+
+The goal of linear regression is to find the “best” values for the parameters $\beta_0$ and $\beta_1$ that minimize the differences between the observed values of $Y$ and the values predicted by the linear model.
+
+For a given observation $i$, the predicted value is:
+
+$$
+\hat{Y}_i = \beta_0 + \beta_1 X_i
+$$
+
+and the **residual** is the difference between the observed and predicted values:
+
+$$
+e_i = Y_i - \hat{Y}_i
+= Y_i - (\beta_0 + \beta_1 X_i).
+$$
+
+The most common method for estimating these parameters is **Ordinary Least Squares (OLS)**. OLS chooses the values of $\beta_0$ and $\beta_1$ that minimize the **Residual Sum of Squares (RSS)**:
+
+$$
+RSS(\beta_0,\beta_1)
+=
+\sum_{i=1}^{n}
+\left[
+Y_i - (\beta_0 + \beta_1 X_i)
+\right]^2.
+$$
+
+In other words, among all possible straight lines, OLS finds the one for which the sum of the squared vertical distances between the observations and the line is as small as possible.
+
+### Why square the residuals?
+
+Squaring the residuals serves two purposes:
+
+- It ensures that **all residuals contribute positively to the sum**. Positive and negative residuals cannot cancel each other out.
+- It gives **more weight to larger errors**, since squaring a large residual makes its contribution to the RSS disproportionately larger.
+
+One can show that the OLS estimators for $\beta_0$ and $\beta_1$ are given by:
+
+$$
+\hat{\beta}_1 =
+\frac{
+\sum_{i=1}^{n}(X_i-\bar{X})(Y_i-\bar{Y})
+}{
+\sum_{i=1}^{n}(X_i-\bar{X})^2
+}
+$$
+
+and
+
+$$
+\hat{\beta}_0 = \bar{Y} - \hat{\beta}_1\bar{X}.
+$$
+
+The formula for $\hat{\beta}_1$ can also be written using the covariance and variance of $X$:
+
+$$
+\boxed{
+\hat{\beta}_1 =
+\frac{\operatorname{cov}(X,Y)}
+{\operatorname{var}(X)}
+}
+$$
+
+Indeed, the sample covariance and variance are defined as:
+
+$$
+\operatorname{cov}(X,Y)
+=
+\frac{1}{n-1}
+\sum_{i=1}^{n}(X_i-\bar{X})(Y_i-\bar{Y})
+$$
+
+and
+
+$$
+\operatorname{var}(X)
+=
+\frac{1}{n-1}
+\sum_{i=1}^{n}(X_i-\bar{X})^2.
+$$
+
+The factor $1/(n-1)$ therefore cancels when taking their ratio.
+
+Thus, in a simple linear regression, the estimated slope can be calculated as:
+
+$$
+\hat{\beta}_1 =
+\frac{\operatorname{cov}(X,Y)}
+{\operatorname{var}(X)}.
+$$
+
+### Exercise: Connecting covariance and the OLS slope
+
+We can verify this relationship directly in R.
+
+Calculate the slope in two different ways:
+
+1. Using the covariance and variance:
+
+   $$
+   \frac{\operatorname{cov}(X,Y)}
+   {\operatorname{var}(X)}
+   $$
+
+2. Using `lm()` and extracting the coefficient of `X`:
+
+   ```{r}
+   coef(lm(Y ~ X, data = df))["X"]
+   ```
+
+<div class="exo">
+
+Perform the following task:
+
+1. Calculate the slope using the covariance and variance.
+2. Calculate the slope using `lm()`.
+3. Compare the two values.
+4. Check whether they are equal.
+
+```{r cov_lm_exercise, exercise=TRUE, echo=TRUE, exercise.setup="covariate_simulation"}
+# Calculate the slope using covariance and variance
+slope_cov <- cov(df$X, df$Y) / var(df$X)
+
+# Calculate the slope using linear regression
+slope_lm <- ___
+
+# Compare the two values
+slope_cov
+slope_lm
+
+# Check whether they are equal
+___
+```
+
+```{r cov_lm_exercise-solution}
+# Calculate the slope using covariance and variance
+slope_cov <- cov(df$X, df$Y) / var(df$X)
+
+# Calculate the slope using linear regression
+slope_lm <- coef(lm(Y ~ X, data = df))["X"]
+
+# Compare the two values
+slope_cov
+slope_lm
+
+# Check whether they are equal
+slope_cov == slope_lm
+```
+
+</div>
+
+You should find that the two estimates are the same, up to numerical precision.
+
+This provides a useful connection between the OLS estimator and two quantities that can be calculated directly from the data:
+
+$$
+\boxed{
+\hat{\beta}_1 =
+\frac{\operatorname{cov}(X,Y)}
+{\operatorname{var}(X)}
+}
+$$
+
+The covariance measures how $X$ and $Y$ vary together, while the variance of $X$ accounts for the scale of variation in the explanatory variable. This is why the OLS slope is not simply equal to the covariance between $X$ and $Y$.
+
+### Matrix Formulation of Linear Regression
+
+The linear regression model can also be expressed in matrix form, which is particularly useful for multiple linear regression and for computational purposes. The model can be written as: 
+
+$$\mathbf{Y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}$$
+Where:
+
+- $Y$ is an $n \times 1$ vector of observed values of the dependent variable.
+- $X$ is an $n \times p$ matrix of the independent variables (including a column of ones for the intercept).
+- $\boldsymbol{\beta}$ is a $p \times 1$ vector of the coefficients (including the intercept).
+- $\boldsymbol{\epsilon}$ is an $n \times 1$ vector of error terms.
+
+The relationship with the scalar notation is as follows:
+
+$$\begin{bmatrix}Y_1 \\
+Y_2 \\
+\vdots \\
+Y_n\end{bmatrix} = \begin{bmatrix}1 & X_1 \\
+1 & X_2 \\
+\vdots & \vdots \\
+1 & X_n\end{bmatrix} \begin{bmatrix}\beta_0 \\
+\beta_1\end{bmatrix} + \begin{bmatrix}\epsilon_1 \\
+\epsilon_2 \\
+\vdots \\
+\epsilon_n\end{bmatrix}$$
+
+The OLS estimator for $\boldsymbol{\beta}$ in matrix form is given by:
+$$\hat{\boldsymbol{\beta}} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{Y}$$
+Where $\mathbf{X}^T$ is the transpose of the matrix $X$ and $(\mathbf{X}^T \mathbf{X})^{-1}$ is the inverse of the matrix $\mathbf{X}^T \mathbf{X}$. This formula provides a compact way to compute the OLS estimates for multiple linear regression models, and it is widely used in statistical software for fitting linear regression models.
+
+## Linear Regression in R
+
+### Generating artificial data
+
+In R, linear regression can be performed using the `lm()` function. We will carry out our analysis using an artificial dataset as input generated according to this **simple linear regression model**:
+
+$$
+Y_i = \beta_0 + \beta_1 X_i + \epsilon_i, \quad i = 1, \ldots, n
+$$
+In this simulation, the parameters are known:
+
+- $\beta_0 = 3$ (true intercept)  
+- $\beta_1 = 2$ (true slope)  
+- $\epsilon_i \sim \mathcal{N}(0, 1)$ (normally distributed noise with mean 0 and standard deviation 1)
+
+The benefit of using an artificial dataset is that we can control the parameters and understand how the linear regression model recovers these parameters from the data.
+
+```{r artificial, exercise=TRUE, echo=TRUE}
+# Set as seed for reproducibility
+set.seed(42)
+
+# Number of observations
+n <- 100
+
+# Predictor X
+X <- rnorm(n, mean = 5, sd = 2)
+
+# Outcome Y depends only on X
+# The true slope = 2, the true intercept = 3
+Y <- 3 + 2 * X + rnorm(n, sd = 1)  
+
+# Put into a data frame
+df <- data.frame(X, Y)
+```
+
+<div class= "exo">
+
+- Create two histograms to visualize the distribution of X and Y
+- Create a scatter plot to check the relationship between X and Y
+
+```{r artificialexo, exercise=TRUE, echo=TRUE, exercise.setup="artificial", exercise.lines=25, fig.height=5, fig.width=6}
+# Your code here
+
+```
+
+```{r artificialexo-solution}
+# Load libraries
+library(ggplot2)
+library(reshape2)
+library(patchwork)
+
+# Histogram of X and Y
+# using ggplot2
+df_melt <- reshape2::melt(df)
+p1 <- ggplot(df_melt, aes(x = value, 
+                    fill = variable)) +
+      geom_histogram(bins = 20, color="black") +
+      facet_wrap(~variable, ncol=1) +
+      labs(title = "Histogram of X and Y",
+           x = "Value",
+           y = "Frequency") +
+      theme_minimal() 
+
+# Scatter plot of X vs Y
+p2 <- ggplot(df, aes(x = X,
+               y=Y)) +
+      geom_point() +
+      theme_bw()
+
+# Combine both plots
+p1 + p2
+```
+</div>
+
+
+### Fitting the linear model
+
+Fitting a linear model in R is straightforward using the `lm()` function. The basic syntax is as follows:
+
+```{r lmfitex, echo=TRUE, eval=FALSE}
+model <- lm(dependent_variable ~ independent_variable, data = your_data)
+```
+
+In our case, we will fit a linear model to predict `Y` based on `X` using the artificial dataset we created earlier.
+
+```{r lmfit, exercise=TRUE, echo=TRUE, exercise.setup="artificial", fig.height=5, fig.width=6}
+# Fit the linear model  
+model <- lm(Y ~ X, data = df)
+
+# Display a fitting line on the scatter plot
+ggplot(df, aes(x = X, y = Y)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(title = "Scatter plot with \nfitted regression line",
+       x = "X",
+       y = "Y") +
+  theme_minimal() 
+```
+
+### Interpreting the results
+
+The returned object from `lm()` contains all the information about the fitted model. It also contains various slots/attributes/components that contain specific information, such as :
+
+- **Residuals**: Summary statistics of the residuals (min, 1Q, median, 3Q, max).
+- **Coefficients**: The estimated values of the intercept $\beta_{0}$ and slope $\beta_{1}$. The expected values should be close to the true values of 3 and 2, respectively, given that we generated the data with these parameters.
+- **fitted values**: The predicted values of $Y$ based on the fitted model.
+
+Some dedicated functions can be used to extract this information, such as `residuals()`, `coef()`, `fitted()`, etc.
+
+We can display the names of the components of the model object using the `names()` function.
+```{r names, exercise=TRUE, echo=TRUE, exercise.setup="lmfit"}
+names(model)
+```
+
+We can access these components directly using the `$` operator or by using dedicated functions.
+
+```{r names2, exercise=TRUE, echo=TRUE, exercise.setup="lmfit"}
+head(model$fitted.values)
+model$coefficients
+```
+
+We can also use dedicated functions to extract specific information/components:
+
+```{r names3, exercise=TRUE, echo=TRUE, exercise.setup="lmfit"}
+head(residuals(model))
+coef(model)
+```
+
+The summary of the linear model provides additional information about the model fit, including the standard error of the coefficients, t-values, p-values, R-squared (...).
+
+```{r lm_summary, exercise=TRUE, echo=TRUE, exercise.setup="lmfit"}
+# Get the summary of the model
+model_summary <- summary(model)
+
+# Display the summary of the model
+model_summary
+```
+
+The output of `summary(model)` includes several additional components:
+
+- **Standard Error**: A measure of the variability of the coefficient estimates.
+- **t-value for $\beta_1$**: A measure of how many standard errors $\beta_1$ is away from zero. 
+- **p-value for $\beta_1$ **: The probability of observing a t-value as extreme as the one calculated, under the null hypothesis. 
+- **t-value for $\beta_0$**: A measure of how many standard errors $\beta_0$ is away from zero. 
+- **p-value for $\beta_0$ **: The probability of observing a t-value as extreme as the one calculated, under the null hypothesis. 
+- **R-squared**: A measure of how well the independent variable explains the variability in the dependent variable. It ranges from 0 to 1, with higher values indicating a better fit.
+- **F-statistic**: A measure of the overall significance of the model.
+- ...
+
+We can access these components using dedicated functions or by directly accessing the attributes of the model object. For the coefficients table, we can access it using the `$coefficients` attribute or using the `coef()` function. 
+
+```{r accesssummary, exercise=TRUE, echo=TRUE, exercise.setup="lm_summary"}
+# Coefficients table
+model_summary$coefficients
+
+# Using dedicated functions
+coefs <- coef(model_summary)
+```
+
+To access the t-value and p-value for the intercept and slope, we can use the following code:
+
+```{r accesssummary2, exercise=TRUE, echo=TRUE, exercise.setup="accesssummary"}
+coefs["(Intercept)", c("t value", "Pr(>|t|)")]
+coefs["X", c("t value", "Pr(>|t|)")]
+
+```
+
+## Exercises
+
+
+<div class="exo">
+
+The residuals can be obtained using the `residuals()` function. Use the R code below with function `min()`, `quantile()` and `max()` to recompute, based on the residuals, the various values returned by the `summary()` function:
+
+```{r resid_summary, exercise=FALSE, echo=TRUE, eval=FALSE}
+ Residuals:
+     Min       1Q   Median       3Q      Max 
+ -1.88842 -0.50664  0.01225  0.54106  2.86240 
+```
+
+
+```{r lm_resid, exercise=TRUE, echo=TRUE, exercise.setup="accesssummary"}
+resid <- residuals(model)
+res_min <- ___
+res_1Q <- ___
+res_median <- ___
+res_3Q <- ___
+res_max <- ___
+```
+
+```{r lm_resid-solution}
+resid <- residuals(model)
+res_min <- min(resid)
+res_1Q <- quantile(resid, 0.25)
+res_median <- quantile(resid, 0.5)
+res_3Q <- quantile(resid, 0.75)
+res_max <- max(resid)
+```
+
+```{r lm_resid-check}
+library(gradethis)
+gradethis::grade_result_strict(
+    pass_if(~ isTRUE(all.equal(setNames(res_min, NULL), -1.88842, tolerance = 1e-5))),
+    pass_if(~ isTRUE(all.equal(setNames(res_1Q, NULL),  -0.50664, tolerance = 1e-5))),   
+    pass_if(~ isTRUE(all.equal(setNames(res_median, NULL), 0.01225, tolerance = 1e-5))),
+    pass_if(~ isTRUE(all.equal(setNames(res_3Q, NULL), 0.54106, tolerance = 1e-5))),
+    pass_if(~ isTRUE(all.equal(setNames(res_max, NULL), 2.86240, tolerance = 1e-5)))
+)
+```
+</div>
+
+<div class="exo">
+
+The coefficients can be obtained using the `coef()` function. 
+
+```{r coef_summary, exercise=FALSE, echo=TRUE, eval=FALSE}
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)
+(Intercept)  2.84374    0.23988   11.86   <2e-16 ***
+   X         2.01358    0.04383   45.94   <2e-16 *** 
+```
+
+
+```{r coef_interpretation, exercise=TRUE, echo=TRUE, exercise.setup="accesssummary"}
+coefs <- coef(model)
+names(coefs)
+beta_0 <- ___
+beta_1 <- ___
+```
+
+```{r coef_interpretation-solution}
+coefs <- coef(model)
+beta_0 <- coefs["(Intercept)"]
+beta_1 <- coefs["X"]
+```
+
+
+```{r coef_interpretation-check}
+library(gradethis)
+gradethis::grade_result_strict(
+    pass_if(~ isTRUE(all.equal(setNames(beta_0, NULL), 2.84374, tolerance = 1e-5))),
+    pass_if(~ isTRUE(all.equal(setNames(beta_1, NULL), 2.01358, tolerance = 1e-5)))
+)
+```
+
+</div>
+
+<div class="exo">
+
+The **`lm()` function** also returns a **t-value for each coefficient**. Given that **$\beta_1$ value represents a ratio** between the changes of $Y$ associated with a one-unit increase in $X$, the **estimator of standard error** from $\beta_1$ will be computed as **the ratio between the residuals and the standard deviation of $X$**:
+
+
+$$\hat{\sigma}_{\beta_1} = \sqrt{\frac{\sum_{i=1}^{n} (Y_i - \hat{Y}_i)^2}{ (n-2)\sum_{i=1}^{n} (X_i - \bar{X})^2}}$$
+
+From this, we can compute the t-value for $\beta_1$ as which is the ratio between the distance of the estimated $\hat{\beta_1}$ from the null hypothesis value (which is 0) and the standard error of $\hat{\beta_1}$:
+
+$$t_{\beta_1} = \frac{\hat{\beta_1} - 0}{\hat{\sigma}_{\beta_1}}$$
+
+So the t-value is used here **to test the null hypothesis** that **$\beta_1$ is equal to zero** (i.e., there is no relationship between $X$ and $Y$). A **large absolute t-value** (*i.e* positive or negative) indicates a **significant relationship** between the independent variable and the dependent variable.
+
+```{r t_summary, exercise=FALSE, echo=TRUE, eval=FALSE}
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)
+(Intercept)  2.84374    0.23988   11.86   <2e-16 ***
+   X         2.01358    0.04383   45.94   <2e-16 *** 
+```
+
+Complete the code below to re-compute the t-value for $\beta_1$ and its associated p-value. Note the residuals can be obtained using the `residuals()`.  
+
+
+
+```{r lmfithidden,  echo=FALSE, eval=TRUE, exercise.setup="artificial"}
+# Fit the linear model  
+model <- lm(Y ~ X, data = df)
+coefs <- coef(model)
+beta_0 <- coefs["(Intercept)"]
+beta_1 <- coefs["X"]
+```
+
+```{r t_interpretation, exercise=TRUE, echo=TRUE, exercise.setup="lmfithidden"}
+n <- ___
+rss <- ___
+sd_b_1 <- ___
+t_value_beta_1 <- ___
+p_value_beta_1 <- ___
+```
+
+```{r t_interpretation-solution}
+n <- nrow(df)
+rss <- sum(residuals(model) ^ 2)
+sd_b_1 <- sqrt( rss / ((n-2) * (sum((df$X - mean(df$X))^2))))
+t_value_beta_1 <- beta_1 / sd_b_1
+p_value_beta_1 <- pt(t_value_beta_1, df = n - 2, lower.tail = FALSE) * 2  # Two-tailed test
+```
+
+```{r t_interpretation-check}
+library(gradethis)
+gradethis::grade_result_strict(
+    pass_if(~ isTRUE(all.equal(setNames(t_value_beta_1, NULL), 45.93802, tolerance = 1e-2)), 
+            message = "The t-value for beta_1 is not correct."),
+    pass_if(~ isTRUE(all.equal(setNames(sd_b_1, NULL), 0.04383253, tolerance = 1e-5)),
+            message = "The standard error for beta_1 is not correct."),
+    pass_if(~ isTRUE(all.equal(setNames(sum(rss), NULL), 80.85626, tolerance = 1e-2)),
+            message = "The residual sum of squares is not correct."),
+    pass_if(~ isTRUE(all.equal(setNames(n, NULL), 100)),
+            message = "The number of observations is not correct."),
+    pass_if(~ isTRUE(all.equal(setNames(log10(p_value_beta_1), NULL), -67.37391, tolerance = 1e-3)),
+            message = "The p-value for beta_1 is not correct.")
+)
+```
+
+</div>
+
+## Covariate adjustment
+
+<div class="alert alert-success" >
+In the context of linear regression, **covariate adjustment** refers to the inclusion of **additional independent variables (covariates)** in the model to control for a potential **confounding effects** on the relationship between the **primary independent** variable and the **dependent variable**. A confounder is a variable that is associated with both the independent variable and the dependent variable, and can potentially bias the estimated relationship between them if not properly accounted for. Some example could be:
+</div>
+
+- In a study examining the relationship between **physical activity** (independent variable) and **cardiovascular health** (dependent variable), **age** could be a **confounder**, as it is associated with both physical activity levels and cardiovascular health outcomes.
+- In a study exploring the relationship between **education level** (independent variable) and **income** (dependent variable), **work experience** could be a confounder, as it is associated with both education level and income.
+
+### Simulated dataset
+
+To illustrate covariate adjustment, we will use a simulated dataset where we have a primary independent variable `X`, a dependent variable `Y`, and a confounding variable `Z`. The relationship between these variables can be defined as follows:
+
+$$Y_i = \beta_0 + \beta_1 X_i + \beta_2 Z + \epsilon_i$$
+
+Where:
+
+- $Y_i$ is the dependent variable for observation $i$.
+- $X_i$ is the primary independent variable for observation $i$.
+- $Z$ is the confounding variable.
+- $\beta_0$ is the intercept.
+- $\beta_1$ is the coefficient for the primary independent variable $X$.
+- $\beta_2$ is the coefficient for the confounding variable $Z$.
+- $\epsilon_i$ is the error term for observation $i$.
+
+In matrix form, we keep the general form:
+
+$$\mathbf{Y} = \mathbf{X} \boldsymbol{\beta} + \boldsymbol{\epsilon}$$
+Which concretely translates to:
+
+$$\begin{bmatrix}Y_1 \\
+Y_2 \\
+\vdots \\
+Y_n\end{bmatrix} = \begin{bmatrix}1 & X_1 & Z_1 \\
+1 & X_2 & Z_2 \\
+\vdots & \vdots & \vdots \\
+1 & X_n & Z_n\end{bmatrix} \begin{bmatrix}\ 
+\beta_0 \\
+\beta_1 \\
+\beta_2\end{bmatrix} + \begin{bmatrix}\epsilon_1 \\
+\epsilon_2 \\
+\vdots \\
+\epsilon_n\end{bmatrix}$$ 
+
+We will generate the data such that there is a strong relationship between Z and Y, and a moderate relationship between X and Y.
+
+```{r covariate_simulation, exercise=TRUE, echo=TRUE}
+# Set seed for reproducibility
+set.seed(42)
+
+# Number of observations
+n <- 200
+
+# Confounder
+Z <- rnorm(n, mean = 50, sd = 10)   # e.g. age
+
+# X depends on Z (confounding)
+X <- 0.05 * Z + rnorm(n, sd = 1)
+
+# Y depends only on Z (no causal effect of X!)
+Y <- 2 * Z + rnorm(n, sd = 5)
+
+# Put into a data frame
+df <- data.frame(X, Y, Z)
+head(df)
+```
+
+<div class="exo">
+Plot the distribution of X, Y and Z.
+
+```{r covariate_exo, exercise=TRUE, echo=TRUE, exercise.setup="covariate_simulation", fig.height=4, fig.width=6}
+# Your code here
+```
+
+```{r covariate_exo-solution}
+library(ggplot2)
+library(patchwork)
+     
+df_melt <- reshape2::melt(df)
+ggplot(df_melt, aes(x=value, fill=variable)) +
+  geom_histogram(binwidth = 2) +
+  facet_wrap(~variable)
+```
+</div>
+
+<div class="exo">
+
+Evaluate the relationship between variables using the `pairs()` function. What do you observe?
+
+```{r covariate_exo2, exercise=TRUE, echo=TRUE, exercise.setup="covariate_simulation", fig.height=5, fig.width=6}
+# Your code here
+```
+
+```{r covariate_exo2-solution}
+pairs(df, pch=16, col="steelblue", main="Scatterplot Matrix")
+```
+</div>
+
+### Fitting the model with and without covariate adjustment
+
+To fit a linear model **without covariate** adjustment, we will only include the primary independent variable `X` in the model:
+
+```{r lm_no_adjustment, exercise=TRUE, echo=TRUE, exercise.setup="covariate_simulation"}
+# Fit the linear model without covariate adjustment
+model_no_adjustment <- lm(Y ~ X, data = df)
+summary(model_no_adjustment)
+```
+
+<div class="exo">
+```{r quizz_lm2, echo=FALSE, eval=TRUE}
+library(learnr)
+
+quiz(
+  question(
+    "What do you observe about the beta 1 coefficient of X in the model without covariate adjustment?",
+    answer("It is significant and positive.", correct = TRUE),
+    answer("It is not significant."),
+    answer("It is significant and negative."),
+    answer("It is exactly zero."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  question("Why is the beta 1 coefficient of X significant in the model without covariate adjustment?",
+           answer("Because X is weakly correlated with Z, which has a strong effect on Y.", correct = TRUE),
+           answer("Because there is a direct causal effect of X on Y."),
+           answer("Because the sample size is large."),
+           answer("Because the noise in the data is low."),
+           allow_retry = TRUE,
+           random_answer_order = TRUE
+  )
+)
+
+```
+</div>
+
+To fit a linear model **with covariate adjustment**, we will include both the primary independent variable `X` and the confounding variable `Z` in the model:
+
+```{r lm_adjustment, exercise=TRUE, echo=TRUE, exercise.setup="covariate_simulation"}
+# Fit the linear model with covariate adjustment
+model_adjustment <- lm(Y ~ X + Z, data = df)
+summary(model_adjustment)
+```
+
+<div class="exo">
+```{r quizz_lm3, echo=FALSE, eval=TRUE}
+library(learnr)
+quiz(
+  question(
+    "What do you observe about the beta 1 coefficient of X in the model with covariate adjustment?",
+    answer("It is not significant.", correct = TRUE),
+    answer("It is significant and positive."),
+    answer("It is significant and negative."),
+    answer("It is exactly zero."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE),
+  question("Why is the beta 1 coefficient of X not significant in the model with covariate adjustment?",
+           answer("Because the confounding variable Z explains most of the variability in Y, and X does not have a direct effect on Y.", 
+                  correct = TRUE),
+           answer("Because the sample size is too small."),
+           answer("Because the noise in the data is too high."),
+           answer("Because there is a direct causal effect of X on Y."),  
+           allow_retry = TRUE,
+           random_answer_order = TRUE
+  )
+)
+```
+</div>
+
+### How does it work?
+
+We will try to **reproduce the results of model adjustment**, by hand, step by step. The goal is to understand how the inclusion of the confounding variable Z in the model affects the estimated relationship between X and Y. 
+
+<div class="exo">
+Perform the following task:
+
+1. Regress Y on Z to remove the effect of Z on Y and save the residuals (let's call them $Y_{res}$).
+2. Regress X on Z to remove the effect of Z on X and save the residuals (let's call them $X_{res}$).
+3. Regress $Y_{res}$ on $X_{res}$ and check the coefficient of $X_{res}$.
+
+```{r covariate_adjustment_exo, exercise=TRUE, echo=TRUE, exercise.setup="covariate_simulation"}
+# Your code here
+
+```
+
+```{r covariate_adjustment_exo-solution}
+# Step 1: Regress Y on Z and save the residuals
+Y_res <- residuals(lm(Y ~ Z, data = df))
+
+# Step 2: Regress X on Z and save the residuals
+X_res <- residuals(lm(X ~ Z, data = df))
+
+# Step 3: Regress Y_res on X_res and check the coefficient of X_res
+summary(lm(Y_res ~ X_res))
+
+# Step 4: Plot the relationship between Y_res and X_res
+plot(X_res, Y_res, pch=16,
+     col="steelblue", 
+     main="Residuals of Y vs Residuals of X",
+     xlab="Residuals of X", 
+     ylab="Residuals of Y")
+```
+
+</div>
+
+<div class="exo">
+```{r quizz_lm4, echo=FALSE, eval=TRUE}
+library(learnr)
+
+quiz(
+  question(
+    "What do you observe about the coefficient of X_res in the regression of Y_res on X_res?",
+    answer("It is not significant.", correct = TRUE),
+    answer("It is significant and positive."),
+    answer("It is significant and negative."),
+    answer("It is exactly zero."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+   question(
+     "Is the coefficient of X_res in the regression of Y_res on X_res the same as the coefficient of X in the model with covariate adjustment?",
+     answer("Yes, they are the same.", correct = TRUE),
+     answer("No, they are different."),
+     allow_retry = TRUE,
+     random_answer_order = TRUE
+   )
+)
+
+```
+</div>
+
+## Categorical explanatory variables
+
+In linear regression, we can also include categorical variables as independent variables. Categorical variables are expected to be provided as factors in R. When we include a categorical variable in a linear regression model, R will automatically create dummy variables for each category of the factor (except for one reference category) and include them in the model. For example, if we have a categorical variable with three categories (A, B, C), R will create two dummy variables (e.g., `B` and `C`) and use one category (e.g., `A`) as the reference category. The **coefficients of the dummy variables** will represent the difference in the dependent variable **between the reference category and the other categories**.
+
+```{r dummy, exercise=TRUE, echo=TRUE}
+# Load the PlantGrowth dataset
+# This dataset contains the weights of plants under three different 
+# treatment conditions: control (ctrl), treatment 1 (trt1), and treatment 2 (trt2).
+data(PlantGrowth)
+
+# Relevel the group variable to set "ctrl" as the reference category
+# This will correspond to the "intercept" in the model
+PlantGrowth$group <- relevel(PlantGrowth$group, ref = "ctrl")
+
+# Fit a linear model with group as a categorical variable
+model_plant <- lm(weight ~ group, data = PlantGrowth)
+coefs <- coef(summary(model_plant))
+coefs
+```
+
+As you can see the **Intercept corresponds to the mean of the reference category (ctrl)**, while the **coefficients for `grouptrt1` and `grouptrt2`** represent the **difference in mean weight** between the treatment groups (trt1 and trt2) and the control group (ctrl). The t-value and p-value for each coefficient indicate whether they differ significantly from zero. Here, the value for the intercept is highly significant, indicating that the mean weight of the control group is very different from zero (which has no practical meaning in this context). The coefficients for `grouptrt1` and `grouptrt2` are also significant, suggesting that the treatment groups have significantly different mean weights compared to the control group.
+
+The following boxplot explain the various estimates found in the summary of the model:
+
+```{r boxplot, echo=FALSE}
+# Preprocess
+data(PlantGrowth)
+PlantGrowth$group <- relevel(PlantGrowth$group, ref = "ctrl")
+model_plant <- lm(weight ~ group, data = PlantGrowth)
+coefs <- coef(summary(model_plant))
+
+# Create annotation data frame with all estimates
+ann_df <- data.frame(
+  x     = c(1.35,  2.25,  2.75),
+  xend  = c(1,     2,     3),
+  y     = c(coefs["(Intercept)", "Estimate"] + 0.5,
+            coefs["(Intercept)", "Estimate"] + coefs["grouptrt1", "Estimate"] + 0.5,
+            coefs["(Intercept)", "Estimate"] + coefs["grouptrt2", "Estimate"] + 0.5),
+  yend  = c(coefs["(Intercept)", "Estimate"],
+            coefs["(Intercept)", "Estimate"] + coefs["grouptrt1", "Estimate"],
+            coefs["(Intercept)", "Estimate"] + coefs["grouptrt2", "Estimate"]),
+  label = c(
+    paste0("bar(Y)[ref] == ", round(coefs["(Intercept)", "Estimate"], 3)),
+    paste0("bar(Y)[trt1] == ", round(coefs["(Intercept)", "Estimate"], 3), "+", round(coefs["grouptrt1", "Estimate"], 3)),
+    paste0("bar(Y)[trt2] == ", round(coefs["(Intercept)", "Estimate"], 3), "+", round(coefs["grouptrt2", "Estimate"], 3))
+  )
+)
+
+sd_df <- data.frame(
+  x = c(1, 2, 3),
+  xend = c(1, 2, 3),
+  y= c(coefs["(Intercept)", "Estimate"] + coefs["(Intercept)", "Std. Error"],
+       coefs["(Intercept)", "Estimate"] + coefs["grouptrt1", "Estimate"] + coefs["grouptrt1", "Std. Error"],
+       coefs["(Intercept)", "Estimate"] + coefs["grouptrt2", "Estimate"] + coefs["grouptrt1", "Std. Error"]),
+  yend= c(coefs["(Intercept)", "Estimate"] - coefs["(Intercept)", "Std. Error"],
+       coefs["(Intercept)", "Estimate"] + coefs["grouptrt1", "Estimate"] - coefs["grouptrt1", "Std. Error"],
+       coefs["(Intercept)", "Estimate"] + coefs["grouptrt2", "Estimate"] - coefs["grouptrt1", "Std. Error"]),
+  label = c(paste0("SE(Y)[ref] == ", round(coefs["(Intercept)", "Std. Error"], 3)),
+            paste0("SE(Y)[trt1] == ", round(coefs["grouptrt1", "Std. Error"], 3)),
+            paste0("SE(Y)[trt2] == ", round(coefs["grouptrt2", "Std. Error"], 3)))
+)
+
+mean_df <- data.frame(
+  x = c(1, 2, 3),
+  xend = c(1, 2, 3),
+  y = c(coefs["(Intercept)", "Estimate"],
+        coefs["(Intercept)", "Estimate"] + coefs["grouptrt1",
+                                               "Estimate"],
+        coefs["(Intercept)", "Estimate"] + coefs["grouptrt2",
+                                               "Estimate"]),
+  yend = c(coefs["(Intercept)", "Estimate"],
+           coefs["(Intercept)", "Estimate"] + coefs["grouptrt1",
+                                               "Estimate"],
+           coefs["(Intercept)", "Estimate"] + coefs["grouptrt2",
+                                               "Estimate"]),
+  label = c(paste0("Mean(Y)[ref] == ", round(coefs["(Intercept)", "Estimate"], 3)),
+            paste0("Mean(Y)[trt1] == ", round(coefs["(Intercept)", "Estimate"] + coefs["grouptrt1", "Estimate"], 3)),
+            paste0("Mean(Y)[trt2] == ", round(coefs["(Intercept)", "Estimate"] + coefs["grouptrt2", "Estimate"], 3)))
+)
+
+ggplot(PlantGrowth, aes(x = group, y = weight)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of weights by group", x = "Group", y = "Weight") +
+  theme_minimal() +
+  geom_point(data=mean_df, mapping=aes(x = x, y = y), color = "steelblue", size = 3) +
+  geom_segment(data = ann_df,
+               aes(x = x, xend = xend, y = y-0.05, yend = yend),
+               arrow = arrow(length = unit(0.2, "cm")), color = "red") +
+  geom_text(data = ann_df,
+            aes(x = x, y = y, label = label),
+            color = "red", hjust = 0, parse = TRUE)
+```
+
+
+
+### Finished
+
+Thank you for following this tutorial.
+
+
+
+
