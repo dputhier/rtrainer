@@ -16,8 +16,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 
-RUN R -e "options(timeout = 10000); install.packages('devtools')"
-RUN R -e "options(timeout = 10000); options(download.file.method = 'wget'); devtools::install_github('dputhier/rtrainer@67ce9457a2357942073d671393b3a2b177f974d5')"
+RUN R -e "options(timeout = 10000); install.packages('devtools'); install.packages('remotes')"
+RUN R -e "options(timeout = 10000); options(download.file.method = 'wget'); remotes::install_github('dputhier/rtrainer@v0.2.7')"
 
 ##  --  Building --
 # docker build   --no-cache -t rtrainer .
