@@ -1,4 +1,4 @@
-FROM bioconductor/bioconductor_docker:3.22
+FROM bioconductor/bioconductor_docker:3.23
 
 RUN git config --global credential.helper store && \
     git config --global user.name "Your Name" && \
@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
 
 
 RUN R -e "options(timeout = 10000); install.packages('devtools')"
-RUN R -e "options(timeout = 10000); options(download.file.method = 'wget'); devtools::install_github('dputhier/rtrainer@d83ae9064f7f950aadc465681f01b51c9aed0409')"
+RUN R -e "options(timeout = 10000); options(download.file.method = 'wget'); devtools::install_github('dputhier/rtrainer@67ce9457a2357942073d671393b3a2b177f974d5')"
 
 ##  --  Building --
 # docker build   --no-cache -t rtrainer .
