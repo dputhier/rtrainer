@@ -2,21 +2,10 @@
 
 The rtrainer package offers a collection of tutorials for learning R. Contributions are welcome—feel free to submit an issue or a pull request. We are eager to expand the collection with new tutorials on a variety of topics.
 
-# Installation for R 4.5.0
-
-This version requires Bioconductor 3.22
-
-
-    install.packages(c("remotes", "devtools"), dependencies=TRUE, ask = FALSE)
-    if (!require("BiocManager", quietly = TRUE))
-        install.packages("BiocManager", dependencies=TRUE, ask = FALSE)
-    BiocManager::install(version = "3.22", ask=FALSE)
-    remotes::install_github("dputhier/rtrainer@778b6f2b47dd57dbe57ecedc169812b8a3aa4f45")
-
 
 # Installation for R 4.6.0 (skip all updates)
 
-This version requires Bioconductor 3.23
+For the 2026–2027 academic year, rtrainer depends on R 4.6 and Bioconductor 3.23.
 
 
     install.packages(c("remotes", "devtools"), dependencies=TRUE, ask = FALSE)
@@ -37,7 +26,8 @@ The list of available tutorials can be obtained using:
 Run a tutorial using the following command:
 
     learnr::run_tutorial("04_factors", "rtrainer")
-    
+
+
 # Docker file
 
 A Docker file is available in `inst/docker` to facilitate the installation of the package and its dependencies.
