@@ -5,7 +5,8 @@ The rtrainer package offers a collection of tutorials for learning R. Contributi
 
 # Installation for R 4.6.0 (skip all updates)
 
-For the 2026–2027 academic year, rtrainer depends on R 4.6 and Bioconductor 3.23.
+For the 2026–2027 academic year, rtrainer depends on R 4.6 and Bioconductor 3.23. Copy and paste the
+following code in your RStudio console to install rtrainer.
 
 
     install.packages(c("remotes", "devtools"), dependencies=TRUE, ask = FALSE)

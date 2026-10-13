@@ -47,5 +47,5 @@ Roxygen: list(markdown = TRUE)
 Depends: R (>= 2.10)
 LazyData: true
 biocViews: Clustering, Classification, Transcriptomics, SingleCell, ReportWriting, GeneRegulation
-Remotes: rstudio/gradethis@502af70, jokergoo/rGREAT@97c712f
+Remotes: rstudio/gradethis@502af70
 Config/roxygen2/version: 8.0.0
