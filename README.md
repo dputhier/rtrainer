@@ -13,7 +13,7 @@ following code in your RStudio console to install rtrainer.
     if (!require("BiocManager", quietly = TRUE))
         install.packages("BiocManager", dependencies=TRUE, ask = FALSE)
     BiocManager::install(version = "3.23", ask=FALSE)
-    remotes::install_github("dputhier/rtrainer@v0.2.7")
+    remotes::install_github("dputhier/rtrainer@v0.2.8")
  
 
 
