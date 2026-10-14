@@ -28,19 +28,13 @@ Run a tutorial using the following command:
     learnr::run_tutorial("04_factors", "rtrainer")
 
 
-# Docker file
+# Docker
 
-A Docker file is available in `inst/docker` to facilitate the installation of the package and its dependencies.
-Use the following command to build the Docker image:
+    docker pull puthier/rtrainer:0.2.8
+    docker run -e PASSWORD=bioc -p 8787:8787 puthier/rtrainer:0.2.8
+    # login : rstudio // passwd: bioc
 
-    cd inst/docker
-    docker build  --progress=plain  --no-cache -t rtrainer .
 
-To run the image, use the following commands:
-
-    docker run -e PASSWORD=bioc -p 8787:8787 rtrainer
-
-The default login is `rstudio` and the password is `bioc`.
 
 # Test all the tutorials
 
